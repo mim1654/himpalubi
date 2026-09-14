@@ -8,40 +8,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body data-page="pendaftaran">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
 
-<header class="site-header">
-  <div class="container">
-    <a href="index.html" class="brand">
-      <img src="img/logo.png" alt="" class="brand-emblem" aria-hidden="true">
-      <span class="brand-text">HIMPALUBI<span class="full-name">Universitas PGRI Argopuro Jember</span></span>
-    </a>
-    <div class="nav-wrap">
-      <nav class="main-nav" aria-label="Navigasi utama">
-        <ul>
-          <li><a href="index.html">Beranda</a></li>
-          <li><a href="berita.html">Berita</a></li>
-          <li><a href="anggota.html">Anggota</a></li>
-        </ul>
-      </nav>
-      <div class="nav-actions">
-        <a href="admin/login.html" class="nav-btn outline">Masuk</a>
-        <a href="pendaftaran.html" class="nav-btn solid">Daftar</a>
-      </div>
-    </div>
-  </div>
-</header>
+<div id="site-header-slot"></div>
 
 <main id="konten">
-  <section class="hero" style="padding-bottom: 1.5rem; border-bottom: none;">
-    <div class="container">
-      <h1>Pendaftaran Anggota Baru</h1>
-      <p class="lead">Isi formulir berikut untuk bergabung bersama HIMPALUBI. Tim pengurus akan meninjau dan menghubungimu.</p>
+  <section class="hero" style="padding:3rem 0; background:var(--sage-100); color:var(--ink-900); text-align:left;">
+    <div class="container" style="max-width:1080px;">
+      <h1 style="color:var(--ink-900);">Pendaftaran Anggota Baru</h1>
+      <p class="lead" style="color:var(--ink-600); margin:0;">Isi formulir berikut untuk bergabung bersama HIMPALUBI. Tim pengurus akan meninjau dan menghubungimu.</p>
     </div>
   </section>
 
-  <section style="border-top:none; padding-top:0;">
+  <section>
     <div class="container">
       <div id="pesan-pendaftaran"></div>
       <form id="form-pendaftaran">
@@ -79,45 +59,13 @@
   </section>
 </main>
 
-<footer class="site-footer">
-  <div class="container footer-grid">
-    <div>
-      <h3>HIMPALUBI</h3>
-      <p>Himpunan Mahasiswa Pendidikan Luar Biasa — bergerak untuk pendidikan yang inklusif dan aksesibel bagi semua.</p>
-    </div>
-    <div>
-      <h3>Tautan Cepat</h3>
-      <ul>
-        <li><a href="berita.html">Berita</a></li>
-        <li><a href="anggota.html">Anggota</a></li>
-        <li><a href="pendaftaran.html">Pendaftaran</a></li>
-      </ul>
-    </div>
-    <div>
-      <h3>Kontak</h3>
-      <ul>
-        <li>himpalubi@kampus.ac.id</li>
-        <li>+62 812-0000-0000</li>
-      </ul>
-    </div>
-    <div>
-      <h3>Ikuti Kami</h3>
-      <ul>
-        <li><a href="#">Instagram</a></li>
-        <li><a href="#">YouTube</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom container">
-    <p>&copy; <span id="tahun"></span> HIMPALUBI. Seluruh hak cipta dilindungi.</p>
-  </div>
-</footer>
+<div id="site-footer-slot"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabaseClient.js"></script>
 <script src="js/public.js"></script>
+<script src="js/components.js"></script>
 <script>
-  document.getElementById("tahun").textContent = new Date().getFullYear();
   pasangFormPendaftaran("form-pendaftaran");
 </script>
 </body>

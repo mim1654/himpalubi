@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Berita — HIMPALUBI</title>
+<title>Kontak — HIMPALUBI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body data-page="berita">
+<body data-page="kontak">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
 
 <div id="site-header-slot"></div>
@@ -16,16 +16,30 @@
 <main id="konten">
   <section class="hero" style="padding:3rem 0; background:var(--sage-100); color:var(--ink-900); text-align:left;">
     <div class="container" style="max-width:1080px;">
-      <h1 style="color:var(--ink-900);">Berita</h1>
-      <p class="lead" style="color:var(--ink-600); margin:0;">Kabar terbaru seputar HIMPALUBI.</p>
+      <h1 style="color:var(--ink-900);">Kontak</h1>
+      <p class="lead" style="color:var(--ink-600); margin:0;">Hubungi HIMPALUBI melalui informasi berikut.</p>
     </div>
   </section>
 
   <section>
-    <div class="container">
-      <ul class="news-list" id="daftar-berita">
-        <li>Memuat berita...</li>
-      </ul>
+    <div class="container" style="max-width:560px;">
+      <div class="card-panel">
+        <h3>Alamat</h3>
+        <p id="kontak-alamat">Universitas PGRI Argopuro Jember</p>
+
+        <h3>Email</h3>
+        <p id="kontak-email">himpalubi@kampus.ac.id</p>
+
+        <h3>Telepon / WhatsApp</h3>
+        <p id="kontak-telepon">+62 812-0000-0000</p>
+
+        <h3>Media Sosial</h3>
+        <p>
+          <a href="#" id="kontak-instagram">Instagram</a>
+          &nbsp;&middot;&nbsp;
+          <a href="#" id="kontak-youtube">YouTube</a>
+        </p>
+      </div>
     </div>
   </section>
 </main>
@@ -37,7 +51,7 @@
 <script src="js/public.js"></script>
 <script src="js/components.js"></script>
 <script>
-  muatBerita("daftar-berita", null, "Berita");
+  muatKontakHalaman();
 </script>
 </body>
 </html>

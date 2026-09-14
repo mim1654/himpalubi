@@ -4,44 +4,46 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HIMPALUBI</title>
-<meta name="description" content="Website resmi HIMPALUBI — berita, keanggotaan, dan pendaftaran organisasi.">
+<meta name="description" content="Website resmi HIMPALUBI — berita, kegiatan, struktur organisasi, dan pendaftaran anggota.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body data-page="beranda">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
 
-<header class="site-header">
-  <div class="container">
-    <a href="index.html" class="brand">
-      <img src="img/logo.png" alt="" class="brand-emblem" aria-hidden="true">
-      <span class="brand-text">HIMPALUBI<span class="full-name">Universitas PGRI Argopuro Jember</span></span>
-    </a>
-    <div class="nav-wrap">
-      <nav class="main-nav" aria-label="Navigasi utama">
-        <ul>
-          <li><a href="index.html" aria-current="page">Beranda</a></li>
-          <li><a href="berita.html">Berita</a></li>
-          <li><a href="anggota.html">Anggota</a></li>
-        </ul>
-      </nav>
-      <div class="nav-actions">
-        <a href="admin/login.html" class="nav-btn outline">Masuk</a>
-        <a href="pendaftaran.html" class="nav-btn solid">Daftar</a>
-      </div>
-    </div>
-  </div>
-</header>
+<div id="site-header-slot"></div>
 
 <main id="konten">
   <section class="hero">
     <div class="container">
       <img src="img/logo.png" alt="Logo HIMPALUBI" class="hero-emblem">
-      <p class="eyebrow">HIMPALUBI</p>
+      <p class="eyebrow">HIMPALUBI UNIPAR JEMBER</p>
       <h1>Himpunan Mahasiswa <span class="accent">Pendidikan Luar Biasa</span></h1>
-      <p class="lead">Bergerak bersama, peduli untuk semua — mewadahi mahasiswa Pendidikan Luar Biasa Universitas PGRI Argopuro Jember dalam berkarya dan membangun kepedulian terhadap pendidikan inklusif.</p>
-      <a href="pendaftaran.html" class="btn">Gabung Jadi Anggota</a>
+      <p class="lead">Universitas PGRI Argopuro Jember — bergerak bersama, peduli untuk semua.</p>
+      <a href="kegiatan.html" class="btn">Lihat Kegiatan</a>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <h2>Tentang HIMPALUBI</h2>
+        <a href="tentang.html">Selengkapnya</a>
+      </div>
+      <p id="tentang-ringkas-teks">Memuat...</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <h2>Kegiatan Terbaru</h2>
+        <a href="kegiatan.html">Lihat semua kegiatan</a>
+      </div>
+      <div class="card-grid-3" id="kegiatan-terbaru-grid">
+        <p>Memuat kegiatan...</p>
+      </div>
     </div>
   </section>
 
@@ -51,67 +53,23 @@
         <h2>Berita Terbaru</h2>
         <a href="berita.html">Lihat semua berita</a>
       </div>
-      <div class="news-split">
-        <ul class="news-sidelist" id="berita-sidelist">
-          <li>Memuat berita...</li>
-        </ul>
-        <div class="news-photo-grid" id="berita-photogrid"></div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="container">
-      <div class="section-head">
-        <h2>Galeri Kegiatan</h2>
-      </div>
-      <div class="gallery-grid" id="galeri-grid">
-        <p>Foto kegiatan akan tampil di sini setelah berita dengan foto dipublikasikan.</p>
+      <div class="card-grid-3" id="berita-terbaru-grid">
+        <p>Memuat berita...</p>
       </div>
     </div>
   </section>
 </main>
 
-<footer class="site-footer">
-  <div class="container footer-grid">
-    <div>
-      <h3>HIMPALUBI</h3>
-      <p>Himpunan Mahasiswa Pendidikan Luar Biasa — bergerak untuk pendidikan yang inklusif dan aksesibel bagi semua.</p>
-    </div>
-    <div>
-      <h3>Tautan Cepat</h3>
-      <ul>
-        <li><a href="berita.html">Berita</a></li>
-        <li><a href="anggota.html">Anggota</a></li>
-        <li><a href="pendaftaran.html">Pendaftaran</a></li>
-      </ul>
-    </div>
-    <div>
-      <h3>Kontak</h3>
-      <ul>
-        <li>himpalubi@kampus.ac.id</li>
-        <li>+62 812-0000-0000</li>
-      </ul>
-    </div>
-    <div>
-      <h3>Ikuti Kami</h3>
-      <ul>
-        <li><a href="#">Instagram</a></li>
-        <li><a href="#">YouTube</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom container">
-    <p>&copy; <span id="tahun"></span> HIMPALUBI. Seluruh hak cipta dilindungi.</p>
-  </div>
-</footer>
+<div id="site-footer-slot"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabaseClient.js"></script>
 <script src="js/public.js"></script>
+<script src="js/components.js"></script>
 <script>
-  document.getElementById("tahun").textContent = new Date().getFullYear();
-  muatBerandaBerita();
+  muatTentangRingkas("tentang-ringkas-teks");
+  muatKegiatanTerbaru("kegiatan-terbaru-grid");
+  muatBeritaKartu("berita-terbaru-grid", 3);
 </script>
 </body>
 </html>

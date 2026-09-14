@@ -1,11 +1,14 @@
-// ================= HALAMAN BERITA (index.html & berita.html) =================
-async function muatBerita(elId, batas) {
+// ================= HALAMAN LIST: Berita & Kegiatan (berita.html / kegiatan.html) =================
+// Dipakai untuk daftar lengkap. kategori: "Berita" atau "Kegiatan".
+async function muatBerita(elId, batas, kategori) {
   const el = document.getElementById(elId);
   if (!el) return;
+  kategori = kategori || "Berita";
 
   let query = supabaseClient
     .from("berita")
     .select("*")
+    .eq("kategori", kategori)
     .order("tanggal", { ascending: false });
 
   if (batas) query = query.limit(batas);
@@ -13,13 +16,13 @@ async function muatBerita(elId, batas) {
   const { data, error } = await query;
 
   if (error) {
-    el.innerHTML = `<p class="form-message error">Berita belum bisa dimuat. Coba muat ulang halaman.</p>`;
+    el.innerHTML = `<p class="form-message error">Data belum bisa dimuat. Coba muat ulang halaman.</p>`;
     console.error(error);
     return;
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = `<p>Belum ada berita yang dipublikasikan.</p>`;
+    el.innerHTML = `<li>Belum ada ${kategori.toLowerCase()} yang dipublikasikan.</li>`;
     return;
   }
 
@@ -35,7 +38,64 @@ async function muatBerita(elId, batas) {
   `).join("");
 }
 
-// ================= HALAMAN ANGGOTA (anggota.html) =================
+// ================= BERANDA: Kegiatan Terbaru (3 kartu foto) =================
+async function muatKegiatanTerbaru(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  const { data, error } = await supabaseClient
+    .from("berita")
+    .select("*")
+    .eq("kategori", "Kegiatan")
+    .order("tanggal", { ascending: false })
+    .limit(3);
+
+  if (error || !data || data.length === 0) {
+    el.innerHTML = `<p>Belum ada kegiatan yang dipublikasikan.</p>`;
+    return;
+  }
+
+  el.innerHTML = data.map(item => `
+    <div class="news-photo-card">
+      ${item.foto_url ? `<img src="${item.foto_url}" alt="">` : ""}
+      <span class="tag">Kegiatan</span>
+      <h4>${escapeHtml(item.judul)}</h4>
+    </div>
+  `).join("");
+}
+
+// ================= BERANDA: Berita Terbaru (3 kartu biasa) =================
+async function muatBeritaKartu(elId, batas) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  let query = supabaseClient
+    .from("berita")
+    .select("*")
+    .eq("kategori", "Berita")
+    .order("tanggal", { ascending: false });
+  if (batas) query = query.limit(batas);
+
+  const { data, error } = await query;
+
+  if (error || !data || data.length === 0) {
+    el.innerHTML = `<p>Belum ada berita yang dipublikasikan.</p>`;
+    return;
+  }
+
+  el.innerHTML = data.map(item => `
+    <div class="content-card">
+      ${item.foto_url ? `<img src="${item.foto_url}" class="thumb" alt="" loading="lazy">` : ""}
+      <div class="body">
+        <time>${formatTanggal(item.tanggal)}</time>
+        <h4>${escapeHtml(item.judul)}</h4>
+        <p>${escapeHtml(ringkas(item.isi, 110))}</p>
+      </div>
+    </div>
+  `).join("");
+}
+
+// ================= HALAMAN ANGGOTA: dikelompokkan per angkatan =================
 async function muatAnggota(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
@@ -43,8 +103,9 @@ async function muatAnggota(elId) {
   const { data, error } = await supabaseClient
     .from("anggota")
     .select("*")
+    .eq("kategori", "Anggota")
     .eq("status", "Aktif")
-    .order("nama", { ascending: true });
+    .order("angkatan", { ascending: false });
 
   if (error) {
     el.innerHTML = `<p class="form-message error">Data anggota belum bisa dimuat.</p>`;
@@ -57,16 +118,207 @@ async function muatAnggota(elId) {
     return;
   }
 
-  el.innerHTML = data.map(a => `
-    <div class="member-card">
-      <div class="photo">
-        ${a.foto_url ? `<img src="${a.foto_url}" alt="">` : initial(a.nama)}
+  const kelompok = {};
+  data.forEach(a => {
+    const k = a.angkatan || "Lainnya";
+    (kelompok[k] = kelompok[k] || []).push(a);
+  });
+
+  el.innerHTML = Object.keys(kelompok)
+    .sort((a, b) => b.localeCompare(a, "id", { numeric: true }))
+    .map(angkatan => `
+      <div class="angkatan-group">
+        <h3>Angkatan ${escapeHtml(angkatan)}</h3>
+        <div class="member-grid">
+          ${kelompok[angkatan].map(kartuAnggota).join("")}
+        </div>
       </div>
+    `).join("");
+}
+
+function kartuAnggota(a) {
+  return `
+    <div class="member-card">
+      <div class="photo">${a.foto_url ? `<img src="${a.foto_url}" alt="">` : initial(a.nama)}</div>
       <h3>${escapeHtml(a.nama)}</h3>
       <div class="role">${escapeHtml(a.jabatan || "Anggota")}</div>
-      <div class="meta">${escapeHtml(a.angkatan || "")}</div>
+    </div>
+  `;
+}
+
+// ================= HALAMAN STRUKTUR ORGANISASI: BPH + Divisi =================
+async function muatStruktur(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  const { data, error } = await supabaseClient
+    .from("anggota")
+    .select("*")
+    .eq("kategori", "Pengurus")
+    .eq("status", "Aktif")
+    .order("nama");
+
+  if (error) {
+    el.innerHTML = `<p class="form-message error">Struktur organisasi belum bisa dimuat.</p>`;
+    console.error(error);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    el.innerHTML = `<p>Struktur organisasi belum diisi oleh admin.</p>`;
+    return;
+  }
+
+  const kelompok = {};
+  data.forEach(a => {
+    const k = a.divisi || "Lainnya";
+    (kelompok[k] = kelompok[k] || []).push(a);
+  });
+
+  el.innerHTML = urutkanDivisi(Object.keys(kelompok)).map(divisi => `
+    <div class="angkatan-group">
+      <h3>${escapeHtml(divisi)}</h3>
+      <div class="member-grid">
+        ${kelompok[divisi].map(kartuAnggota).join("")}
+      </div>
     </div>
   `).join("");
+}
+
+// ================= HALAMAN PROGRAM KERJA: dikelompokkan per divisi =================
+async function muatProgramKerja(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  const { data, error } = await supabaseClient
+    .from("program_kerja")
+    .select("*")
+    .order("divisi");
+
+  if (error) {
+    el.innerHTML = `<p class="form-message error">Program kerja belum bisa dimuat.</p>`;
+    console.error(error);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    el.innerHTML = `<p>Program kerja belum ditambahkan oleh admin.</p>`;
+    return;
+  }
+
+  const kelompok = {};
+  data.forEach(p => {
+    (kelompok[p.divisi] = kelompok[p.divisi] || []).push(p);
+  });
+
+  el.innerHTML = urutkanDivisi(Object.keys(kelompok)).map(divisi => `
+    <div class="angkatan-group">
+      <h3>${escapeHtml(divisi)}</h3>
+      <div class="program-list">
+        ${kelompok[divisi].map(p => `
+          <div class="program-item">
+            <div>
+              <h4>${escapeHtml(p.nama_program)}</h4>
+              ${p.deskripsi ? `<p>${escapeHtml(p.deskripsi)}</p>` : ""}
+            </div>
+            ${badgeStatusProgram(p.status)}
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+function urutkanDivisi(daftar) {
+  return daftar.sort((a, b) => {
+    if (a === "BPH") return -1;
+    if (b === "BPH") return 1;
+    return a.localeCompare(b, "id");
+  });
+}
+
+function badgeStatusProgram(status) {
+  const kelas = { Direncanakan: "menunggu", Berjalan: "diterima", Selesai: "aktif" }[status] || "menunggu";
+  return `<span class="badge ${kelas}">${escapeHtml(status || "")}</span>`;
+}
+
+// ================= HALAMAN GALERI =================
+async function muatGaleriHalaman(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  const { data, error } = await supabaseClient
+    .from("galeri")
+    .select("*")
+    .order("tanggal", { ascending: false });
+
+  if (error) {
+    el.innerHTML = `<p class="form-message error">Galeri belum bisa dimuat.</p>`;
+    console.error(error);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    el.innerHTML = `<p>Belum ada foto di galeri.</p>`;
+    return;
+  }
+
+  el.innerHTML = data.map(g => `<img src="${g.foto_url}" alt="${escapeHtml(g.judul || "")}" loading="lazy">`).join("");
+}
+
+// ================= HALAMAN TENTANG =================
+async function muatTentangHalaman(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  const { data, error } = await supabaseClient.from("pengaturan").select("*").eq("id", 1).single();
+  if (error || !data) {
+    el.innerHTML = `<p>Informasi belum tersedia.</p>`;
+    return;
+  }
+  const paragraf = (data.tentang || "").split(/\n+/).filter(Boolean);
+  el.innerHTML = paragraf.map(p => `<p>${escapeHtml(p)}</p>`).join("") || `<p>Informasi belum tersedia.</p>`;
+}
+
+// ================= BERANDA: Tentang (ringkas) =================
+async function muatTentangRingkas(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const { data, error } = await supabaseClient.from("pengaturan").select("tentang").eq("id", 1).single();
+  if (error || !data) return;
+  el.textContent = ringkas(data.tentang || "", 260);
+}
+
+// ================= HALAMAN KONTAK =================
+async function muatKontakHalaman() {
+  const { data, error } = await supabaseClient.from("pengaturan").select("*").eq("id", 1).single();
+  if (error || !data) return;
+
+  setTeksAman("kontak-alamat", data.alamat);
+  setTeksAman("kontak-email", data.email);
+  setTeksAman("kontak-telepon", data.telepon);
+
+  const ig = document.getElementById("kontak-instagram");
+  if (ig && data.instagram) ig.href = data.instagram;
+  const yt = document.getElementById("kontak-youtube");
+  if (yt && data.youtube) yt.href = data.youtube;
+}
+
+// ================= FOOTER: isi otomatis dari Pengaturan =================
+async function muatPengaturanFooter() {
+  const { data, error } = await supabaseClient.from("pengaturan").select("*").eq("id", 1).single();
+  if (error || !data) return;
+
+  const d = document.getElementById("footer-deskripsi");
+  if (d && data.tagline) d.textContent = data.tagline;
+
+  setTeksAman("footer-email", data.email);
+  setTeksAman("footer-telepon", data.telepon);
+
+  const ig = document.getElementById("footer-instagram");
+  if (ig && data.instagram) ig.href = data.instagram;
+  const yt = document.getElementById("footer-youtube");
+  if (yt && data.youtube) yt.href = data.youtube;
 }
 
 // ================= FORM PENDAFTARAN (pendaftaran.html) =================
@@ -109,67 +361,11 @@ function pasangFormPendaftaran(formId) {
   });
 }
 
-// ================= BERANDA: Berita (daftar + kartu foto) + Galeri =================
-async function muatBerandaBerita() {
-  const { data, error } = await supabaseClient
-    .from("berita")
-    .select("*")
-    .order("tanggal", { ascending: false })
-    .limit(8);
-
-  const sideEl = document.getElementById("berita-sidelist");
-  const gridEl = document.getElementById("berita-photogrid");
-  const galeriEl = document.getElementById("galeri-grid");
-
-  if (error || !data) {
-    if (sideEl) sideEl.innerHTML = `<li>Berita belum bisa dimuat.</li>`;
-    return;
-  }
-
-  if (data.length === 0) {
-    if (sideEl) sideEl.innerHTML = `<li>Belum ada berita yang dipublikasikan.</li>`;
-    if (gridEl) gridEl.innerHTML = "";
-    return;
-  }
-
-  if (sideEl) {
-    sideEl.innerHTML = data.slice(0, 4).map(item => `
-      <li>
-        <span class="date-badge">
-          <span class="day">${new Date(item.tanggal).getDate()}</span>
-          <span class="month">${new Date(item.tanggal).toLocaleDateString("id-ID", { month: "short" })}</span>
-        </span>
-        <div>
-          <h4>${escapeHtml(item.judul)}</h4>
-          <p>${escapeHtml(ringkas(item.isi, 90))}</p>
-          <a class="more" href="berita.html">Selengkapnya &rarr;</a>
-        </div>
-      </li>
-    `).join("");
-  }
-
-  if (gridEl) {
-    const dengan_foto = data.filter(item => item.foto_url).slice(0, 4);
-    gridEl.innerHTML = dengan_foto.length
-      ? dengan_foto.map(item => `
-          <div class="news-photo-card">
-            <img src="${item.foto_url}" alt="">
-            <span class="tag">Berita</span>
-            <h4>${escapeHtml(item.judul)}</h4>
-          </div>
-        `).join("")
-      : `<p style="grid-column:1/-1; color:var(--ink-600);">Tambahkan tautan foto pada berita supaya tampil di sini.</p>`;
-  }
-
-  if (galeriEl) {
-    const foto = data.filter(item => item.foto_url);
-    galeriEl.innerHTML = foto.length
-      ? foto.map(item => `<img src="${item.foto_url}" alt="${escapeHtml(item.judul)}" loading="lazy">`).join("")
-      : `<p>Foto kegiatan akan tampil di sini setelah berita dengan foto dipublikasikan.</p>`;
-  }
-}
-
 // ================= UTIL =================
+function setTeksAman(id, teks) {
+  const el = document.getElementById(id);
+  if (el && teks) el.textContent = teks;
+}
 function formatTanggal(tgl) {
   if (!tgl) return "";
   const d = new Date(tgl);
@@ -185,7 +381,7 @@ function initial(nama) {
 }
 function escapeHtml(str) {
   if (!str) return "";
-  return str.replace(/[&<>"']/g, (c) => ({
+  return String(str).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
   }[c]));
 }

@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Berita — HIMPALUBI</title>
+<title>Struktur Organisasi — HIMPALUBI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body data-page="berita">
+<body data-page="struktur">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
 
 <div id="site-header-slot"></div>
@@ -16,16 +16,14 @@
 <main id="konten">
   <section class="hero" style="padding:3rem 0; background:var(--sage-100); color:var(--ink-900); text-align:left;">
     <div class="container" style="max-width:1080px;">
-      <h1 style="color:var(--ink-900);">Berita</h1>
-      <p class="lead" style="color:var(--ink-600); margin:0;">Kabar terbaru seputar HIMPALUBI.</p>
+      <h1 style="color:var(--ink-900);">Struktur Organisasi</h1>
+      <p class="lead" style="color:var(--ink-600); margin:0;">Badan Pengurus Harian (BPH) dan divisi-divisi HIMPALUBI.</p>
     </div>
   </section>
 
   <section>
-    <div class="container">
-      <ul class="news-list" id="daftar-berita">
-        <li>Memuat berita...</li>
-      </ul>
+    <div class="container" id="struktur-konten">
+      <p>Memuat struktur organisasi...</p>
     </div>
   </section>
 </main>
@@ -37,7 +35,7 @@
 <script src="js/public.js"></script>
 <script src="js/components.js"></script>
 <script>
-  muatBerita("daftar-berita", null, "Berita");
+  muatStruktur("struktur-konten");
 </script>
 </body>
 </html>
