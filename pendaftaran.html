@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pendaftaran Anggota — HIMPALUBI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<a href="#konten" class="skip-link">Langsung ke konten</a>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">HIM<strong>PALUBI</strong></a>
+    <nav class="main-nav" aria-label="Navigasi utama">
+      <ul>
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="berita.html">Berita</a></li>
+        <li><a href="anggota.html">Anggota</a></li>
+        <li><a href="pendaftaran.html" aria-current="page">Pendaftaran</a></li>
+        <li><a href="admin/login.html">Login Admin</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="konten">
+  <section class="hero" style="padding-bottom: 1.5rem; border-bottom: none;">
+    <div class="container">
+      <h1>Pendaftaran Anggota Baru</h1>
+      <p class="lead">Isi formulir berikut untuk bergabung bersama HIMPALUBI. Tim pengurus akan meninjau dan menghubungimu.</p>
+    </div>
+  </section>
+
+  <section style="border-top:none; padding-top:0;">
+    <div class="container">
+      <div id="pesan-pendaftaran"></div>
+      <form id="form-pendaftaran">
+        <div class="field">
+          <label for="nama">Nama Lengkap</label>
+          <input type="text" id="nama" name="nama" required>
+        </div>
+        <div class="field">
+          <label for="nim">NIM</label>
+          <input type="text" id="nim" name="nim" required>
+        </div>
+        <div class="field">
+          <label for="program_studi">Program Studi</label>
+          <input type="text" id="program_studi" name="program_studi" required>
+        </div>
+        <div class="field">
+          <label for="angkatan">Angkatan</label>
+          <input type="text" id="angkatan" name="angkatan" placeholder="Contoh: 2025" required>
+        </div>
+        <div class="field">
+          <label for="no_wa">Nomor WhatsApp</label>
+          <input type="tel" id="no_wa" name="no_wa" required>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="field">
+          <label for="alasan">Alasan Bergabung</label>
+          <textarea id="alasan" name="alasan" required></textarea>
+        </div>
+        <button type="submit" class="btn">Kirim Pendaftaran</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; <span id="tahun"></span> HIMPALUBI.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/public.js"></script>
+<script>
+  document.getElementById("tahun").textContent = new Date().getFullYear();
+  pasangFormPendaftaran("form-pendaftaran");
+</script>
+</body>
+</html>

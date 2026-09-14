@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anggota — HIMPALUBI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<a href="#konten" class="skip-link">Langsung ke konten</a>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">HIM<strong>PALUBI</strong></a>
+    <nav class="main-nav" aria-label="Navigasi utama">
+      <ul>
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="berita.html">Berita</a></li>
+        <li><a href="anggota.html" aria-current="page">Anggota</a></li>
+        <li><a href="pendaftaran.html">Pendaftaran</a></li>
+        <li><a href="admin/login.html">Login Admin</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="konten">
+  <section class="hero" style="padding-bottom: 1.5rem; border-bottom: none;">
+    <div class="container">
+      <h1>Pengurus &amp; Anggota</h1>
+      <p class="lead">Kenali orang-orang di balik HIMPALUBI.</p>
+    </div>
+  </section>
+
+  <section style="border-top:none; padding-top:0;">
+    <div class="container">
+      <div class="member-grid" id="daftar-anggota">
+        <p>Memuat data anggota...</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; <span id="tahun"></span> HIMPALUBI.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/public.js"></script>
+<script>
+  document.getElementById("tahun").textContent = new Date().getFullYear();
+  muatAnggota("daftar-anggota");
+</script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin — HIMPALUBI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <a href="#ringkasan" class="brand">HIM<strong style="color:var(--gold-500)">PALUBI</strong></a>
+    <nav aria-label="Navigasi admin">
+      <ul>
+        <li><a href="#ringkasan">Dashboard</a></li>
+        <li><a href="#kelola-berita">Berita</a></li>
+        <li><a href="#kelola-anggota">Anggota</a></li>
+        <li><a href="#kelola-pendaftaran">Pendaftaran</a></li>
+        <li><a href="../index.html">Lihat Website</a></li>
+        <li><a href="#" id="tombol-logout">Keluar</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+
+    <section id="ringkasan">
+      <div class="admin-topbar">
+        <h1>Dashboard Organisasi</h1>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><span class="number" id="jumlah-anggota">–</span><span class="label">Anggota Aktif</span></div>
+        <div class="stat-card"><span class="number" id="jumlah-berita">–</span><span class="label">Berita</span></div>
+        <div class="stat-card"><span class="number" id="jumlah-pendaftar">–</span><span class="label">Pendaftar Menunggu</span></div>
+      </div>
+
+      <div class="card-panel">
+        <h2>Pendaftar Terbaru</h2>
+        <table>
+          <thead><tr><th>Nama</th><th>Tanggal</th><th>Status</th></tr></thead>
+          <tbody id="pendaftar-terbaru"><tr><td colspan="3">Memuat...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="kelola-berita">
+      <h2>Kelola Berita</h2>
+      <div class="card-panel">
+        <h3 id="judul-form-berita">Tambah Berita</h3>
+        <form id="form-berita">
+          <div class="field">
+            <label for="judul">Judul</label>
+            <input type="text" id="judul" name="judul" required>
+          </div>
+          <div class="field">
+            <label for="isi">Isi Berita</label>
+            <textarea id="isi" name="isi" required></textarea>
+          </div>
+          <div class="field">
+            <label for="tanggal">Tanggal</label>
+            <input type="date" id="tanggal" name="tanggal" required>
+          </div>
+          <div class="field">
+            <label for="penulis">Penulis</label>
+            <input type="text" id="penulis" name="penulis">
+          </div>
+          <div class="field">
+            <label for="foto_url">Tautan Foto (opsional)</label>
+            <input type="url" id="foto_url" name="foto_url" placeholder="https://...">
+            <p class="hint">Unggah foto ke layanan seperti imgur.com atau Supabase Storage, lalu tempel tautannya di sini.</p>
+          </div>
+          <button type="submit" class="btn">Simpan Berita</button>
+        </form>
+      </div>
+
+      <table>
+        <thead><tr><th>Judul</th><th>Tanggal</th><th>Penulis</th><th>Aksi</th></tr></thead>
+        <tbody id="tabel-berita"><tr><td colspan="4">Memuat...</td></tr></tbody>
+      </table>
+    </section>
+
+    <section id="kelola-anggota">
+      <h2>Kelola Anggota</h2>
+      <div class="card-panel">
+        <h3 id="judul-form-anggota">Tambah Anggota</h3>
+        <form id="form-anggota">
+          <div class="field">
+            <label for="nama-anggota">Nama</label>
+            <input type="text" id="nama-anggota" name="nama" required>
+          </div>
+          <div class="field">
+            <label for="jabatan">Jabatan</label>
+            <input type="text" id="jabatan" name="jabatan" placeholder="Contoh: Ketua, Sekretaris, Anggota">
+          </div>
+          <div class="field">
+            <label for="angkatan-anggota">Angkatan</label>
+            <input type="text" id="angkatan-anggota" name="angkatan">
+          </div>
+          <div class="field">
+            <label for="foto_url_anggota">Tautan Foto (opsional)</label>
+            <input type="url" id="foto_url_anggota" name="foto_url" placeholder="https://...">
+          </div>
+          <div class="field">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+              <option value="Aktif">Aktif</option>
+              <option value="Nonaktif">Nonaktif</option>
+            </select>
+          </div>
+          <button type="submit" class="btn">Simpan Anggota</button>
+        </form>
+      </div>
+
+      <table>
+        <thead><tr><th>Nama</th><th>Jabatan</th><th>Angkatan</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody id="tabel-anggota"><tr><td colspan="5">Memuat...</td></tr></tbody>
+      </table>
+    </section>
+
+    <section id="kelola-pendaftaran">
+      <h2>Kelola Pendaftaran</h2>
+      <table>
+        <thead><tr><th>Nama</th><th>NIM</th><th>No. WA</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody id="tabel-pendaftaran"><tr><td colspan="6">Memuat...</td></tr></tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/supabaseClient.js"></script>
+<script src="../js/public.js"></script>
+<script src="../js/admin.js"></script>
+<script>
+  (async () => {
+    await wajibLogin();
+    pasangTombolLogout("tombol-logout");
+
+    document.getElementById("form-berita").tanggal.valueAsDate = new Date();
+
+    muatRingkasan();
+    muatTabelBerita();
+    muatTabelAnggota();
+    muatTabelPendaftaran();
+
+    pasangFormBerita("form-berita");
+    pasangFormAnggota("form-anggota");
+  })();
+</script>
+</body>
+</html>
