@@ -109,16 +109,64 @@ function pasangFormPendaftaran(formId) {
   });
 }
 
-// ================= FAKTA DI HERO (index.html) =================
-async function muatFaktaHero() {
-  const [anggota, berita] = await Promise.all([
-    supabaseClient.from("anggota").select("id", { count: "exact", head: true }).eq("status", "Aktif"),
-    supabaseClient.from("berita").select("id", { count: "exact", head: true }),
-  ]);
-  const elAnggota = document.getElementById("fakta-anggota");
-  const elBerita = document.getElementById("fakta-berita");
-  if (elAnggota) elAnggota.textContent = anggota.count ?? 0;
-  if (elBerita) elBerita.textContent = berita.count ?? 0;
+// ================= BERANDA: Berita (daftar + kartu foto) + Galeri =================
+async function muatBerandaBerita() {
+  const { data, error } = await supabaseClient
+    .from("berita")
+    .select("*")
+    .order("tanggal", { ascending: false })
+    .limit(8);
+
+  const sideEl = document.getElementById("berita-sidelist");
+  const gridEl = document.getElementById("berita-photogrid");
+  const galeriEl = document.getElementById("galeri-grid");
+
+  if (error || !data) {
+    if (sideEl) sideEl.innerHTML = `<li>Berita belum bisa dimuat.</li>`;
+    return;
+  }
+
+  if (data.length === 0) {
+    if (sideEl) sideEl.innerHTML = `<li>Belum ada berita yang dipublikasikan.</li>`;
+    if (gridEl) gridEl.innerHTML = "";
+    return;
+  }
+
+  if (sideEl) {
+    sideEl.innerHTML = data.slice(0, 4).map(item => `
+      <li>
+        <span class="date-badge">
+          <span class="day">${new Date(item.tanggal).getDate()}</span>
+          <span class="month">${new Date(item.tanggal).toLocaleDateString("id-ID", { month: "short" })}</span>
+        </span>
+        <div>
+          <h4>${escapeHtml(item.judul)}</h4>
+          <p>${escapeHtml(ringkas(item.isi, 90))}</p>
+          <a class="more" href="berita.html">Selengkapnya &rarr;</a>
+        </div>
+      </li>
+    `).join("");
+  }
+
+  if (gridEl) {
+    const dengan_foto = data.filter(item => item.foto_url).slice(0, 4);
+    gridEl.innerHTML = dengan_foto.length
+      ? dengan_foto.map(item => `
+          <div class="news-photo-card">
+            <img src="${item.foto_url}" alt="">
+            <span class="tag">Berita</span>
+            <h4>${escapeHtml(item.judul)}</h4>
+          </div>
+        `).join("")
+      : `<p style="grid-column:1/-1; color:var(--ink-600);">Tambahkan tautan foto pada berita supaya tampil di sini.</p>`;
+  }
+
+  if (galeriEl) {
+    const foto = data.filter(item => item.foto_url);
+    galeriEl.innerHTML = foto.length
+      ? foto.map(item => `<img src="${item.foto_url}" alt="${escapeHtml(item.judul)}" loading="lazy">`).join("")
+      : `<p>Foto kegiatan akan tampil di sini setelah berita dengan foto dipublikasikan.</p>`;
+  }
 }
 
 // ================= UTIL =================

@@ -6,26 +6,26 @@
    ========================================================= */
 
 :root {
-  /* Navy sebagai warna institusional utama, emas tua sebagai aksen resmi */
-  --teal-900: #10213d;   /* navy tua — header, footer, teks judul */
-  --teal-700: #1c3766;   /* navy sedang — hover, tautan */
-  --teal-500: #2b4d8a;   /* navy muda — elemen interaktif ringan */
-  --gold-500: #b3872b;   /* emas tua — aksen, garis pemisah, lambang */
-  --gold-100: #f1e6c8;   /* emas muda — latar lambang, highlight lembut */
-  --sage-100: #eceef1;   /* abu-biru muda — latar sekunder */
-  --sage-050: #f6f6f4;   /* putih hangat — latar utama */
-  --ink-900: #1a1d22;
-  --ink-600: #565b62;
-  --line: #d8dbdd;
+  /* Merah dari logo HIMPALUBI sebagai warna utama, hitam sebagai penyeimbang */
+  --teal-900: #17181c;   /* hitam pekat — nav teks, hero gelap */
+  --teal-700: #2a2c31;   /* abu gelap — elemen sekunder di atas gelap */
+  --teal-500: #4a4d54;
+  --gold-500: #c8102e;   /* merah HIMPALUBI — aksen utama, tombol, badge */
+  --gold-100: #fbe4e8;   /* merah muda — latar highlight lembut */
+  --sage-100: #f1f1f2;   /* abu terang — latar sekunder */
+  --sage-050: #f7f7f8;   /* putih hangat — latar utama */
+  --ink-900: #17181c;
+  --ink-600: #5b5e64;
+  --line: #e3e4e6;
   --white: #ffffff;
   --danger: #9c2f2f;
   --ok: #2d6b46;
   --wait: #93701f;
 
-  --font-display: "PT Serif", Georgia, serif;
-  --font-body: "Public Sans", -apple-system, Segoe UI, sans-serif;
+  --font-display: "Poppins", -apple-system, Segoe UI, sans-serif;
+  --font-body: "Inter", -apple-system, Segoe UI, sans-serif;
 
-  --radius: 4px;
+  --radius: 10px;
   --focus-ring: 3px solid var(--gold-500);
 }
 
@@ -83,71 +83,53 @@ a:hover { color: var(--teal-900); }
   padding: 0 1.5rem;
 }
 
-/* ---------- Utility bar ---------- */
-.utility-bar {
-  background: #0a1628;
-  color: #b9c2d4;
-  font-size: 0.82rem;
-  padding: 0.4rem 0;
-  border-bottom: 1px solid var(--gold-500);
-}
-.utility-bar .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-.utility-bar a { color: #d7dee9; text-decoration: none; }
-.utility-bar a:hover { color: var(--white); }
-.utility-links { display: flex; gap: 1.25rem; list-style: none; margin: 0; padding: 0; }
-
 /* ---------- Header & nav ---------- */
 .site-header {
   background: var(--white);
-  border-bottom: 3px solid var(--teal-900);
-  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--line);
+  padding: 1rem 0;
 }
 .site-header .container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
 }
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.65rem;
   text-decoration: none;
 }
 .brand-emblem {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: var(--teal-900);
-  border: 2px solid var(--gold-500);
-  color: var(--gold-100);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.15rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
+  object-fit: contain;
+  background: var(--white);
 }
 .brand-text {
   font-family: var(--font-display);
-  font-size: 1.2rem;
-  color: var(--teal-900);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--ink-900);
   line-height: 1.15;
 }
 .brand-text .full-name {
   display: block;
   font-family: var(--font-body);
-  font-size: 0.72rem;
+  font-weight: 400;
+  font-size: 0.7rem;
   color: var(--ink-600);
-  font-weight: 500;
+}
+
+.nav-wrap {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .main-nav ul {
@@ -161,7 +143,7 @@ a:hover { color: var(--teal-900); }
 .main-nav a {
   color: var(--ink-900);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.95rem;
   padding: 0.3rem 0.1rem;
   border-bottom: 2px solid transparent;
@@ -169,52 +151,65 @@ a:hover { color: var(--teal-900); }
 .main-nav a:hover,
 .main-nav a[aria-current="page"] {
   border-bottom-color: var(--gold-500);
-  color: var(--teal-900);
+  color: var(--gold-500);
 }
+
+.nav-actions { display: flex; align-items: center; gap: 0.75rem; }
+.nav-btn {
+  display: inline-block;
+  padding: 0.55rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.nav-btn.outline {
+  border: 1.5px solid var(--ink-900);
+  color: var(--ink-900);
+}
+.nav-btn.outline:hover { background: var(--sage-100); }
+.nav-btn.solid {
+  background: var(--gold-500);
+  color: var(--white);
+  border: 1.5px solid var(--gold-500);
+}
+.nav-btn.solid:hover { background: #a30d26; }
 
 /* ---------- Hero ---------- */
 .hero {
-  padding: 3.5rem 0;
-  background: var(--sage-100);
-  border-bottom: 3px solid var(--teal-900);
+  padding: 5rem 0;
+  background: linear-gradient(180deg, #1c1e23 0%, #101114 100%);
+  text-align: center;
+  color: var(--white);
 }
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1.6fr 1fr;
-  gap: 3rem;
-  align-items: start;
+.hero .container { max-width: 760px; }
+.hero-emblem {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: var(--white);
+  margin: 0 auto 1.5rem;
+  display: block;
 }
 .hero .eyebrow {
   color: var(--gold-500);
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
 }
+.hero h1 {
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+.hero h1 .accent { color: var(--gold-500); }
 .hero p.lead {
-  font-size: 1.1rem;
-  color: var(--ink-600);
+  font-size: 1.05rem;
+  color: #c4c6ca;
+  margin: 0 auto 2rem;
 }
-.hero-facts {
-  border-left: 3px solid var(--gold-500);
-  padding-left: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-.hero-facts .fact .number {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  color: var(--teal-900);
-  display: block;
-  line-height: 1;
-}
-.hero-facts .fact .label {
-  color: var(--ink-600);
-  font-size: 0.88rem;
-}
-@media (max-width: 720px) {
-  .hero-grid { grid-template-columns: 1fr; }
-  .hero-facts { border-left: none; border-top: 3px solid var(--gold-500); padding-left: 0; padding-top: 1.25rem; flex-direction: row; flex-wrap: wrap; gap: 2rem; }
-}
+.hero .btn { padding: 0.85rem 2rem; border-radius: 999px; }
 
 /* ---------- Sections ---------- */
 section { padding: 3rem 0; }
@@ -256,6 +251,112 @@ section + section { border-top: 1px solid var(--line); }
 
 @media (max-width: 560px) {
   .news-item { grid-template-columns: 1fr; }
+}
+
+/* ---------- Beranda: Berita split layout (daftar + kartu foto) ---------- */
+.news-split {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+.news-sidelist { list-style: none; margin: 0; padding: 0; }
+.news-sidelist li {
+  display: flex;
+  gap: 1rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.news-sidelist li:first-child { padding-top: 0; }
+.date-badge {
+  flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  border-radius: 8px;
+  background: var(--gold-500);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+}
+.date-badge .day { font-size: 1.15rem; }
+.date-badge .month { font-size: 0.65rem; text-transform: uppercase; }
+.news-sidelist h4 { margin: 0 0 0.25rem; font-size: 0.98rem; font-family: var(--font-body); font-weight: 700; color: var(--ink-900); }
+.news-sidelist p { margin: 0; font-size: 0.85rem; color: var(--ink-600); }
+.news-sidelist a.more { font-size: 0.82rem; font-weight: 600; color: var(--gold-500); text-decoration: none; }
+
+.news-photo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+.news-photo-card {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  min-height: 190px;
+  background: linear-gradient(160deg, #2a2c31, #17181c);
+  color: var(--white);
+  display: flex;
+  align-items: flex-end;
+  padding: 1.25rem;
+}
+.news-photo-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+.news-photo-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.75) 100%);
+  z-index: 1;
+}
+.news-photo-card .tag {
+  position: absolute;
+  top: 0.9rem;
+  left: 0.9rem;
+  background: var(--gold-500);
+  color: var(--white);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  z-index: 2;
+}
+.news-photo-card h4 {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+@media (max-width: 780px) {
+  .news-split { grid-template-columns: 1fr; }
+  .news-photo-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- Galeri ---------- */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+.gallery-grid img {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
 }
 
 /* ---------- Anggota ---------- */

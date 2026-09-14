@@ -6,58 +6,42 @@
 <title>HIMPALUBI</title>
 <meta name="description" content="Website resmi HIMPALUBI — berita, keanggotaan, dan pendaftaran organisasi.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <a href="#konten" class="skip-link">Langsung ke konten</a>
 
-<div class="utility-bar">
-  <div class="container">
-    <span>Himpunan Mahasiswa Pendidikan Luar Biasa</span>
-    <ul class="utility-links">
-      <li><a href="pendaftaran.html">Pendaftaran Anggota</a></li>
-      <li><a href="admin/login.html">Portal Admin</a></li>
-    </ul>
-  </div>
-</div>
-
 <header class="site-header">
   <div class="container">
     <a href="index.html" class="brand">
-      <span class="brand-emblem" aria-hidden="true">H</span>
-      <span class="brand-text">HIMPALUBI<span class="full-name">Himpunan Mahasiswa Pendidikan Luar Biasa</span></span>
+      <img src="img/logo.png" alt="" class="brand-emblem" aria-hidden="true">
+      <span class="brand-text">HIMPALUBI<span class="full-name">Universitas PGRI Argopuro Jember</span></span>
     </a>
-    <nav class="main-nav" aria-label="Navigasi utama">
-      <ul>
-        <li><a href="index.html" aria-current="page">Beranda</a></li>
-        <li><a href="berita.html">Berita</a></li>
-        <li><a href="anggota.html">Anggota</a></li>
-        <li><a href="pendaftaran.html">Pendaftaran</a></li>
-      </ul>
-    </nav>
+    <div class="nav-wrap">
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <ul>
+          <li><a href="index.html" aria-current="page">Beranda</a></li>
+          <li><a href="berita.html">Berita</a></li>
+          <li><a href="anggota.html">Anggota</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <a href="admin/login.html" class="nav-btn outline">Masuk</a>
+        <a href="pendaftaran.html" class="nav-btn solid">Daftar</a>
+      </div>
+    </div>
   </div>
 </header>
 
 <main id="konten">
   <section class="hero">
-    <div class="container hero-grid">
-      <div>
-        <p class="eyebrow">Himpunan Mahasiswa Pendidikan Luar Biasa</p>
-        <h1>Bergerak bersama, peduli untuk semua.</h1>
-        <p class="lead">HIMPALUBI adalah wadah mahasiswa Pendidikan Luar Biasa untuk berkarya, belajar, dan membangun kepedulian terhadap pendidikan inklusif dan aksesibel bagi semua orang.</p>
-        <a href="pendaftaran.html" class="btn">Gabung Jadi Anggota</a>
-      </div>
-      <div class="hero-facts">
-        <div class="fact">
-          <span class="number" id="fakta-anggota">–</span>
-          <span class="label">Anggota Aktif</span>
-        </div>
-        <div class="fact">
-          <span class="number" id="fakta-berita">–</span>
-          <span class="label">Berita Dipublikasikan</span>
-        </div>
-      </div>
+    <div class="container">
+      <img src="img/logo.png" alt="Logo HIMPALUBI" class="hero-emblem">
+      <p class="eyebrow">HIMPALUBI</p>
+      <h1>Himpunan Mahasiswa <span class="accent">Pendidikan Luar Biasa</span></h1>
+      <p class="lead">Bergerak bersama, peduli untuk semua — mewadahi mahasiswa Pendidikan Luar Biasa Universitas PGRI Argopuro Jember dalam berkarya dan membangun kepedulian terhadap pendidikan inklusif.</p>
+      <a href="pendaftaran.html" class="btn">Gabung Jadi Anggota</a>
     </div>
   </section>
 
@@ -67,9 +51,23 @@
         <h2>Berita Terbaru</h2>
         <a href="berita.html">Lihat semua berita</a>
       </div>
-      <ul class="news-list" id="daftar-berita-beranda">
-        <li>Memuat berita...</li>
-      </ul>
+      <div class="news-split">
+        <ul class="news-sidelist" id="berita-sidelist">
+          <li>Memuat berita...</li>
+        </ul>
+        <div class="news-photo-grid" id="berita-photogrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <h2>Galeri Kegiatan</h2>
+      </div>
+      <div class="gallery-grid" id="galeri-grid">
+        <p>Foto kegiatan akan tampil di sini setelah berita dengan foto dipublikasikan.</p>
+      </div>
     </div>
   </section>
 </main>
@@ -113,8 +111,7 @@
 <script src="js/public.js"></script>
 <script>
   document.getElementById("tahun").textContent = new Date().getFullYear();
-  muatBerita("daftar-berita-beranda", 3);
-  muatFaktaHero();
+  muatBerandaBerita();
 </script>
 </body>
 </html>
