@@ -233,8 +233,34 @@ async function muatTabelPendaftaran() {
 }
 
 async function ubahStatusPendaftaran(id, status) {
-  await supabaseClient.from("pendaftaran").update({ status }).eq("id", id);
+  const { error } = await supabaseClient.from("pendaftaran").update({ status }).eq("id", id);
+  if (error) { alert("Gagal mengubah status."); console.error(error); return; }
+
+  // Kalau diterima, otomatis buat data anggota baru dari data pendaftarnya
+  if (status === "Diterima") {
+    const { data: pendaftar } = await supabaseClient.from("pendaftaran").select("*").eq("id", id).single();
+    if (pendaftar) {
+      // Cek dulu supaya tidak dobel kalau tombol "Terima" diklik lebih dari sekali
+      const { data: sudahAda } = await supabaseClient
+        .from("anggota")
+        .select("id")
+        .eq("nama", pendaftar.nama)
+        .eq("angkatan", pendaftar.angkatan || "");
+
+      if (!sudahAda || sudahAda.length === 0) {
+        await supabaseClient.from("anggota").insert({
+          nama: pendaftar.nama,
+          jabatan: "Anggota",
+          angkatan: pendaftar.angkatan,
+          status: "Aktif",
+        });
+      }
+    }
+  }
+
   muatTabelPendaftaran();
+  muatTabelAnggota();
+  muatRingkasan();
 }
 
 // ================= UTIL BERSAMA =================
