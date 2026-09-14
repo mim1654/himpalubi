@@ -11,33 +11,83 @@
 <body>
 <div class="admin-shell">
   <aside class="admin-sidebar">
-    <a href="#ringkasan" class="brand" style="display:flex; margin-bottom:2rem;"><img src="../img/logo.png" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:50%;">HIM<strong style="color:var(--gold-500)">PALUBI</strong></a>
+    <a href="#ringkasan" class="brand"><img src="../img/logo.png" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:50%;">HIM<strong style="color:var(--gold-500)">PALUBI</strong></a>
+
     <nav aria-label="Navigasi admin">
+      <p class="nav-group-label">Utama</p>
       <ul>
-        <li><a href="#ringkasan">Dashboard</a></li>
-        <li><a href="#kelola-berita">Berita</a></li>
-        <li><a href="#kelola-anggota">Anggota</a></li>
-        <li><a href="#kelola-pendaftaran">Pendaftaran</a></li>
-        <li><a href="../index.html">Lihat Website</a></li>
-        <li><a href="#" id="tombol-logout">Keluar</a></li>
+        <li><a href="#ringkasan" data-section="ringkasan"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a></li>
+      </ul>
+
+      <p class="nav-group-label">Konten</p>
+      <ul>
+        <li><a href="#kelola-berita" data-section="kelola-berita"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h9l3 3v15H6z"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>Berita</a></li>
+        <li><a href="#kelola-kegiatan" data-section="kelola-kegiatan"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="7" y1="3" x2="7" y2="7"/><line x1="17" y1="3" x2="17" y2="7"/></svg>Kegiatan</a></li>
+        <li><a href="#kelola-galeri" data-section="kelola-galeri"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5-4 4-3-3-6 6"/></svg>Galeri</a></li>
+      </ul>
+
+      <p class="nav-group-label">Keanggotaan</p>
+      <ul>
+        <li><a href="#kelola-anggota" data-section="kelola-anggota"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/><circle cx="17" cy="8" r="2.5"/><path d="M16 14c2.8 0 5 2 5 6"/></svg>Anggota</a></li>
+        <li><a href="#kelola-struktur" data-section="kelola-struktur"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4" r="2"/><line x1="12" y1="6" x2="12" y2="11"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="5" y1="15" x2="5" y2="11"/><line x1="19" y1="15" x2="19" y2="11"/><line x1="12" y1="11" x2="12" y2="15"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>Struktur Pengurus</a></li>
+        <li><a href="#kelola-pendaftaran" data-section="kelola-pendaftaran"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h4l2 3h4l2-3h4"/><path d="M4 12l1.5-7h13L20 12"/><path d="M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6"/></svg>Pendaftaran</a></li>
+      </ul>
+
+      <p class="nav-group-label">Organisasi</p>
+      <ul>
+        <li><a href="#kelola-program" data-section="kelola-program"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="M9 12l2 2 4-4"/></svg>Program Kerja</a></li>
+        <li><a href="#kelola-pengaturan" data-section="kelola-pengaturan"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.5 4.5l2 2M17.5 17.5l2 2M19.5 4.5l-2 2M6.5 17.5l-2 2"/></svg>Pengaturan</a></li>
+      </ul>
+
+      <p class="nav-group-label">Lainnya</p>
+      <ul>
+        <li><a href="../index.html"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Lihat Website</a></li>
       </ul>
     </nav>
+
+    <div class="admin-profile">
+      <div class="avatar" id="admin-avatar">A</div>
+      <div class="info">
+        <span class="email" id="admin-email">Memuat...</span>
+        <a href="#" id="tombol-logout" class="keluar">Keluar</a>
+      </div>
+    </div>
   </aside>
 
   <main class="admin-main">
 
-    <section id="ringkasan">
+    <!-- ================= RINGKASAN ================= -->
+    <section id="ringkasan" class="admin-section">
       <div class="admin-topbar">
-        <h1>Dashboard Organisasi</h1>
+        <p class="eyebrow">Dashboard</p>
+        <h1>Ringkasan Organisasi</h1>
+        <p class="subtitle">Gambaran umum data HIMPALUBI saat ini.</p>
       </div>
       <div class="stat-grid">
-        <div class="stat-card"><span class="number" id="jumlah-anggota">–</span><span class="label">Anggota Aktif</span></div>
-        <div class="stat-card"><span class="number" id="jumlah-berita">–</span><span class="label">Berita</span></div>
-        <div class="stat-card"><span class="number" id="jumlah-pendaftar">–</span><span class="label">Pendaftar Menunggu</span></div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg></div>
+          <div><span class="number" id="jumlah-anggota">–</span><span class="label">Anggota Aktif</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4" r="2"/><line x1="5" y1="15" x2="19" y2="15"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg></div>
+          <div><span class="number" id="jumlah-pengurus">–</span><span class="label">Pengurus (BPH+Divisi)</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h9l3 3v15H6z"/></svg></div>
+          <div><span class="number" id="jumlah-berita">–</span><span class="label">Berita</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/></svg></div>
+          <div><span class="number" id="jumlah-kegiatan">–</span><span class="label">Kegiatan</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h4l2 3h4l2-3h4"/><path d="M4 12l1.5-7h13L20 12"/></svg></div>
+          <div><span class="number" id="jumlah-pendaftar">–</span><span class="label">Pendaftar Menunggu</span></div>
+        </div>
       </div>
 
       <div class="card-panel">
-        <h2>Pendaftar Terbaru</h2>
+        <h3>Pendaftar Terbaru</h3>
         <table>
           <thead><tr><th>Nama</th><th>Tanggal</th><th>Status</th></tr></thead>
           <tbody id="pendaftar-terbaru"><tr><td colspan="3">Memuat...</td></tr></tbody>
@@ -45,86 +95,202 @@
       </div>
     </section>
 
-    <section id="kelola-berita">
-      <h2>Kelola Berita</h2>
+    <!-- ================= BERITA ================= -->
+    <section id="kelola-berita" class="admin-section">
+      <div class="admin-topbar">
+        <p class="eyebrow">Konten</p>
+        <h1>Kelola Berita</h1>
+        <p class="subtitle">Artikel dan kabar seputar HIMPALUBI.</p>
+      </div>
       <div class="card-panel">
         <h3 id="judul-form-berita">Tambah Berita</h3>
-        <form id="form-berita">
-          <div class="field">
-            <label for="judul">Judul</label>
-            <input type="text" id="judul" name="judul" required>
-          </div>
-          <div class="field">
-            <label for="isi">Isi Berita</label>
-            <textarea id="isi" name="isi" required></textarea>
-          </div>
-          <div class="field">
-            <label for="tanggal">Tanggal</label>
-            <input type="date" id="tanggal" name="tanggal" required>
-          </div>
-          <div class="field">
-            <label for="penulis">Penulis</label>
-            <input type="text" id="penulis" name="penulis">
-          </div>
-          <div class="field">
+        <form id="form-berita" class="form-grid">
+          <div class="field full"><label for="judul">Judul</label><input type="text" id="judul" name="judul" required></div>
+          <div class="field full"><label for="isi">Isi Berita</label><textarea id="isi" name="isi" required></textarea></div>
+          <div class="field"><label for="tanggal">Tanggal</label><input type="date" id="tanggal" name="tanggal" required></div>
+          <div class="field"><label for="penulis">Penulis</label><input type="text" id="penulis" name="penulis"></div>
+          <div class="field full">
             <label for="foto_url">Tautan Foto (opsional)</label>
             <input type="url" id="foto_url" name="foto_url" placeholder="https://...">
-            <p class="hint">Unggah foto ke layanan seperti imgur.com atau Supabase Storage, lalu tempel tautannya di sini.</p>
+            <p class="hint">Unggah foto ke layanan seperti imgur.com, lalu tempel tautannya di sini.</p>
           </div>
-          <button type="submit" class="btn">Simpan Berita</button>
+          <div class="field full"><button type="submit" class="btn">Simpan Berita</button></div>
         </form>
       </div>
-
       <table>
         <thead><tr><th>Judul</th><th>Tanggal</th><th>Penulis</th><th>Aksi</th></tr></thead>
         <tbody id="tabel-berita"><tr><td colspan="4">Memuat...</td></tr></tbody>
       </table>
     </section>
 
-    <section id="kelola-anggota">
-      <h2>Kelola Anggota</h2>
+    <!-- ================= KEGIATAN ================= -->
+    <section id="kelola-kegiatan" class="admin-section">
+      <div class="admin-topbar">
+        <p class="eyebrow">Konten</p>
+        <h1>Kelola Kegiatan</h1>
+        <p class="subtitle">Agenda dan dokumentasi kegiatan HIMPALUBI.</p>
+      </div>
       <div class="card-panel">
-        <h3 id="judul-form-anggota">Tambah Anggota</h3>
-        <form id="form-anggota">
-          <div class="field">
-            <label for="nama-anggota">Nama</label>
-            <input type="text" id="nama-anggota" name="nama" required>
+        <h3 id="judul-form-kegiatan">Tambah Kegiatan</h3>
+        <form id="form-kegiatan" class="form-grid">
+          <div class="field full"><label for="judul-kegiatan">Nama Kegiatan</label><input type="text" id="judul-kegiatan" name="judul" required></div>
+          <div class="field full"><label for="isi-kegiatan">Deskripsi</label><textarea id="isi-kegiatan" name="isi" required></textarea></div>
+          <div class="field"><label for="tanggal-kegiatan">Tanggal</label><input type="date" id="tanggal-kegiatan" name="tanggal" required></div>
+          <div class="field"><label for="penulis-kegiatan">Penyelenggara</label><input type="text" id="penulis-kegiatan" name="penulis"></div>
+          <div class="field full">
+            <label for="foto_url-kegiatan">Tautan Foto (opsional)</label>
+            <input type="url" id="foto_url-kegiatan" name="foto_url" placeholder="https://...">
           </div>
-          <div class="field">
-            <label for="jabatan">Jabatan</label>
-            <input type="text" id="jabatan" name="jabatan" placeholder="Contoh: Ketua, Sekretaris, Anggota">
-          </div>
-          <div class="field">
-            <label for="angkatan-anggota">Angkatan</label>
-            <input type="text" id="angkatan-anggota" name="angkatan">
-          </div>
-          <div class="field">
-            <label for="foto_url_anggota">Tautan Foto (opsional)</label>
-            <input type="url" id="foto_url_anggota" name="foto_url" placeholder="https://...">
-          </div>
-          <div class="field">
-            <label for="status">Status</label>
-            <select id="status" name="status">
-              <option value="Aktif">Aktif</option>
-              <option value="Nonaktif">Nonaktif</option>
-            </select>
-          </div>
-          <button type="submit" class="btn">Simpan Anggota</button>
+          <div class="field full"><button type="submit" class="btn">Simpan Kegiatan</button></div>
         </form>
       </div>
-
       <table>
-        <thead><tr><th>Nama</th><th>Jabatan</th><th>Angkatan</th><th>Status</th><th>Aksi</th></tr></thead>
-        <tbody id="tabel-anggota"><tr><td colspan="5">Memuat...</td></tr></tbody>
+        <thead><tr><th>Nama Kegiatan</th><th>Tanggal</th><th>Penyelenggara</th><th>Aksi</th></tr></thead>
+        <tbody id="tabel-kegiatan"><tr><td colspan="4">Memuat...</td></tr></tbody>
       </table>
     </section>
 
-    <section id="kelola-pendaftaran">
-      <h2>Kelola Pendaftaran</h2>
+    <!-- ================= GALERI ================= -->
+    <section id="kelola-galeri" class="admin-section">
+      <div class="admin-topbar">
+        <p class="eyebrow">Konten</p>
+        <h1>Kelola Galeri</h1>
+        <p class="subtitle">Foto-foto dokumentasi, terpisah dari Berita/Kegiatan.</p>
+      </div>
+      <div class="card-panel">
+        <h3>Tambah Foto</h3>
+        <form id="form-galeri" class="form-grid">
+          <div class="field full"><label for="judul-galeri">Judul/Keterangan (opsional)</label><input type="text" id="judul-galeri" name="judul"></div>
+          <div class="field"><label for="tanggal-galeri">Tanggal</label><input type="date" id="tanggal-galeri" name="tanggal" required></div>
+          <div class="field full"><label for="foto_url-galeri">Tautan Foto</label><input type="url" id="foto_url-galeri" name="foto_url" placeholder="https://..." required></div>
+          <div class="field full"><button type="submit" class="btn">Tambah ke Galeri</button></div>
+        </form>
+      </div>
+      <table>
+        <thead><tr><th>Foto</th><th>Judul</th><th>Tanggal</th><th>Aksi</th></tr></thead>
+        <tbody id="tabel-galeri"><tr><td colspan="4">Memuat...</td></tr></tbody>
+      </table>
+    </section>
+
+    <!-- ================= ANGGOTA ================= -->
+    <section id="kelola-anggota" class="admin-section">
+      <div class="admin-topbar">
+        <p class="eyebrow">Keanggotaan</p>
+        <h1>Kelola Anggota</h1>
+        <p class="subtitle">Anggota biasa, dikelompokkan per angkatan di halaman publik.</p>
+      </div>
+      <div class="card-panel">
+        <h3 id="judul-form-anggota">Tambah Anggota</h3>
+        <form id="form-anggota" class="form-grid">
+          <div class="field full"><label for="nama-anggota">Nama</label><input type="text" id="nama-anggota" name="nama" required></div>
+          <div class="field"><label for="jabatan-anggota">Jabatan (opsional)</label><input type="text" id="jabatan-anggota" name="jabatan"></div>
+          <div class="field"><label for="angkatan-anggota">Angkatan</label><input type="text" id="angkatan-anggota" name="angkatan" required></div>
+          <div class="field full"><label for="foto_url_anggota">Tautan Foto (opsional)</label><input type="url" id="foto_url_anggota" name="foto_url" placeholder="https://..."></div>
+          <div class="field">
+            <label for="status-anggota">Status</label>
+            <select id="status-anggota" name="status"><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select>
+          </div>
+          <div class="field full"><button type="submit" class="btn">Simpan Anggota</button></div>
+        </form>
+      </div>
+      <table>
+        <thead><tr><th>Nama</th><th>Angkatan</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody id="tabel-anggota"><tr><td colspan="4">Memuat...</td></tr></tbody>
+      </table>
+    </section>
+
+    <!-- ================= STRUKTUR PENGURUS ================= -->
+    <section id="kelola-struktur" class="admin-section">
+      <div class="admin-topbar">
+        <p class="eyebrow">Keanggotaan</p>
+        <h1>Kelola Struktur Pengurus</h1>
+        <p class="subtitle">BPH dan Divisi — tampil di halaman publik "Struktur Organisasi".</p>
+      </div>
+      <div class="card-panel">
+        <h3 id="judul-form-struktur">Tambah Pengurus</h3>
+        <form id="form-struktur" class="form-grid">
+          <div class="field full"><label for="nama-struktur">Nama</label><input type="text" id="nama-struktur" name="nama" required></div>
+          <div class="field"><label for="jabatan-struktur">Jabatan</label><input type="text" id="jabatan-struktur" name="jabatan" placeholder="Ketua, Sekretaris, Staff, dst" required></div>
+          <div class="field">
+            <label for="divisi-struktur">Divisi</label>
+            <input type="text" id="divisi-struktur" name="divisi" placeholder="BPH, Divisi Humas, dst" required>
+            <p class="hint">Ketik "BPH" untuk Badan Pengurus Harian — selalu tampil di atas.</p>
+          </div>
+          <div class="field full"><label for="foto_url-struktur">Tautan Foto (opsional)</label><input type="url" id="foto_url-struktur" name="foto_url" placeholder="https://..."></div>
+          <div class="field">
+            <label for="status-struktur">Status</label>
+            <select id="status-struktur" name="status"><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select>
+          </div>
+          <div class="field full"><button type="submit" class="btn">Simpan Pengurus</button></div>
+        </form>
+      </div>
+      <table>
+        <thead><tr><th>Nama</th><th>Jabatan</th><th>Divisi</th><th>Aksi</th></tr></thead>
+        <tbody id="tabel-struktur"><tr><td colspan="4">Memuat...</td></tr></tbody>
+      </table>
+    </section>
+
+    <!-- ================= PENDAFTARAN ================= -->
+    <section id="kelola-pendaftaran" class="admin-section">
+      <div class="admin-topbar">
+        <p class="eyebrow">Keanggotaan</p>
+        <h1>Kelola Pendaftaran</h1>
+        <p class="subtitle">Terima langsung otomatis jadi Anggota.</p>
+      </div>
       <table>
         <thead><tr><th>Nama</th><th>NIM</th><th>No. WA</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead>
         <tbody id="tabel-pendaftaran"><tr><td colspan="6">Memuat...</td></tr></tbody>
       </table>
+    </section>
+
+    <!-- ================= PROGRAM KERJA ================= -->
+    <section id="kelola-program" class="admin-section">
+      <div class="admin-topbar">
+        <p class="eyebrow">Organisasi</p>
+        <h1>Kelola Program Kerja</h1>
+        <p class="subtitle">Terikat ke Divisi, tampil dikelompokkan di halaman publik.</p>
+      </div>
+      <div class="card-panel">
+        <h3 id="judul-form-program">Tambah Program Kerja</h3>
+        <form id="form-program" class="form-grid">
+          <div class="field full"><label for="nama_program">Nama Program</label><input type="text" id="nama_program" name="nama_program" required></div>
+          <div class="field"><label for="divisi-program">Divisi</label><input type="text" id="divisi-program" name="divisi" placeholder="BPH, Divisi Humas, dst" required></div>
+          <div class="field">
+            <label for="status-program">Status</label>
+            <select id="status-program" name="status">
+              <option value="Direncanakan">Direncanakan</option>
+              <option value="Berjalan" selected>Berjalan</option>
+              <option value="Selesai">Selesai</option>
+            </select>
+          </div>
+          <div class="field full"><label for="deskripsi-program">Deskripsi (opsional)</label><textarea id="deskripsi-program" name="deskripsi"></textarea></div>
+          <div class="field full"><button type="submit" class="btn">Simpan Program</button></div>
+        </form>
+      </div>
+      <div id="daftar-program-admin"><p>Memuat program kerja...</p></div>
+    </section>
+
+    <!-- ================= PENGATURAN ================= -->
+    <section id="kelola-pengaturan" class="admin-section">
+      <div class="admin-topbar">
+        <p class="eyebrow">Organisasi</p>
+        <h1>Pengaturan Website</h1>
+        <p class="subtitle">Info ini tampil otomatis di halaman Tentang, Kontak, dan footer.</p>
+      </div>
+      <div class="card-panel">
+        <div id="pesan-pengaturan"></div>
+        <form id="form-pengaturan" class="form-grid">
+          <div class="field"><label for="nama_organisasi">Nama Organisasi</label><input type="text" id="nama_organisasi" name="nama_organisasi" required></div>
+          <div class="field"><label for="tagline">Tagline Singkat</label><input type="text" id="tagline" name="tagline"></div>
+          <div class="field full"><label for="tentang">Tentang (untuk halaman Tentang &amp; Beranda)</label><textarea id="tentang" name="tentang" style="min-height:160px;"></textarea></div>
+          <div class="field full"><label for="alamat">Alamat</label><input type="text" id="alamat" name="alamat"></div>
+          <div class="field"><label for="email-pengaturan">Email</label><input type="email" id="email-pengaturan" name="email"></div>
+          <div class="field"><label for="telepon">Telepon / WhatsApp</label><input type="text" id="telepon" name="telepon"></div>
+          <div class="field"><label for="instagram">Link Instagram</label><input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/..."></div>
+          <div class="field"><label for="youtube">Link YouTube</label><input type="url" id="youtube" name="youtube" placeholder="https://youtube.com/..."></div>
+          <div class="field full"><button type="submit" class="btn">Simpan Pengaturan</button></div>
+        </form>
+      </div>
     </section>
 
   </main>
@@ -138,16 +304,37 @@
   (async () => {
     await wajibLogin();
     pasangTombolLogout("tombol-logout");
+    tampilkanProfilAdmin();
+    pasangScrollSpy();
 
     document.getElementById("form-berita").tanggal.valueAsDate = new Date();
+    document.getElementById("form-kegiatan").tanggal.valueAsDate = new Date();
+    document.getElementById("form-galeri").tanggal.valueAsDate = new Date();
 
     muatRingkasan();
-    muatTabelBerita();
-    muatTabelAnggota();
+
+    muatTabelKonten("Berita", "tabel-berita");
+    pasangFormKonten("form-berita", "Berita", () => muatTabelKonten("Berita", "tabel-berita"));
+
+    muatTabelKonten("Kegiatan", "tabel-kegiatan");
+    pasangFormKonten("form-kegiatan", "Kegiatan", () => muatTabelKonten("Kegiatan", "tabel-kegiatan"));
+
+    muatTabelGaleri();
+    pasangFormGaleri("form-galeri");
+
+    muatTabelOrang("Anggota", "tabel-anggota");
+    pasangFormOrang("form-anggota", "Anggota");
+
+    muatTabelOrang("Pengurus", "tabel-struktur");
+    pasangFormOrang("form-struktur", "Pengurus");
+
     muatTabelPendaftaran();
 
-    pasangFormBerita("form-berita");
-    pasangFormAnggota("form-anggota");
+    muatDaftarProgramAdmin();
+    pasangFormProgram("form-program");
+
+    muatFormPengaturan();
+    pasangFormPengaturan("form-pengaturan");
   })();
 </script>
 </body>

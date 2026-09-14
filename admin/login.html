@@ -10,23 +10,29 @@
 </head>
 <body>
 <div class="login-shell">
-  <div class="login-card">
-    <p class="brand" style="justify-content:center; color:var(--teal-900); margin-bottom:1.5rem;"><img src="../img/logo.png" alt="" style="width:44px;height:44px;object-fit:cover;border-radius:50%;">HIM<strong style="color:var(--gold-500)">PALUBI</strong></p>
-    <h1 style="font-size:1.4rem;">Login Pengurus</h1>
-    <p style="color:var(--ink-600); margin-bottom:1.5rem;">Khusus admin dan pengurus organisasi.</p>
-    <div id="pesan-login"></div>
-    <form id="form-login">
-      <div class="field">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required autocomplete="username">
-      </div>
-      <div class="field">
-        <label for="password">Kata Sandi</label>
-        <input type="password" id="password" name="password" required autocomplete="current-password">
-      </div>
-      <button type="submit" class="btn" style="width:100%;">Masuk</button>
-    </form>
-    <p style="margin-top:1.5rem;"><a href="../index.html">&larr; Kembali ke website</a></p>
+  <div class="login-brand-panel">
+    <img src="../img/logo.png" alt="Logo HIMPALUBI">
+    <h2>Portal Admin &amp; Pengurus</h2>
+    <p>Kelola berita, kegiatan, anggota, dan seluruh konten website HIMPALUBI di satu tempat.</p>
+  </div>
+  <div class="login-form-panel">
+    <div class="login-card">
+      <h1 style="font-size:1.5rem; margin-bottom:0.35rem;">Masuk</h1>
+      <p style="color:var(--ink-600); margin-bottom:1.75rem;">Khusus admin dan pengurus organisasi.</p>
+      <div id="pesan-login"></div>
+      <form id="form-login">
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="password">Kata Sandi</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn" style="width:100%;">Masuk</button>
+      </form>
+      <p style="margin-top:1.5rem;"><a href="../index.html">&larr; Kembali ke website</a></p>
+    </div>
   </div>
 </div>
 
