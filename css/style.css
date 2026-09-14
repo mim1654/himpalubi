@@ -103,11 +103,11 @@ a:hover { color: var(--teal-900); }
   text-decoration: none;
 }
 .brand-emblem {
-  width: 40px;
-  height: 40px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   flex-shrink: 0;
-  object-fit: contain;
+  object-fit: cover;
   background: var(--white);
 }
 .brand-text {
@@ -260,10 +260,10 @@ a:hover { color: var(--teal-900); }
 }
 .hero .container { max-width: 760px; }
 .hero-emblem {
-  width: 96px;
-  height: 96px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
-  object-fit: contain;
+  object-fit: cover;
   background: var(--white);
   margin: 0 auto 1.5rem;
   display: block;
