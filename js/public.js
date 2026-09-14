@@ -109,6 +109,18 @@ function pasangFormPendaftaran(formId) {
   });
 }
 
+// ================= FAKTA DI HERO (index.html) =================
+async function muatFaktaHero() {
+  const [anggota, berita] = await Promise.all([
+    supabaseClient.from("anggota").select("id", { count: "exact", head: true }).eq("status", "Aktif"),
+    supabaseClient.from("berita").select("id", { count: "exact", head: true }),
+  ]);
+  const elAnggota = document.getElementById("fakta-anggota");
+  const elBerita = document.getElementById("fakta-berita");
+  if (elAnggota) elAnggota.textContent = anggota.count ?? 0;
+  if (elBerita) elBerita.textContent = berita.count ?? 0;
+}
+
 // ================= UTIL =================
 function formatTanggal(tgl) {
   if (!tgl) return "";

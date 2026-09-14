@@ -6,25 +6,26 @@
    ========================================================= */
 
 :root {
-  --teal-900: #0f3d3a;
-  --teal-700: #146560;
-  --teal-500: #1c8b83;
-  --gold-500: #c99a3a;
-  --gold-100: #f3e6c4;
-  --sage-100: #f2f4ee;
-  --sage-050: #f9faf7;
-  --ink-900: #1c2321;
-  --ink-600: #4b5450;
-  --line: #dde2da;
+  /* Navy sebagai warna institusional utama, emas tua sebagai aksen resmi */
+  --teal-900: #10213d;   /* navy tua — header, footer, teks judul */
+  --teal-700: #1c3766;   /* navy sedang — hover, tautan */
+  --teal-500: #2b4d8a;   /* navy muda — elemen interaktif ringan */
+  --gold-500: #b3872b;   /* emas tua — aksen, garis pemisah, lambang */
+  --gold-100: #f1e6c8;   /* emas muda — latar lambang, highlight lembut */
+  --sage-100: #eceef1;   /* abu-biru muda — latar sekunder */
+  --sage-050: #f6f6f4;   /* putih hangat — latar utama */
+  --ink-900: #1a1d22;
+  --ink-600: #565b62;
+  --line: #d8dbdd;
   --white: #ffffff;
-  --danger: #b3492f;
-  --ok: #2f7a4f;
-  --wait: #a3781f;
+  --danger: #9c2f2f;
+  --ok: #2d6b46;
+  --wait: #93701f;
 
-  --font-display: "Source Serif 4", Georgia, serif;
-  --font-body: "Work Sans", -apple-system, Segoe UI, sans-serif;
+  --font-display: "PT Serif", Georgia, serif;
+  --font-body: "Public Sans", -apple-system, Segoe UI, sans-serif;
 
-  --radius: 10px;
+  --radius: 4px;
   --focus-ring: 3px solid var(--gold-500);
 }
 
@@ -82,10 +83,29 @@ a:hover { color: var(--teal-900); }
   padding: 0 1.5rem;
 }
 
+/* ---------- Utility bar ---------- */
+.utility-bar {
+  background: #0a1628;
+  color: #b9c2d4;
+  font-size: 0.82rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--gold-500);
+}
+.utility-bar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.utility-bar a { color: #d7dee9; text-decoration: none; }
+.utility-bar a:hover { color: var(--white); }
+.utility-links { display: flex; gap: 1.25rem; list-style: none; margin: 0; padding: 0; }
+
 /* ---------- Header & nav ---------- */
 .site-header {
-  background: var(--teal-900);
-  color: var(--sage-050);
+  background: var(--white);
+  border-bottom: 3px solid var(--teal-900);
   padding: 1.1rem 0;
 }
 .site-header .container {
@@ -96,38 +116,73 @@ a:hover { color: var(--teal-900); }
   flex-wrap: wrap;
 }
 .brand {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  color: var(--white);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
   text-decoration: none;
 }
-.brand strong { color: var(--gold-500); }
+.brand-emblem {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--teal-900);
+  border: 2px solid var(--gold-500);
+  color: var(--gold-100);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.brand-text {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--teal-900);
+  line-height: 1.15;
+}
+.brand-text .full-name {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  color: var(--ink-600);
+  font-weight: 500;
+}
 
 .main-nav ul {
   list-style: none;
   display: flex;
-  gap: 1.5rem;
+  gap: 1.75rem;
   margin: 0;
   padding: 0;
   flex-wrap: wrap;
 }
 .main-nav a {
-  color: var(--sage-050);
+  color: var(--ink-900);
   text-decoration: none;
-  font-weight: 500;
-  padding: 0.25rem 0.1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.3rem 0.1rem;
   border-bottom: 2px solid transparent;
 }
 .main-nav a:hover,
 .main-nav a[aria-current="page"] {
   border-bottom-color: var(--gold-500);
-  color: var(--white);
+  color: var(--teal-900);
 }
 
 /* ---------- Hero ---------- */
 .hero {
-  padding: 4rem 0 3rem;
-  border-bottom: 1px solid var(--line);
+  padding: 3.5rem 0;
+  background: var(--sage-100);
+  border-bottom: 3px solid var(--teal-900);
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 3rem;
+  align-items: start;
 }
 .hero .eyebrow {
   color: var(--gold-500);
@@ -135,8 +190,30 @@ a:hover { color: var(--teal-900); }
   margin-bottom: 0.5rem;
 }
 .hero p.lead {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   color: var(--ink-600);
+}
+.hero-facts {
+  border-left: 3px solid var(--gold-500);
+  padding-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.hero-facts .fact .number {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--teal-900);
+  display: block;
+  line-height: 1;
+}
+.hero-facts .fact .label {
+  color: var(--ink-600);
+  font-size: 0.88rem;
+}
+@media (max-width: 720px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-facts { border-left: none; border-top: 3px solid var(--gold-500); padding-left: 0; padding-top: 1.25rem; flex-direction: row; flex-wrap: wrap; gap: 2rem; }
 }
 
 /* ---------- Sections ---------- */
@@ -396,11 +473,34 @@ tr:last-child td { border-bottom: none; }
 /* ---------- Footer ---------- */
 .site-footer {
   background: var(--teal-900);
-  color: var(--sage-100);
-  padding: 2rem 0;
+  color: #c7cedb;
   margin-top: 2rem;
+  border-top: 3px solid var(--gold-500);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 2rem;
+  padding: 3rem 0 2rem;
+}
+.footer-grid h3 {
+  color: var(--white);
+  font-size: 1rem;
+  margin-bottom: 0.9rem;
+}
+.footer-grid p { font-size: 0.9rem; max-width: 32ch; }
+.footer-grid ul { list-style: none; margin: 0; padding: 0; }
+.footer-grid ul li { margin-bottom: 0.5rem; }
+.footer-grid a { color: #c7cedb; text-decoration: none; font-size: 0.9rem; }
+.footer-grid a:hover { color: var(--white); }
+.footer-bottom {
+  border-top: 1px solid #2a3a5c;
+  padding: 1.1rem 0;
+  font-size: 0.85rem;
   text-align: center;
-  font-size: 0.9rem;
+}
+@media (max-width: 720px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 
 .sr-only {

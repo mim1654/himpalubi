@@ -5,22 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anggota — HIMPALUBI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <a href="#konten" class="skip-link">Langsung ke konten</a>
 
+<div class="utility-bar">
+  <div class="container">
+    <span>Himpunan Mahasiswa Pendidikan Luar Biasa</span>
+    <ul class="utility-links">
+      <li><a href="pendaftaran.html">Pendaftaran Anggota</a></li>
+      <li><a href="admin/login.html">Portal Admin</a></li>
+    </ul>
+  </div>
+</div>
+
 <header class="site-header">
   <div class="container">
-    <a href="index.html" class="brand">HIM<strong>PALUBI</strong></a>
+    <a href="index.html" class="brand">
+      <span class="brand-emblem" aria-hidden="true">H</span>
+      <span class="brand-text">HIMPALUBI<span class="full-name">Himpunan Mahasiswa Pendidikan Luar Biasa</span></span>
+    </a>
     <nav class="main-nav" aria-label="Navigasi utama">
       <ul>
         <li><a href="index.html">Beranda</a></li>
         <li><a href="berita.html">Berita</a></li>
         <li><a href="anggota.html" aria-current="page">Anggota</a></li>
         <li><a href="pendaftaran.html">Pendaftaran</a></li>
-        <li><a href="admin/login.html">Login Admin</a></li>
       </ul>
     </nav>
   </div>
@@ -44,8 +56,36 @@
 </main>
 
 <footer class="site-footer">
-  <div class="container">
-    <p>&copy; <span id="tahun"></span> HIMPALUBI.</p>
+  <div class="container footer-grid">
+    <div>
+      <h3>HIMPALUBI</h3>
+      <p>Himpunan Mahasiswa Pendidikan Luar Biasa — bergerak untuk pendidikan yang inklusif dan aksesibel bagi semua.</p>
+    </div>
+    <div>
+      <h3>Tautan Cepat</h3>
+      <ul>
+        <li><a href="berita.html">Berita</a></li>
+        <li><a href="anggota.html">Anggota</a></li>
+        <li><a href="pendaftaran.html">Pendaftaran</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Kontak</h3>
+      <ul>
+        <li>himpalubi@kampus.ac.id</li>
+        <li>+62 812-0000-0000</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Ikuti Kami</h3>
+      <ul>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">YouTube</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom container">
+    <p>&copy; <span id="tahun"></span> HIMPALUBI. Seluruh hak cipta dilindungi.</p>
   </div>
 </footer>
 
