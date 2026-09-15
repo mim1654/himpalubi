@@ -52,23 +52,33 @@ async function tampilkanProfilAdmin() {
   if (av) av.textContent = email.charAt(0).toUpperCase();
 }
 
-// ================= SIDEBAR: highlight menu aktif saat scroll =================
-function pasangScrollSpy() {
+// ================= SIDEBAR: ganti "lembar" tanpa scroll =================
+function pasangNavigasiTab() {
   const sections = document.querySelectorAll(".admin-section");
   const links = document.querySelectorAll(".admin-sidebar nav a[data-section]");
   if (!sections.length || !links.length) return;
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        links.forEach(l => l.removeAttribute("aria-current"));
-        const aktif = document.querySelector(`.admin-sidebar nav a[data-section="${entry.target.id}"]`);
-        if (aktif) aktif.setAttribute("aria-current", "page");
-      }
+  function tampilkanBagian(idBagian) {
+    sections.forEach(s => s.classList.toggle("aktif", s.id === idBagian));
+    links.forEach(l => {
+      if (l.dataset.section === idBagian) l.setAttribute("aria-current", "page");
+      else l.removeAttribute("aria-current");
     });
-  }, { rootMargin: "-15% 0px -75% 0px", threshold: 0 });
+    document.querySelector(".admin-main").scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, behavior: "instant" });
+    history.replaceState(null, "", `#${idBagian}`);
+  }
 
-  sections.forEach(s => observer.observe(s));
+  links.forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      tampilkanBagian(link.dataset.section);
+    });
+  });
+
+  const awal = window.location.hash.replace("#", "");
+  const bagianAwal = document.getElementById(awal) ? awal : "ringkasan";
+  tampilkanBagian(bagianAwal);
 }
 
 // ================= DASHBOARD: RINGKASAN =================
@@ -151,8 +161,9 @@ function pasangFormKonten(formId, kategori) {
       : supabaseClient.from("berita").insert(payload);
 
     const { error } = await query;
-    if (error) { alert("Gagal menyimpan data."); console.error(error); return; }
+    if (error) { tampilkanToast("Gagal menyimpan data.", "gagal"); console.error(error); return; }
 
+    tampilkanToast(id ? "Perubahan disimpan." : "Data berhasil ditambahkan.", "sukses");
     form.reset();
     form.tanggal.valueAsDate = new Date();
     delete form.dataset.editId;
@@ -194,13 +205,18 @@ const ORANG_CONFIG = {
 async function muatTabelOrang(kategori, tabelElId) {
   const el = document.getElementById(tabelElId);
   if (!el) return;
-  const { data, error } = await supabaseClient.from("anggota").select("*").eq("kategori", kategori).order("nama");
-  if (error) { el.innerHTML = `<tr><td colspan="4">Gagal memuat data.</td></tr>`; return; }
-  if (!data.length) { el.innerHTML = `<tr><td colspan="4">Belum ada data.</td></tr>`; return; }
+  let query = supabaseClient.from("anggota").select("*").eq("kategori", kategori);
+  query = kategori === "Pengurus"
+    ? query.order("urutan", { ascending: true, nullsFirst: false }).order("nama")
+    : query.order("nama");
+  const { data, error } = await query;
+  if (error) { el.innerHTML = `<tr><td colspan="5">Gagal memuat data.</td></tr>`; return; }
+  if (!data.length) { el.innerHTML = `<tr><td colspan="5">Belum ada data.</td></tr>`; return; }
 
   if (kategori === "Pengurus") {
     el.innerHTML = data.map(a => `
       <tr>
+        <td>${a.urutan ?? "-"}</td>
         <td>${escapeHtml(a.nama)}</td>
         <td>${escapeHtml(a.jabatan || "-")}</td>
         <td>${escapeHtml(a.divisi || "-")}</td>
@@ -238,16 +254,21 @@ function pasangFormOrang(formId, kategori) {
       status: form.status.value,
       kategori,
     };
-    if (cfg.hasDivisi) payload.divisi = form.divisi.value.trim();
-    else payload.angkatan = form.angkatan.value.trim();
+    if (cfg.hasDivisi) {
+      payload.divisi = form.divisi.value.trim();
+      payload.urutan = form.urutan.value ? parseInt(form.urutan.value, 10) : null;
+    } else {
+      payload.angkatan = form.angkatan.value.trim();
+    }
 
     const query = id
       ? supabaseClient.from("anggota").update(payload).eq("id", id)
       : supabaseClient.from("anggota").insert(payload);
 
     const { error } = await query;
-    if (error) { alert("Gagal menyimpan data."); console.error(error); return; }
+    if (error) { tampilkanToast("Gagal menyimpan data.", "gagal"); console.error(error); return; }
 
+    tampilkanToast(id ? "Perubahan disimpan." : "Data berhasil ditambahkan.", "sukses");
     form.reset();
     delete form.dataset.editId;
     document.getElementById(cfg.judulFormId).textContent = cfg.labelTambah;
@@ -265,8 +286,12 @@ async function editOrang(id, kategori) {
   form.jabatan.value = data.jabatan || "";
   form.foto_url.value = data.foto_url || "";
   form.status.value = data.status;
-  if (cfg.hasDivisi) form.divisi.value = data.divisi || "";
-  else form.angkatan.value = data.angkatan || "";
+  if (cfg.hasDivisi) {
+    form.divisi.value = data.divisi || "";
+    form.urutan.value = data.urutan ?? "";
+  } else {
+    form.angkatan.value = data.angkatan || "";
+  }
   form.dataset.editId = id;
   document.getElementById(cfg.judulFormId).textContent = cfg.labelEdit;
   form.scrollIntoView({ behavior: "smooth" });
@@ -304,7 +329,7 @@ async function muatTabelPendaftaran() {
 
 async function ubahStatusPendaftaran(id, status) {
   const { error } = await supabaseClient.from("pendaftaran").update({ status }).eq("id", id);
-  if (error) { alert("Gagal mengubah status."); console.error(error); return; }
+  if (error) { tampilkanToast("Gagal mengubah status.", "gagal"); console.error(error); return; }
 
   if (status === "Diterima") {
     const { data: pendaftar } = await supabaseClient.from("pendaftaran").select("*").eq("id", id).single();
@@ -361,7 +386,8 @@ function pasangFormGaleri(formId) {
       foto_url: form.foto_url.value.trim(),
     };
     const { error } = await supabaseClient.from("galeri").insert(payload);
-    if (error) { alert("Gagal menambah foto."); console.error(error); return; }
+    if (error) { tampilkanToast("Gagal menambah foto.", "gagal"); console.error(error); return; }
+    tampilkanToast("Foto ditambahkan ke galeri.", "sukses");
     form.reset();
     form.tanggal.valueAsDate = new Date();
     muatTabelGaleri();
@@ -382,7 +408,7 @@ async function muatDaftarProgramAdmin() {
   if (error) { el.innerHTML = `<p class="form-message error">Gagal memuat data.</p>`; return; }
   if (!data.length) { el.innerHTML = `<p>Belum ada program kerja.</p>`; return; }
 
-  el.innerHTML = `<table><thead><tr><th>Program</th><th>Divisi</th><th>Status</th><th>Aksi</th></tr></thead><tbody>` +
+  el.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Program</th><th>Divisi</th><th>Status</th><th>Aksi</th></tr></thead><tbody>` +
     data.map(p => `
       <tr>
         <td>${escapeHtml(p.nama_program)}</td>
@@ -392,7 +418,7 @@ async function muatDaftarProgramAdmin() {
           <button onclick="editProgram('${p.id}')">Edit</button>
           <button onclick="hapusProgram('${p.id}')">Hapus</button>
         </td>
-      </tr>`).join("") + `</tbody></table>`;
+      </tr>`).join("") + `</tbody></table></div>`;
 }
 
 function pasangFormProgram(formId) {
@@ -412,8 +438,9 @@ function pasangFormProgram(formId) {
       : supabaseClient.from("program_kerja").insert(payload);
 
     const { error } = await query;
-    if (error) { alert("Gagal menyimpan program kerja."); console.error(error); return; }
+    if (error) { tampilkanToast("Gagal menyimpan program kerja.", "gagal"); console.error(error); return; }
 
+    tampilkanToast(id ? "Perubahan disimpan." : "Program kerja ditambahkan.", "sukses");
     form.reset();
     delete form.dataset.editId;
     document.getElementById("judul-form-program").textContent = "Tambah Program Kerja";

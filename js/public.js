@@ -30,12 +30,51 @@ async function muatBerita(elId, batas, kategori) {
     <li class="news-item">
       <time datetime="${item.tanggal}">${formatTanggal(item.tanggal)}</time>
       <div>
-        <h3>${escapeHtml(item.judul)}</h3>
+        <h3><a href="detail.html?id=${item.id}&kategori=${kategori}" style="color:inherit; text-decoration:none;">${escapeHtml(item.judul)}</a></h3>
         <p class="excerpt">${escapeHtml(ringkas(item.isi, 180))}</p>
+        <a href="detail.html?id=${item.id}&kategori=${kategori}" class="more">Baca Selengkapnya &rarr;</a>
       </div>
       ${item.foto_url ? `<img src="${item.foto_url}" alt="" loading="lazy">` : ""}
     </li>
   `).join("");
+}
+
+// ================= HALAMAN DETAIL: Berita/Kegiatan =================
+async function muatDetailKonten(elId, backLinkId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  const kategori = params.get("kategori") || "Berita";
+
+  const backLink = document.getElementById(backLinkId);
+  if (backLink) backLink.href = kategori === "Kegiatan" ? "kegiatan.html" : "berita.html";
+  document.body.dataset.page = kategori === "Kegiatan" ? "kegiatan" : "berita";
+
+  if (!id) {
+    el.innerHTML = `<p>Data tidak ditemukan.</p>`;
+    return;
+  }
+
+  const { data, error } = await supabaseClient.from("berita").select("*").eq("id", id).single();
+  if (error || !data) {
+    el.innerHTML = `<p>Data tidak ditemukan atau sudah dihapus.</p>`;
+    return;
+  }
+
+  document.title = `${data.judul} — HIMPALUBI`;
+  const paragraf = (data.isi || "").split(/\n+/).filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join("");
+
+  el.innerHTML = `
+    <div class="detail-meta">
+      <span class="kategori-tag">${escapeHtml(kategori)}</span>
+      ${formatTanggal(data.tanggal)}${data.penulis ? ` &middot; ${escapeHtml(data.penulis)}` : ""}
+    </div>
+    <h1>${escapeHtml(data.judul)}</h1>
+    ${data.foto_url ? `<img src="${data.foto_url}" alt="" class="detail-photo">` : ""}
+    <div class="detail-isi">${paragraf || "<p>Belum ada isi.</p>"}</div>
+  `;
 }
 
 // ================= BERANDA: Kegiatan Terbaru (3 kartu foto) =================
@@ -56,11 +95,11 @@ async function muatKegiatanTerbaru(elId) {
   }
 
   el.innerHTML = data.map(item => `
-    <div class="news-photo-card">
+    <a href="detail.html?id=${item.id}&kategori=Kegiatan" class="news-photo-card" style="text-decoration:none;">
       ${item.foto_url ? `<img src="${item.foto_url}" alt="">` : ""}
       <span class="tag">Kegiatan</span>
       <h4>${escapeHtml(item.judul)}</h4>
-    </div>
+    </a>
   `).join("");
 }
 
@@ -84,14 +123,14 @@ async function muatBeritaKartu(elId, batas) {
   }
 
   el.innerHTML = data.map(item => `
-    <div class="content-card">
+    <a href="detail.html?id=${item.id}&kategori=Berita" class="content-card" style="text-decoration:none; color:inherit; display:block;">
       ${item.foto_url ? `<img src="${item.foto_url}" class="thumb" alt="" loading="lazy">` : ""}
       <div class="body">
         <time>${formatTanggal(item.tanggal)}</time>
         <h4>${escapeHtml(item.judul)}</h4>
         <p>${escapeHtml(ringkas(item.isi, 110))}</p>
       </div>
-    </div>
+    </a>
   `).join("");
 }
 
@@ -156,6 +195,7 @@ async function muatStruktur(elId) {
     .select("*")
     .eq("kategori", "Pengurus")
     .eq("status", "Aktif")
+    .order("urutan", { ascending: true, nullsFirst: false })
     .order("nama");
 
   if (error) {
@@ -384,4 +424,72 @@ function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
   }[c]));
+}
+
+// ================= TOAST: notifikasi halus (pengganti alert()) =================
+function tampilkanToast(pesan, jenis) {
+  let wrap = document.querySelector(".toast-wrap");
+  if (!wrap) {
+    wrap = document.createElement("div");
+    wrap.className = "toast-wrap";
+    document.body.appendChild(wrap);
+  }
+  const toast = document.createElement("div");
+  toast.className = `toast ${jenis || ""}`.trim();
+  toast.textContent = pesan;
+  wrap.appendChild(toast);
+  setTimeout(() => toast.remove(), 3200);
+}
+
+// ================= LIGHTBOX: klik foto galeri untuk perbesar =================
+function pasangLightbox(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const gambar = Array.from(container.querySelectorAll("img"));
+  if (!gambar.length) return;
+
+  let indeks = 0;
+
+  function bukaLightbox(i) {
+    indeks = i;
+    const overlay = document.createElement("div");
+    overlay.className = "lightbox-overlay";
+    overlay.id = "lightbox-aktif";
+    overlay.innerHTML = `
+      <button class="lightbox-tutup" aria-label="Tutup">&times;</button>
+      ${gambar.length > 1 ? `<button class="lightbox-prev" aria-label="Sebelumnya">&larr;</button>` : ""}
+      <img src="${gambar[indeks].src}" alt="${gambar[indeks].alt || ""}">
+      ${gambar.length > 1 ? `<button class="lightbox-next" aria-label="Berikutnya">&rarr;</button>` : ""}
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector(".lightbox-tutup").addEventListener("click", tutupLightbox);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) tutupLightbox(); });
+    const prev = overlay.querySelector(".lightbox-prev");
+    const next = overlay.querySelector(".lightbox-next");
+    if (prev) prev.addEventListener("click", () => geser(-1));
+    if (next) next.addEventListener("click", () => geser(1));
+    document.addEventListener("keydown", tombolKeyboard);
+  }
+
+  function geser(arah) {
+    indeks = (indeks + arah + gambar.length) % gambar.length;
+    const overlay = document.getElementById("lightbox-aktif");
+    if (overlay) overlay.querySelector("img").src = gambar[indeks].src;
+  }
+
+  function tombolKeyboard(e) {
+    if (e.key === "Escape") tutupLightbox();
+    if (e.key === "ArrowLeft") geser(-1);
+    if (e.key === "ArrowRight") geser(1);
+  }
+
+  function tutupLightbox() {
+    const overlay = document.getElementById("lightbox-aktif");
+    if (overlay) overlay.remove();
+    document.removeEventListener("keydown", tombolKeyboard);
+  }
+
+  gambar.forEach((img, i) => img.addEventListener("click", () => bukaLightbox(i)));
 }

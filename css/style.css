@@ -677,8 +677,129 @@ input:focus, textarea:focus, select:focus {
   margin-bottom: 0.35rem;
 }
 .admin-topbar p.subtitle { color: var(--ink-600); margin: 0.35rem 0 0; }
-.admin-section { padding-top: 2.5rem; scroll-margin-top: 1rem; }
-.admin-section:first-of-type { padding-top: 0; }
+.admin-section { display: none; }
+.admin-section.aktif { display: block; }
+
+@media (max-width: 900px) {
+  .admin-shell { grid-template-columns: 1fr; }
+  .admin-sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .admin-sidebar .brand { margin-bottom: 0; flex-shrink: 0; }
+  .admin-sidebar nav { display: flex; flex: none; }
+  .admin-sidebar nav .nav-group-label { display: none; }
+  .admin-sidebar nav ul { display: flex; gap: 0.4rem; }
+  .admin-sidebar nav a { white-space: nowrap; }
+  .admin-profile { border-top: none; margin-top: 0; padding-top: 0; flex-shrink: 0; }
+  .admin-profile .info .email { display: none; }
+  .admin-main { padding: 1.25rem; }
+}
+
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-wrap table { min-width: 560px; }
+
+/* ---------- Toast (notifikasi halus, pengganti alert()) ---------- */
+.toast-wrap {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.toast {
+  background: var(--ink-900);
+  color: var(--white);
+  padding: 0.85rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  max-width: 320px;
+  animation: toast-masuk 0.2s ease-out;
+}
+.toast.sukses { background: var(--ok); }
+.toast.gagal { background: var(--danger); }
+@keyframes toast-masuk {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 600px) {
+  .toast-wrap { left: 1rem; right: 1rem; bottom: 1rem; }
+  .toast { max-width: none; }
+}
+
+/* ---------- Lightbox (galeri klik-perbesar) ---------- */
+.gallery-grid img { cursor: pointer; }
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,10,12,0.92);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.lightbox-overlay img {
+  max-width: 90vw;
+  max-height: 82vh;
+  object-fit: contain;
+  border-radius: 6px;
+}
+.lightbox-tutup, .lightbox-prev, .lightbox-next {
+  position: absolute;
+  background: rgba(255,255,255,0.12);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lightbox-tutup:hover, .lightbox-prev:hover, .lightbox-next:hover { background: rgba(255,255,255,0.25); }
+.lightbox-tutup { top: 1.25rem; right: 1.25rem; }
+.lightbox-prev { left: 1.25rem; top: 50%; transform: translateY(-50%); }
+.lightbox-next { right: 1.25rem; top: 50%; transform: translateY(-50%); }
+@media (max-width: 600px) {
+  .lightbox-prev, .lightbox-next { width: 38px; height: 38px; font-size: 1.1rem; }
+}
+
+/* ---------- Halaman Detail Berita/Kegiatan ---------- */
+.detail-meta {
+  color: var(--ink-600);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+.detail-meta .kategori-tag {
+  display: inline-block;
+  background: var(--gold-100);
+  color: var(--gold-500);
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  margin-right: 0.6rem;
+}
+.detail-photo {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  margin-bottom: 1.75rem;
+}
+.detail-isi p { margin-bottom: 1.1rem; line-height: 1.7; }
 
 .stat-grid {
   display: grid;

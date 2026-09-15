@@ -3,27 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Galeri — HIMPALUBI</title>
+<title>Detail — HIMPALUBI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body data-page="galeri">
+<body data-page="berita">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
 
 <div id="site-header-slot"></div>
 
 <main id="konten">
-  <section class="hero" style="padding:3rem 0; background:var(--sage-100); color:var(--ink-900); text-align:left;">
-    <div class="container" style="max-width:1080px;">
-      <h1 style="color:var(--ink-900);">Galeri</h1>
-      <p class="lead" style="color:var(--ink-600); margin:0;">Dokumentasi foto kegiatan HIMPALUBI.</p>
-    </div>
-  </section>
-
   <section>
-    <div class="container gallery-grid" id="galeri-konten">
-      <p>Memuat galeri...</p>
+    <div class="container" style="max-width:760px; padding-top:2.5rem;">
+      <p><a href="#" id="tautan-kembali">&larr; Kembali</a></p>
+      <div id="detail-konten">
+        <p>Memuat...</p>
+      </div>
     </div>
   </section>
 </main>
@@ -35,7 +31,7 @@
 <script src="js/public.js"></script>
 <script src="js/components.js"></script>
 <script>
-  muatGaleriHalaman("galeri-konten").then(() => pasangLightbox("galeri-konten"));
+  muatDetailKonten("detail-konten", "tautan-kembali");
 </script>
 </body>
 </html>

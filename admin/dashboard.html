@@ -88,10 +88,12 @@
 
       <div class="card-panel">
         <h3>Pendaftar Terbaru</h3>
-        <table>
+        <div class="table-wrap">
+<table>
           <thead><tr><th>Nama</th><th>Tanggal</th><th>Status</th></tr></thead>
           <tbody id="pendaftar-terbaru"><tr><td colspan="3">Memuat...</td></tr></tbody>
         </table>
+</div>
       </div>
     </section>
 
@@ -117,10 +119,12 @@
           <div class="field full"><button type="submit" class="btn">Simpan Berita</button></div>
         </form>
       </div>
-      <table>
+      <div class="table-wrap">
+<table>
         <thead><tr><th>Judul</th><th>Tanggal</th><th>Penulis</th><th>Aksi</th></tr></thead>
         <tbody id="tabel-berita"><tr><td colspan="4">Memuat...</td></tr></tbody>
       </table>
+</div>
     </section>
 
     <!-- ================= KEGIATAN ================= -->
@@ -144,10 +148,12 @@
           <div class="field full"><button type="submit" class="btn">Simpan Kegiatan</button></div>
         </form>
       </div>
-      <table>
+      <div class="table-wrap">
+<table>
         <thead><tr><th>Nama Kegiatan</th><th>Tanggal</th><th>Penyelenggara</th><th>Aksi</th></tr></thead>
         <tbody id="tabel-kegiatan"><tr><td colspan="4">Memuat...</td></tr></tbody>
       </table>
+</div>
     </section>
 
     <!-- ================= GALERI ================= -->
@@ -166,10 +172,12 @@
           <div class="field full"><button type="submit" class="btn">Tambah ke Galeri</button></div>
         </form>
       </div>
-      <table>
+      <div class="table-wrap">
+<table>
         <thead><tr><th>Foto</th><th>Judul</th><th>Tanggal</th><th>Aksi</th></tr></thead>
         <tbody id="tabel-galeri"><tr><td colspan="4">Memuat...</td></tr></tbody>
       </table>
+</div>
     </section>
 
     <!-- ================= ANGGOTA ================= -->
@@ -193,10 +201,12 @@
           <div class="field full"><button type="submit" class="btn">Simpan Anggota</button></div>
         </form>
       </div>
-      <table>
+      <div class="table-wrap">
+<table>
         <thead><tr><th>Nama</th><th>Angkatan</th><th>Status</th><th>Aksi</th></tr></thead>
         <tbody id="tabel-anggota"><tr><td colspan="4">Memuat...</td></tr></tbody>
       </table>
+</div>
     </section>
 
     <!-- ================= STRUKTUR PENGURUS ================= -->
@@ -216,6 +226,11 @@
             <input type="text" id="divisi-struktur" name="divisi" placeholder="BPH, Divisi Humas, dst" required>
             <p class="hint">Ketik "BPH" untuk Badan Pengurus Harian — selalu tampil di atas.</p>
           </div>
+          <div class="field">
+            <label for="urutan-struktur">Urutan Tampil (opsional)</label>
+            <input type="number" id="urutan-struktur" name="urutan" min="1" placeholder="1">
+            <p class="hint">Angka kecil tampil lebih dulu. Contoh: Ketua Umum = 1, Wakil = 2, dst.</p>
+          </div>
           <div class="field full"><label for="foto_url-struktur">Tautan Foto (opsional)</label><input type="url" id="foto_url-struktur" name="foto_url" placeholder="https://..."></div>
           <div class="field">
             <label for="status-struktur">Status</label>
@@ -224,10 +239,12 @@
           <div class="field full"><button type="submit" class="btn">Simpan Pengurus</button></div>
         </form>
       </div>
-      <table>
-        <thead><tr><th>Nama</th><th>Jabatan</th><th>Divisi</th><th>Aksi</th></tr></thead>
-        <tbody id="tabel-struktur"><tr><td colspan="4">Memuat...</td></tr></tbody>
+      <div class="table-wrap">
+<table>
+        <thead><tr><th>Urutan</th><th>Nama</th><th>Jabatan</th><th>Divisi</th><th>Aksi</th></tr></thead>
+        <tbody id="tabel-struktur"><tr><td colspan="5">Memuat...</td></tr></tbody>
       </table>
+</div>
     </section>
 
     <!-- ================= PENDAFTARAN ================= -->
@@ -237,10 +254,12 @@
         <h1>Kelola Pendaftaran</h1>
         <p class="subtitle">Terima langsung otomatis jadi Anggota.</p>
       </div>
-      <table>
+      <div class="table-wrap">
+<table>
         <thead><tr><th>Nama</th><th>NIM</th><th>No. WA</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead>
         <tbody id="tabel-pendaftaran"><tr><td colspan="6">Memuat...</td></tr></tbody>
       </table>
+</div>
     </section>
 
     <!-- ================= PROGRAM KERJA ================= -->
@@ -305,7 +324,7 @@
     await wajibLogin();
     pasangTombolLogout("tombol-logout");
     tampilkanProfilAdmin();
-    pasangScrollSpy();
+    pasangNavigasiTab();
 
     document.getElementById("form-berita").tanggal.valueAsDate = new Date();
     document.getElementById("form-kegiatan").tanggal.valueAsDate = new Date();
