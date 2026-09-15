@@ -64,6 +64,8 @@ async function muatDetailKonten(elId, backLinkId) {
   }
 
   document.title = `${data.judul} — HIMPALUBI`;
+  perbaruiMetaDetail(data, kategori);
+
   const paragraf = (data.isi || "").split(/\n+/).filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join("");
 
   el.innerHTML = `
@@ -424,6 +426,31 @@ function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
   }[c]));
+}
+
+// ================= SEO: update meta/OG tag dinamis di halaman detail =================
+function perbaruiMetaDetail(data, kategori) {
+  const BASE = "https://mim1654.github.io/himpalubi/";
+  const judul = `${data.judul} — HIMPALUBI`;
+  const deskripsi = ringkas((data.isi || "").replace(/\n+/g, " "), 160);
+  const gambar = data.foto_url || `${BASE}img/logo.png`;
+  const url = `${BASE}detail.html?id=${data.id}&kategori=${kategori}`;
+
+  aturMeta('meta[name="description"]', "content", deskripsi);
+  aturMeta('link[rel="canonical"]', "href", url);
+  aturMeta('meta[property="og:type"]', "content", "article");
+  aturMeta('meta[property="og:title"]', "content", judul);
+  aturMeta('meta[property="og:description"]', "content", deskripsi);
+  aturMeta('meta[property="og:image"]', "content", gambar);
+  aturMeta('meta[property="og:url"]', "content", url);
+  aturMeta('meta[name="twitter:title"]', "content", judul);
+  aturMeta('meta[name="twitter:description"]', "content", deskripsi);
+  aturMeta('meta[name="twitter:image"]', "content", gambar);
+}
+
+function aturMeta(selector, atribut, nilai) {
+  const el = document.querySelector(selector);
+  if (el) el.setAttribute(atribut, nilai);
 }
 
 // ================= TOAST: notifikasi halus (pengganti alert()) =================
