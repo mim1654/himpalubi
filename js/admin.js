@@ -50,6 +50,112 @@ async function tampilkanProfilAdmin() {
   setTeks("admin-email", email);
   const av = document.getElementById("admin-avatar");
   if (av) av.textContent = email.charAt(0).toUpperCase();
+  return email;
+}
+
+// ================= DAFTAR ADMIN BARU (admin/daftar.html) =================
+function pasangFormDaftarAdmin(formId) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const pesanEl = document.getElementById("pesan-daftar");
+    const tombol = form.querySelector("button[type=submit]");
+    tombol.disabled = true;
+    tombol.textContent = "Mendaftarkan...";
+
+    const { error } = await supabaseClient.auth.signUp({
+      email: form.email.value.trim(),
+      password: form.password.value,
+    });
+
+    tombol.disabled = false;
+    tombol.textContent = "Daftar";
+
+    if (error) {
+      pesanEl.className = "form-message error";
+      pesanEl.textContent = "Pendaftaran gagal: " + error.message;
+      return;
+    }
+
+    pesanEl.className = "form-message success";
+    pesanEl.textContent = "Akun berhasil dibuat. Kalau email kamu sudah diundang, kamu otomatis jadi admin — coba cek email untuk konfirmasi (kalau diminta), lalu login.";
+    form.reset();
+  });
+}
+
+// ================= KELOLA ADMIN (dashboard) =================
+async function muatUndanganAdmin() {
+  const el = document.getElementById("tabel-undangan-admin");
+  if (!el) return;
+  const { data, error } = await supabaseClient.from("admin_undangan").select("*").order("dibuat_pada", { ascending: false });
+  if (error) { el.innerHTML = `<tr><td colspan="3">Gagal memuat data.</td></tr>`; return; }
+  el.innerHTML = data.length ? data.map(u => `
+    <tr>
+      <td>${escapeHtml(u.email)}</td>
+      <td>${formatTanggal(u.dibuat_pada)}</td>
+      <td class="table-actions"><button onclick="batalkanUndangan('${u.email.replace(/'/g, "\\'")}')">Batalkan</button></td>
+    </tr>
+  `).join("") : `<tr><td colspan="3">Tidak ada undangan menunggu.</td></tr>`;
+}
+
+function pasangFormUndangAdmin(formId) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = form.email.value.trim();
+    const emailAdminSaatIni = document.getElementById("admin-email")?.textContent || null;
+
+    const { error } = await supabaseClient.from("admin_undangan").insert({
+      email,
+      diundang_oleh: emailAdminSaatIni,
+    });
+
+    if (error) {
+      tampilkanToast(error.code === "23505" ? "Email itu sudah diundang." : "Gagal mengundang.", "gagal");
+      console.error(error);
+      return;
+    }
+
+    tampilkanToast(`Undangan terkirim untuk ${email}. Minta dia daftar lewat halaman "Daftar Admin".`, "sukses");
+    form.reset();
+    muatUndanganAdmin();
+  });
+}
+
+async function batalkanUndangan(email) {
+  if (!confirm(`Batalkan undangan untuk ${email}?`)) return;
+  await supabaseClient.from("admin_undangan").delete().eq("email", email);
+  muatUndanganAdmin();
+}
+
+async function muatDaftarAdminAktif() {
+  const el = document.getElementById("tabel-admin-aktif");
+  if (!el) return;
+  const { data, error } = await supabaseClient.from("admin_users").select("*").order("dibuat_pada");
+  if (error) { el.innerHTML = `<tr><td colspan="3">Gagal memuat data.</td></tr>`; return; }
+
+  const { data: sesi } = await supabaseClient.auth.getSession();
+  const emailSaatIni = sesi?.session?.user?.email;
+
+  el.innerHTML = data.length ? data.map(a => `
+    <tr>
+      <td>${escapeHtml(a.email)}${a.email === emailSaatIni ? " <em>(kamu)</em>" : ""}</td>
+      <td>${formatTanggal(a.dibuat_pada)}</td>
+      <td class="table-actions">
+        ${a.email === emailSaatIni ? "-" : `<button onclick="cabutAksesAdmin('${a.id}','${a.email.replace(/'/g, "\\'")}')">Cabut Akses</button>`}
+      </td>
+    </tr>
+  `).join("") : `<tr><td colspan="3">Belum ada admin.</td></tr>`;
+}
+
+async function cabutAksesAdmin(id, email) {
+  if (!confirm(`Cabut akses admin untuk ${email}? Akun login-nya tidak dihapus, cuma akses dashboard-nya.`)) return;
+  await supabaseClient.from("admin_users").delete().eq("id", id);
+  tampilkanToast(`Akses admin ${email} sudah dicabut.`, "sukses");
+  muatDaftarAdminAktif();
 }
 
 // ================= SIDEBAR: ganti "lembar" tanpa scroll =================

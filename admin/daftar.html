@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login Admin — HIMPALUBI</title>
+<title>Daftar Admin — HIMPALUBI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/style.css">
@@ -12,36 +12,37 @@
 <div class="login-shell">
   <div class="login-brand-panel">
     <img src="../img/logo.png" alt="Logo HIMPALUBI">
-    <h2>Portal Admin &amp; Pengurus</h2>
-    <p>Kelola berita, kegiatan, anggota, dan seluruh konten website HIMPALUBI di satu tempat.</p>
+    <h2>Daftar sebagai Admin</h2>
+    <p>Hanya email yang sudah diundang oleh admin lain yang akan otomatis mendapat akses.</p>
   </div>
   <div class="login-form-panel">
     <div class="login-card">
-      <h1 style="font-size:1.5rem; margin-bottom:0.35rem;">Masuk</h1>
-      <p style="color:var(--ink-600); margin-bottom:1.75rem;">Khusus admin dan pengurus organisasi.</p>
-      <div id="pesan-login"></div>
-      <form id="form-login">
+      <h1 style="font-size:1.5rem; margin-bottom:0.35rem;">Buat Akun</h1>
+      <p style="color:var(--ink-600); margin-bottom:1.75rem;">Gunakan email yang sama dengan yang diundang oleh admin.</p>
+      <div id="pesan-daftar"></div>
+      <form id="form-daftar-admin">
         <div class="field">
           <label for="email">Email</label>
           <input type="email" id="email" name="email" required autocomplete="username">
         </div>
         <div class="field">
-          <label for="password">Kata Sandi</label>
-          <input type="password" id="password" name="password" required autocomplete="current-password">
+          <label for="password">Buat Kata Sandi</label>
+          <input type="password" id="password" name="password" required minlength="6" autocomplete="new-password">
+          <p class="hint">Minimal 6 karakter.</p>
         </div>
-        <button type="submit" class="btn" style="width:100%;">Masuk</button>
+        <button type="submit" class="btn" style="width:100%;">Daftar</button>
       </form>
-      <p style="margin-top:1.5rem;"><a href="../index.html">&larr; Kembali ke website</a></p>
-      <p style="margin-top:0.5rem; font-size:0.85rem; color:var(--ink-600);">Diundang jadi admin? <a href="daftar.html">Daftar di sini</a></p>
+      <p style="margin-top:1.5rem;"><a href="login.html">&larr; Sudah punya akun? Masuk</a></p>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../js/supabaseClient.js"></script>
+<script src="../js/public.js"></script>
 <script src="../js/admin.js"></script>
 <script>
-  pasangFormLogin("form-login");
+  pasangFormDaftarAdmin("form-daftar-admin");
 </script>
 </body>
 </html>

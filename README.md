@@ -77,6 +77,35 @@ Kalau organisasi sudah punya budget untuk domain (misalnya `himpalubi.org`):
 
 Semua langkah di atas **tidak wajib berbayar** — domain custom hanya opsional.
 
+## Cara Menambah Admin/Pengurus Baru (Setelah Migrasi Keamanan)
+
+Ada 2 cara menambah admin baru:
+
+### Cara 1 — Fitur "Undang Admin" di dashboard (disarankan)
+
+Perlu jalankan dulu `sql/migrasi_tahap4_undang_admin.sql` di Supabase (SQL Editor), dan **nyalakan kembali pendaftaran akun**:
+1. Supabase → **Authentication → Providers** → provider **Email** → nyalakan lagi **"Allow new users to sign up"**
+2. Ini tetap aman: siapa pun boleh bikin akun, tapi TIDAK dapat akses admin sama sekali kecuali emailnya sudah diundang oleh admin yang ada.
+
+Setelah itu, alurnya:
+1. Login ke dashboard → menu **Kelola Admin** → isi email teman di form "Undang Admin Baru" → **Kirim Undangan**
+2. Kirim link `admin/daftar.html` ke temanmu, minta dia daftar pakai **email yang sama persis** dengan yang diundang
+3. Begitu daftar, sistem otomatis mengenali undangannya dan langsung memberi akses admin (undangan otomatis hangus setelah dipakai)
+4. Kalau di project Supabase kamu ada verifikasi email aktif, temanmu perlu klik link konfirmasi di emailnya dulu sebelum bisa login
+
+Kamu juga bisa **mencabut akses admin** siapa pun (kecuali dirimu sendiri) langsung dari menu **Kelola Admin → Admin Aktif → Cabut Akses**, tanpa perlu ke Supabase.
+
+### Cara 2 — Manual lewat Supabase (kalau tidak mau nyalakan sign-up publik)
+
+1. Buat akunnya dulu seperti biasa: **Authentication > Users > Add user** (isi email, password, centang **Auto Confirm User**).
+2. Buka **SQL Editor > New query**, jalankan (ganti email-nya):
+   ```sql
+   insert into admin_users (id, email)
+   select id, email from auth.users where email = 'email_pengurus_baru@contoh.com'
+   on conflict (id) do nothing;
+   ```
+3. Selesai — akun itu sekarang bisa login ke dashboard admin.
+
 ## Kalau ada bagian yang error atau bingung
 
 Simpan pesan errornya (screenshot boleh) dan tanyakan lagi — akan dibantu ditelusuri penyebabnya.
