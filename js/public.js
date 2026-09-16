@@ -4,6 +4,7 @@ async function muatBerita(elId, batas, kategori) {
   const el = document.getElementById(elId);
   if (!el) return;
   kategori = kategori || "Berita";
+  el.innerHTML = skeletonListItems(batas || 3);
 
   let query = supabaseClient
     .from("berita")
@@ -22,7 +23,7 @@ async function muatBerita(elId, batas, kategori) {
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = `<li>Belum ada ${kategori.toLowerCase()} yang dipublikasikan.</li>`;
+    el.innerHTML = `<li>${emptyState(`Belum ada ${kategori.toLowerCase()}`, "Konten akan tampil di sini begitu admin mempublikasikannya.")}</li>`;
     return;
   }
 
@@ -43,6 +44,7 @@ async function muatBerita(elId, batas, kategori) {
 async function muatDetailKonten(elId, backLinkId) {
   const el = document.getElementById(elId);
   if (!el) return;
+  el.innerHTML = `<span class="skeleton skeleton-image" style="height:260px; margin-bottom:1.5rem;"></span>${skeletonParagraf(4)}`;
 
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
@@ -74,7 +76,7 @@ async function muatDetailKonten(elId, backLinkId) {
       ${formatTanggal(data.tanggal)}${data.penulis ? ` &middot; ${escapeHtml(data.penulis)}` : ""}
     </div>
     <h1>${escapeHtml(data.judul)}</h1>
-    ${data.foto_url ? `<img src="${data.foto_url}" alt="" class="detail-photo">` : ""}
+    ${data.foto_url ? `<img src="${data.foto_url}" alt="" class="detail-photo" loading="lazy">` : ""}
     <div class="detail-isi">${paragraf || "<p>Belum ada isi.</p>"}</div>
   `;
 }
@@ -83,6 +85,7 @@ async function muatDetailKonten(elId, backLinkId) {
 async function muatKegiatanTerbaru(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
+  el.innerHTML = skeletonCards(3, skeletonPhotoCard);
 
   const { data, error } = await supabaseClient
     .from("berita")
@@ -92,13 +95,13 @@ async function muatKegiatanTerbaru(elId) {
     .limit(3);
 
   if (error || !data || data.length === 0) {
-    el.innerHTML = `<p>Belum ada kegiatan yang dipublikasikan.</p>`;
+    el.innerHTML = emptyState("Belum ada kegiatan", "Kegiatan terbaru akan muncul di sini setelah dipublikasikan.");
     return;
   }
 
   el.innerHTML = data.map(item => `
     <a href="detail.html?id=${item.id}&kategori=Kegiatan" class="news-photo-card" style="text-decoration:none;">
-      ${item.foto_url ? `<img src="${item.foto_url}" alt="">` : ""}
+      ${item.foto_url ? `<img src="${item.foto_url}" alt="" loading="lazy">` : ""}
       <span class="tag">Kegiatan</span>
       <h4>${escapeHtml(item.judul)}</h4>
     </a>
@@ -109,6 +112,7 @@ async function muatKegiatanTerbaru(elId) {
 async function muatBeritaKartu(elId, batas) {
   const el = document.getElementById(elId);
   if (!el) return;
+  el.innerHTML = skeletonCards(batas || 3, skeletonContentCard);
 
   let query = supabaseClient
     .from("berita")
@@ -120,7 +124,7 @@ async function muatBeritaKartu(elId, batas) {
   const { data, error } = await query;
 
   if (error || !data || data.length === 0) {
-    el.innerHTML = `<p>Belum ada berita yang dipublikasikan.</p>`;
+    el.innerHTML = emptyState("Belum ada berita", "Berita terbaru akan muncul di sini setelah dipublikasikan.");
     return;
   }
 
@@ -140,6 +144,7 @@ async function muatBeritaKartu(elId, batas) {
 async function muatAnggota(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
+  el.innerHTML = skeletonMemberGrid(4);
 
   const { data, error } = await supabaseClient
     .from("anggota")
@@ -155,7 +160,7 @@ async function muatAnggota(elId) {
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = `<p>Belum ada data anggota.</p>`;
+    el.innerHTML = emptyState("Belum ada data anggota", "Data anggota akan tampil di sini setelah ditambahkan admin.");
     return;
   }
 
@@ -180,7 +185,7 @@ async function muatAnggota(elId) {
 function kartuAnggota(a) {
   return `
     <div class="member-card">
-      <div class="photo">${a.foto_url ? `<img src="${a.foto_url}" alt="">` : initial(a.nama)}</div>
+      <div class="photo">${a.foto_url ? `<img src="${a.foto_url}" alt="" loading="lazy">` : initial(a.nama)}</div>
       <h3>${escapeHtml(a.nama)}</h3>
       <div class="role">${escapeHtml(a.jabatan || "Anggota")}</div>
     </div>
@@ -191,6 +196,7 @@ function kartuAnggota(a) {
 async function muatStruktur(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
+  el.innerHTML = skeletonMemberGrid(4);
 
   const { data, error } = await supabaseClient
     .from("anggota")
@@ -207,7 +213,7 @@ async function muatStruktur(elId) {
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = `<p>Struktur organisasi belum diisi oleh admin.</p>`;
+    el.innerHTML = emptyState("Struktur belum diisi", "Susunan BPH dan divisi akan tampil di sini setelah diisi admin.");
     return;
   }
 
@@ -231,6 +237,7 @@ async function muatStruktur(elId) {
 async function muatProgramKerja(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
+  el.innerHTML = Array(3).fill(0).map(skeletonProgramItem).join("");
 
   const { data, error } = await supabaseClient
     .from("program_kerja")
@@ -244,7 +251,7 @@ async function muatProgramKerja(elId) {
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = `<p>Program kerja belum ditambahkan oleh admin.</p>`;
+    el.innerHTML = emptyState("Belum ada program kerja", "Program kerja tiap divisi akan tampil di sini setelah ditambahkan.");
     return;
   }
 
@@ -288,6 +295,7 @@ function badgeStatusProgram(status) {
 async function muatGaleriHalaman(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
+  el.innerHTML = skeletonGaleri(6);
 
   const { data, error } = await supabaseClient
     .from("galeri")
@@ -301,7 +309,7 @@ async function muatGaleriHalaman(elId) {
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = `<p>Belum ada foto di galeri.</p>`;
+    el.innerHTML = emptyState("Galeri masih kosong", "Foto kegiatan akan tampil di sini setelah diunggah admin.");
     return;
   }
 
@@ -312,6 +320,7 @@ async function muatGaleriHalaman(elId) {
 async function muatTentangHalaman(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
+  el.innerHTML = skeletonParagraf(4);
 
   const { data, error } = await supabaseClient.from("pengaturan").select("*").eq("id", 1).single();
   if (error || !data) {
@@ -326,6 +335,7 @@ async function muatTentangHalaman(elId) {
 async function muatTentangRingkas(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
+  el.innerHTML = skeletonParagraf(2);
   const { data, error } = await supabaseClient.from("pengaturan").select("tentang").eq("id", 1).single();
   if (error || !data) return;
   el.textContent = ringkas(data.tentang || "", 260);
@@ -368,10 +378,52 @@ function pasangFormPendaftaran(formId) {
   const form = document.getElementById(formId);
   if (!form) return;
 
+  // Pesan validasi Bahasa Indonesia untuk field NIM & No. WhatsApp
+  const nimEl = form.querySelector("#nim");
+  if (nimEl) {
+    nimEl.addEventListener("input", () => nimEl.setCustomValidity(""));
+    nimEl.addEventListener("invalid", () => {
+      nimEl.setCustomValidity(
+        nimEl.validity.patternMismatch || nimEl.validity.valueMissing
+          ? "NIM harus berupa angka saja, 6-20 digit."
+          : ""
+      );
+    });
+  }
+  const waEl = form.querySelector("#no_wa");
+  if (waEl) {
+    waEl.addEventListener("input", () => waEl.setCustomValidity(""));
+    waEl.addEventListener("invalid", () => {
+      waEl.setCustomValidity(
+        waEl.validity.patternMismatch || waEl.validity.valueMissing
+          ? "Format nomor tidak valid. Contoh yang benar: 08123456789"
+          : ""
+      );
+    });
+  }
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const tombol = form.querySelector("button[type=submit]");
     const pesanEl = document.getElementById("pesan-pendaftaran");
+
+    // Validasi tambahan sebelum kirim (selain validasi HTML5 bawaan browser)
+    const nim = form.nim.value.trim();
+    const noWa = form.no_wa.value.trim();
+
+    if (!/^[0-9]{6,20}$/.test(nim)) {
+      pesanEl.className = "form-message error";
+      pesanEl.textContent = "NIM harus berupa angka saja, 6-20 digit.";
+      form.nim.focus();
+      return;
+    }
+    if (!/^(\+62|62|0)8[0-9]{8,12}$/.test(noWa)) {
+      pesanEl.className = "form-message error";
+      pesanEl.textContent = "Format Nomor WhatsApp tidak valid. Contoh: 08123456789.";
+      form.no_wa.focus();
+      return;
+    }
+
+    const tombol = form.querySelector("button[type=submit]");
     tombol.disabled = true;
     tombol.textContent = "Mengirim...";
 
@@ -421,6 +473,70 @@ function initial(nama) {
   if (!nama) return "?";
   return nama.trim().charAt(0).toUpperCase();
 }
+// ================= SKELETON LOADING: placeholder shimmer sebelum data siap =================
+function skeletonListItem() {
+  return `<li class="news-item">
+    <span class="skeleton skeleton-text short" style="height:1.1em;"></span>
+    <div>
+      <span class="skeleton skeleton-title"></span>
+      <span class="skeleton skeleton-text"></span>
+    </div>
+  </li>`;
+}
+function skeletonListItems(jumlah) {
+  return Array(jumlah || 3).fill(0).map(skeletonListItem).join("");
+}
+function skeletonPhotoCard() {
+  return `<div class="news-photo-card" style="background: var(--sage-100);"><span class="skeleton skeleton-image" style="height:100%; position:absolute; inset:0; border-radius: var(--radius);"></span></div>`;
+}
+function skeletonContentCard() {
+  return `<div class="content-card">
+    <span class="skeleton skeleton-image"></span>
+    <div class="body">
+      <span class="skeleton skeleton-text short" style="height:0.8em; width:30%;"></span>
+      <span class="skeleton skeleton-title"></span>
+      <span class="skeleton skeleton-text"></span>
+    </div>
+  </div>`;
+}
+function skeletonCards(jumlah, fn) {
+  return Array(jumlah || 3).fill(0).map(fn).join("");
+}
+function skeletonMemberCard() {
+  return `<div class="member-card">
+    <span class="skeleton skeleton-circle"></span>
+    <span class="skeleton skeleton-title" style="margin-top:0.75rem;"></span>
+    <span class="skeleton skeleton-text short"></span>
+  </div>`;
+}
+function skeletonMemberGrid(jumlah) {
+  return `<div class="member-grid">${skeletonCards(jumlah || 4, skeletonMemberCard)}</div>`;
+}
+function skeletonParagraf(jumlah) {
+  return Array(jumlah || 3).fill(0).map((_, i) => `<span class="skeleton skeleton-text${i === (jumlah || 3) - 1 ? " short" : ""}"></span>`).join("");
+}
+function skeletonProgramItem() {
+  return `<div class="program-item"><span class="skeleton skeleton-title" style="width:60%;"></span></div>`;
+}
+function skeletonGaleri(jumlah) {
+  return Array(jumlah || 6).fill('<span class="skeleton skeleton-image"></span>').join("");
+}
+function skeletonBarisTabel(kolom, jumlahBaris) {
+  const baris = `<tr>${Array(kolom).fill('<td><span class="skeleton skeleton-text"></span></td>').join("")}</tr>`;
+  return Array(jumlahBaris || 3).fill(baris).join("");
+}
+
+// ================= EMPTY STATE: tampilan "belum ada data" yang lebih baik =================
+function emptyState(judul, deskripsi) {
+  return `
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M8 14h8"/></svg>
+      <h4>${escapeHtml(judul)}</h4>
+      <p>${escapeHtml(deskripsi)}</p>
+    </div>
+  `;
+}
+
 function escapeHtml(str) {
   if (!str) return "";
   return String(str).replace(/[&<>"']/g, (c) => ({

@@ -43,7 +43,7 @@
         </div>
         <div class="field">
           <label for="nim">NIM</label>
-          <input type="text" id="nim" name="nim" required>
+          <input type="text" id="nim" name="nim" inputmode="numeric" pattern="[0-9]{6,20}" title="NIM hanya boleh berisi angka, 6-20 digit" required>
         </div>
         <div class="field">
           <label for="program_studi">Program Studi</label>
@@ -55,7 +55,7 @@
         </div>
         <div class="field">
           <label for="no_wa">Nomor WhatsApp</label>
-          <input type="tel" id="no_wa" name="no_wa" required>
+          <input type="tel" id="no_wa" name="no_wa" inputmode="tel" pattern="^(\+62|62|0)8[0-9]{8,12}$" title="Format nomor Indonesia, contoh: 08123456789" placeholder="Contoh: 08123456789" required>
         </div>
         <div class="field">
           <label for="email">Email</label>

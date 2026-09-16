@@ -119,3 +119,19 @@ Kunci `SUPABASE_SERVICE_ROLE_KEY` otomatis tersedia untuk Edge Function ini dari
 ## Kalau ada bagian yang error atau bingung
 
 Simpan pesan errornya (screenshot boleh) dan tanyakan lagi — akan dibantu ditelusuri penyebabnya.
+
+## (Opsional) Mencegah Spam di Form Pendaftaran dengan Cloudflare Turnstile
+
+Form Pendaftaran saat ini sudah divalidasi formatnya (NIM angka saja, No. WhatsApp format Indonesia), tapi tetap bisa "diisi" berkali-kali oleh bot otomatis. **Cloudflare Turnstile** adalah captcha gratis yang bisa menyaring itu. Implementasi penuhnya butuh "Site Key" dari akun Cloudflare kamu sendiri, jadi ini opsional dan belum dipasang otomatis — begini caranya kalau suatu saat mau dipasang:
+
+1. Buat akun gratis di **dash.cloudflare.com** → menu **Turnstile** → **Add Site**, isi domain website kamu (`mim1654.github.io`)
+2. Cloudflare akan kasih kamu **Site Key** (untuk frontend, publik) dan **Secret Key** (rahasia, untuk verifikasi)
+3. Tambahkan script Turnstile di `pendaftaran.html`, sebelum `</body>`:
+   ```html
+   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+   ```
+4. Tambahkan widget-nya di dalam form, sebelum tombol submit:
+   ```html
+   <div class="cf-turnstile" data-sitekey="ISI_SITE_KEY_KAMU"></div>
+   ```
+5. **Penting**: supaya benar-benar aman, hasil verifikasi Turnstile idealnya dicek ulang di sisi server (bukan cuma browser) sebelum data disimpan — ini butuh Edge Function tambahan (mirip pola `reset-password-admin` yang sudah kita buat) yang memanggil endpoint verifikasi Cloudflare pakai Secret Key. Kalau kamu mau fitur ini benar-benar aktif, kabari saja dan siapkan Site Key + Secret Key-nya, nanti dibantu buatkan Edge Function verifikasinya.

@@ -180,6 +180,7 @@ async function renderKelolaAdminJikaUtama() {
 async function muatUndanganAdmin() {
   const el = document.getElementById("tabel-undangan-admin");
   if (!el) return;
+  el.innerHTML = skeletonBarisTabel(3, 2);
   const { data, error } = await supabaseClient.from("admin_undangan").select("*").order("dibuat_pada", { ascending: false });
   if (error) { el.innerHTML = `<tr><td colspan="3">Gagal memuat data.</td></tr>`; return; }
   el.innerHTML = data.length ? data.map(u => `
@@ -188,7 +189,7 @@ async function muatUndanganAdmin() {
       <td>${formatTanggal(u.dibuat_pada)}</td>
       <td class="table-actions"><button onclick="batalkanUndangan('${u.email.replace(/'/g, "\\'")}')">Batalkan</button></td>
     </tr>
-  `).join("") : `<tr><td colspan="3">Tidak ada undangan menunggu.</td></tr>`;
+  `).join("") : `<tr><td colspan="3">${emptyState("Tidak ada undangan menunggu", "Undangan yang belum diklaim akan muncul di sini.")}</td></tr>`;
 }
 
 function pasangFormUndangAdmin(formId) {
@@ -225,6 +226,7 @@ async function batalkanUndangan(email) {
 async function muatDaftarAdminAktifUtama() {
   const el = document.getElementById("tabel-admin-aktif");
   if (!el) return;
+  el.innerHTML = skeletonBarisTabel(4, 2);
   const { data, error } = await supabaseClient.from("admin_users").select("*").order("dibuat_pada");
   if (error) { el.innerHTML = `<tr><td colspan="4">Gagal memuat data.</td></tr>`; return; }
 
@@ -243,7 +245,7 @@ async function muatDaftarAdminAktifUtama() {
         `}
       </td>
     </tr>
-  `).join("") : `<tr><td colspan="4">Belum ada admin.</td></tr>`;
+  `).join("") : `<tr><td colspan="4">${emptyState("Belum ada admin", "Undang admin pertama lewat form di atas.")}</td></tr>`;
 }
 
 async function cabutAksesAdmin(id, email) {
@@ -344,6 +346,7 @@ async function konfirmasiResetSandi(userId, email) {
 async function muatRiwayatResetSandi() {
   const el = document.getElementById("tabel-riwayat-reset");
   if (!el) return;
+  el.innerHTML = skeletonBarisTabel(3, 2);
   const { data, error } = await supabaseClient
     .from("admin_activity_log")
     .select("*")
@@ -357,7 +360,7 @@ async function muatRiwayatResetSandi() {
       <td>Reset sandi untuk ${escapeHtml(l.target_email || "-")}</td>
       <td>${formatTanggal(l.waktu)}</td>
     </tr>
-  `).join("") : `<tr><td colspan="3">Belum ada riwayat.</td></tr>`;
+  `).join("") : `<tr><td colspan="3">${emptyState("Belum ada riwayat", "Riwayat reset sandi akan tercatat di sini.")}</td></tr>`;
 }
 
 // ================= SIDEBAR: ganti "lembar" tanpa scroll =================
@@ -391,6 +394,13 @@ function pasangNavigasiTab() {
 
 // ================= DASHBOARD: RINGKASAN =================
 async function muatRingkasan() {
+  ["jumlah-anggota", "jumlah-pengurus", "jumlah-berita", "jumlah-kegiatan", "jumlah-pendaftar"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = `<span class="skeleton skeleton-text" style="width:2.5em; height:1.8rem; display:inline-block;"></span>`;
+  });
+  const elTerbaruAwal = document.getElementById("pendaftar-terbaru");
+  if (elTerbaruAwal) elTerbaruAwal.innerHTML = skeletonBarisTabel(3, 3);
+
   const [anggota, pengurus, berita, kegiatan, pendaftar] = await Promise.all([
     supabaseClient.from("anggota").select("id", { count: "exact", head: true }).eq("kategori", "Anggota").eq("status", "Aktif"),
     supabaseClient.from("anggota").select("id", { count: "exact", head: true }).eq("kategori", "Pengurus").eq("status", "Aktif"),
@@ -419,7 +429,7 @@ async function muatRingkasan() {
             <td>${formatTanggal(p.created_at)}</td>
             <td>${badgeStatus(p.status)}</td>
           </tr>`).join("")
-      : `<tr><td colspan="3">Belum ada pendaftar.</td></tr>`;
+      : `<tr><td colspan="3">${emptyState("Belum ada pendaftar", "Pendaftar baru akan muncul di sini.")}</td></tr>`;
   }
 }
 
@@ -432,6 +442,7 @@ const KONTEN_CONFIG = {
 async function muatTabelKonten(kategori, tabelElId) {
   const el = document.getElementById(tabelElId);
   if (!el) return;
+  el.innerHTML = skeletonBarisTabel(4, 3);
   const { data, error } = await supabaseClient.from("berita").select("*").eq("kategori", kategori).order("tanggal", { ascending: false });
   if (error) { el.innerHTML = `<tr><td colspan="4">Gagal memuat data.</td></tr>`; return; }
 
@@ -445,7 +456,7 @@ async function muatTabelKonten(kategori, tabelElId) {
         <button onclick="hapusKonten('${b.id}','${kategori}')">Hapus</button>
       </td>
     </tr>
-  `).join("") : `<tr><td colspan="4">Belum ada data.</td></tr>`;
+  `).join("") : `<tr><td colspan="4">${emptyState("Belum ada data", "Tambahkan lewat form di atas.")}</td></tr>`;
 }
 
 function pasangFormKonten(formId, kategori) {
@@ -513,13 +524,14 @@ const ORANG_CONFIG = {
 async function muatTabelOrang(kategori, tabelElId) {
   const el = document.getElementById(tabelElId);
   if (!el) return;
+  el.innerHTML = skeletonBarisTabel(kategori === "Pengurus" ? 5 : 4, 3);
   let query = supabaseClient.from("anggota").select("*").eq("kategori", kategori);
   query = kategori === "Pengurus"
     ? query.order("urutan", { ascending: true, nullsFirst: false }).order("nama")
     : query.order("nama");
   const { data, error } = await query;
   if (error) { el.innerHTML = `<tr><td colspan="5">Gagal memuat data.</td></tr>`; return; }
-  if (!data.length) { el.innerHTML = `<tr><td colspan="5">Belum ada data.</td></tr>`; return; }
+  if (!data.length) { el.innerHTML = `<tr><td colspan="5">${emptyState("Belum ada data", "Tambahkan lewat form di atas.")}</td></tr>`; return; }
 
   if (kategori === "Pengurus") {
     el.innerHTML = data.map(a => `
@@ -617,6 +629,7 @@ async function hapusOrang(id, kategori) {
 async function muatTabelPendaftaran() {
   const el = document.getElementById("tabel-pendaftaran");
   if (!el) return;
+  el.innerHTML = skeletonBarisTabel(6, 3);
   const { data, error } = await supabaseClient.from("pendaftaran").select("*").order("created_at", { ascending: false });
   if (error) { el.innerHTML = `<tr><td colspan="6">Gagal memuat data.</td></tr>`; return; }
 
@@ -632,7 +645,7 @@ async function muatTabelPendaftaran() {
         <button onclick="ubahStatusPendaftaran('${p.id}','Ditolak')">Tolak</button>
       </td>
     </tr>
-  `).join("") : `<tr><td colspan="6">Belum ada pendaftar.</td></tr>`;
+  `).join("") : `<tr><td colspan="6">${emptyState("Belum ada pendaftar", "Pendaftar baru akan muncul di sini.")}</td></tr>`;
 }
 
 async function ubahStatusPendaftaran(id, status) {
@@ -669,13 +682,14 @@ async function ubahStatusPendaftaran(id, status) {
 async function muatTabelGaleri() {
   const el = document.getElementById("tabel-galeri");
   if (!el) return;
+  el.innerHTML = skeletonBarisTabel(4, 3);
   const { data, error } = await supabaseClient.from("galeri").select("*").order("tanggal", { ascending: false });
   if (error) { el.innerHTML = `<tr><td colspan="4">Gagal memuat data.</td></tr>`; return; }
-  if (!data.length) { el.innerHTML = `<tr><td colspan="4">Belum ada foto.</td></tr>`; return; }
+  if (!data.length) { el.innerHTML = `<tr><td colspan="4">${emptyState("Belum ada foto", "Tambahkan foto lewat form di atas.")}</td></tr>`; return; }
 
   el.innerHTML = data.map(g => `
     <tr>
-      <td>${g.foto_url ? `<img src="${g.foto_url}" alt="" style="width:64px;height:48px;object-fit:cover;border-radius:6px;">` : "-"}</td>
+      <td>${g.foto_url ? `<img src="${g.foto_url}" alt="" loading="lazy" style="width:64px;height:48px;object-fit:cover;border-radius:6px;">` : "-"}</td>
       <td>${escapeHtml(g.judul || "-")}</td>
       <td>${formatTanggal(g.tanggal)}</td>
       <td class="table-actions"><button onclick="hapusGaleri('${g.id}')">Hapus</button></td>
@@ -712,9 +726,10 @@ async function hapusGaleri(id) {
 async function muatDaftarProgramAdmin() {
   const el = document.getElementById("daftar-program-admin");
   if (!el) return;
+  el.innerHTML = `<div class="table-wrap"><table><tbody>${skeletonBarisTabel(4, 3)}</tbody></table></div>`;
   const { data, error } = await supabaseClient.from("program_kerja").select("*").order("divisi");
   if (error) { el.innerHTML = `<p class="form-message error">Gagal memuat data.</p>`; return; }
-  if (!data.length) { el.innerHTML = `<p>Belum ada program kerja.</p>`; return; }
+  if (!data.length) { el.innerHTML = emptyState("Belum ada program kerja", "Tambahkan lewat form di atas."); return; }
 
   el.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Program</th><th>Divisi</th><th>Status</th><th>Aksi</th></tr></thead><tbody>` +
     data.map(p => `
