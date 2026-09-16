@@ -385,7 +385,7 @@ function pasangFormPendaftaran(formId) {
     nimEl.addEventListener("invalid", () => {
       nimEl.setCustomValidity(
         nimEl.validity.patternMismatch || nimEl.validity.valueMissing
-          ? "NIM harus berupa angka saja, 6-20 digit."
+          ? "NIM boleh berisi huruf dan angka, 6-20 karakter."
           : ""
       );
     });
@@ -410,9 +410,9 @@ function pasangFormPendaftaran(formId) {
     const nim = form.nim.value.trim();
     const noWa = form.no_wa.value.trim();
 
-    if (!/^[0-9]{6,20}$/.test(nim)) {
+    if (!/^[A-Za-z0-9]{6,20}$/.test(nim)) {
       pesanEl.className = "form-message error";
-      pesanEl.textContent = "NIM harus berupa angka saja, 6-20 digit.";
+      pesanEl.textContent = "NIM boleh berisi huruf dan angka, 6-20 karakter.";
       form.nim.focus();
       return;
     }

@@ -28,7 +28,10 @@
         </div>
         <div class="field">
           <label for="password">Kata Sandi</label>
-          <input type="password" id="password" name="password" required autocomplete="current-password">
+          <div class="password-toggle-wrap">
+            <input type="password" id="password" name="password" required autocomplete="current-password">
+            <button type="button" class="password-toggle-btn" id="toggle-password-login">Lihat</button>
+          </div>
         </div>
         <button type="submit" class="btn" style="width:100%;">Masuk</button>
       </form>
@@ -43,6 +46,7 @@
 <script src="../js/admin.js"></script>
 <script>
   pasangFormLogin("form-login");
+  pasangTogglePassword("password", "toggle-password-login");
 </script>
 </body>
 </html>

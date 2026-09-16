@@ -1,3 +1,15 @@
+// ================= UTIL: tombol lihat/sembunyikan sandi (dipakai di banyak tempat) =================
+function pasangTogglePassword(inputId, tombolId) {
+  const input = document.getElementById(inputId);
+  const tombol = document.getElementById(tombolId);
+  if (!input || !tombol) return;
+  tombol.addEventListener("click", () => {
+    const kini = input.type === "password";
+    input.type = kini ? "text" : "password";
+    tombol.textContent = kini ? "Sembunyikan" : "Lihat";
+  });
+}
+
 // ================= LOGIN =================
 function pasangFormLogin(formId) {
   const form = document.getElementById(formId);
@@ -19,8 +31,13 @@ function pasangFormLogin(formId) {
     tombol.textContent = "Masuk";
 
     if (error) {
-      pesanEl.className = "form-message error";
-      pesanEl.textContent = "Email atau kata sandi salah.";
+      if (error.message && error.message.toLowerCase().includes("email not confirmed")) {
+        pesanEl.className = "form-message error";
+        pesanEl.textContent = "Email belum dikonfirmasi. Cek kotak masuk (atau folder spam) untuk link konfirmasi dari Supabase.";
+      } else {
+        pesanEl.className = "form-message error";
+        pesanEl.textContent = "Email atau kata sandi salah.";
+      }
       return;
     }
     window.location.href = "dashboard.html";
