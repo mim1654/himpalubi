@@ -267,7 +267,7 @@ function bukaModalResetSandi(userId, email) {
       <div class="field">
         <label for="input-sandi-baru">Sandi Baru</label>
         <div class="password-toggle-wrap">
-          <input type="password" id="input-sandi-baru" minlength="8" placeholder="Minimal 8 karakter">
+          <input type="password" id="input-sandi-baru" minlength="8" placeholder="Minimal 8 karakter" autocomplete="new-password" name="sandi-baru-${userId}">
           <button type="button" class="password-toggle-btn" id="tombol-lihat-sandi">Lihat</button>
         </div>
       </div>
