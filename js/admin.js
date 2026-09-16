@@ -85,7 +85,98 @@ function pasangFormDaftarAdmin(formId) {
   });
 }
 
-// ================= KELOLA ADMIN (dashboard) =================
+// ================= KELOLA ADMIN (khusus admin utama, dirender via JS) =================
+
+// Cek apakah user yang login adalah admin utama. Kalau ya, BANGUN dan
+// SISIPKAN menu + section "Kelola Admin" ke DOM lewat JS. Kalau bukan,
+// slot-nya dibiarkan kosong sama sekali — elemen ini tidak pernah ada
+// di DOM untuk admin biasa, bahkan kalau dicek lewat DevTools.
+async function renderKelolaAdminJikaUtama() {
+  const { data: sesi } = await supabaseClient.auth.getSession();
+  const uid = sesi?.session?.user?.id;
+  if (!uid) return false;
+
+  const { data: profilSaya } = await supabaseClient
+    .from("admin_users")
+    .select("peran")
+    .eq("id", uid)
+    .maybeSingle();
+
+  if (!profilSaya || profilSaya.peran !== "utama") return false;
+
+  const navSlot = document.getElementById("grup-admin-slot");
+  if (navSlot) {
+    navSlot.innerHTML = `
+      <p class="nav-group-label">Admin Utama</p>
+      <ul>
+        <li><a href="#kelola-admin" data-section="kelola-admin"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4a3 3 0 100 6 3 3 0 000-6z"/><path d="M4 20c0-3.5 3.5-6 8-6s8 2.5 8 6"/><path d="M19 8l1.5 1.5L23 7"/></svg>Kelola Admin</a></li>
+      </ul>
+    `;
+  }
+
+  const sectionSlot = document.getElementById("kelola-admin-slot");
+  if (sectionSlot) {
+    sectionSlot.innerHTML = `
+      <section id="kelola-admin" class="admin-section">
+        <div class="admin-topbar">
+          <p class="eyebrow">Admin Utama</p>
+          <h1>Kelola Admin</h1>
+          <p class="subtitle">Hanya terlihat untukmu sebagai admin utama.</p>
+        </div>
+
+        <div class="card-panel">
+          <h3>Undang Admin Baru</h3>
+          <form id="form-undang-admin" class="form-grid">
+            <div class="field full">
+              <label for="email-undangan">Email Calon Admin</label>
+              <input type="email" id="email-undangan" name="email" required placeholder="nama@email.com">
+              <p class="hint">Setelah diundang, minta orang itu buka <strong>admin/daftar.html</strong> dan daftar pakai email yang sama.</p>
+            </div>
+            <div class="field full"><button type="submit" class="btn">Kirim Undangan</button></div>
+          </form>
+        </div>
+
+        <div class="card-panel">
+          <h3>Undangan Menunggu</h3>
+          <div class="table-wrap">
+          <table>
+            <thead><tr><th>Email</th><th>Diundang Tanggal</th><th>Aksi</th></tr></thead>
+            <tbody id="tabel-undangan-admin"><tr><td colspan="3">Memuat...</td></tr></tbody>
+          </table>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <h3>Admin Aktif</h3>
+          <div class="table-wrap">
+          <table>
+            <thead><tr><th>Email</th><th>Peran</th><th>Admin Sejak</th><th>Aksi</th></tr></thead>
+            <tbody id="tabel-admin-aktif"><tr><td colspan="4">Memuat...</td></tr></tbody>
+          </table>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <h3>Riwayat Reset Sandi</h3>
+          <div class="table-wrap">
+          <table>
+            <thead><tr><th>Dilakukan Oleh</th><th>Aksi</th><th>Waktu</th></tr></thead>
+            <tbody id="tabel-riwayat-reset"><tr><td colspan="3">Memuat...</td></tr></tbody>
+          </table>
+          </div>
+        </div>
+      </section>
+    `;
+
+    pasangFormUndangAdmin("form-undang-admin");
+    muatUndanganAdmin();
+    muatDaftarAdminAktifUtama();
+    muatRiwayatResetSandi();
+  }
+
+  return true;
+}
+
 async function muatUndanganAdmin() {
   const el = document.getElementById("tabel-undangan-admin");
   if (!el) return;
@@ -131,11 +222,11 @@ async function batalkanUndangan(email) {
   muatUndanganAdmin();
 }
 
-async function muatDaftarAdminAktif() {
+async function muatDaftarAdminAktifUtama() {
   const el = document.getElementById("tabel-admin-aktif");
   if (!el) return;
   const { data, error } = await supabaseClient.from("admin_users").select("*").order("dibuat_pada");
-  if (error) { el.innerHTML = `<tr><td colspan="3">Gagal memuat data.</td></tr>`; return; }
+  if (error) { el.innerHTML = `<tr><td colspan="4">Gagal memuat data.</td></tr>`; return; }
 
   const { data: sesi } = await supabaseClient.auth.getSession();
   const emailSaatIni = sesi?.session?.user?.email;
@@ -143,19 +234,130 @@ async function muatDaftarAdminAktif() {
   el.innerHTML = data.length ? data.map(a => `
     <tr>
       <td>${escapeHtml(a.email)}${a.email === emailSaatIni ? " <em>(kamu)</em>" : ""}</td>
+      <td>${a.peran === "utama" ? '<span class="badge diterima">Utama</span>' : '<span class="badge menunggu">Admin</span>'}</td>
       <td>${formatTanggal(a.dibuat_pada)}</td>
       <td class="table-actions">
-        ${a.email === emailSaatIni ? "-" : `<button onclick="cabutAksesAdmin('${a.id}','${a.email.replace(/'/g, "\\'")}')">Cabut Akses</button>`}
+        ${a.peran === "utama" ? "-" : `
+          <button onclick="bukaModalResetSandi('${a.id}','${a.email.replace(/'/g, "\\'")}')">Reset Sandi</button>
+          <button onclick="cabutAksesAdmin('${a.id}','${a.email.replace(/'/g, "\\'")}')">Cabut Akses</button>
+        `}
       </td>
     </tr>
-  `).join("") : `<tr><td colspan="3">Belum ada admin.</td></tr>`;
+  `).join("") : `<tr><td colspan="4">Belum ada admin.</td></tr>`;
 }
 
 async function cabutAksesAdmin(id, email) {
   if (!confirm(`Cabut akses admin untuk ${email}? Akun login-nya tidak dihapus, cuma akses dashboard-nya.`)) return;
   await supabaseClient.from("admin_users").delete().eq("id", id);
   tampilkanToast(`Akses admin ${email} sudah dicabut.`, "sukses");
-  muatDaftarAdminAktif();
+  muatDaftarAdminAktifUtama();
+}
+
+// ---------- Modal Reset Sandi ----------
+function bukaModalResetSandi(userId, email) {
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.id = "modal-reset-sandi";
+  overlay.innerHTML = `
+    <div class="modal-box">
+      <h3>Reset Sandi</h3>
+      <p style="color:var(--ink-600); font-size:0.9rem; margin-top:-0.5rem;">Untuk akun: <strong>${escapeHtml(email)}</strong></p>
+      <div class="field">
+        <label for="input-sandi-baru">Sandi Baru</label>
+        <div class="password-toggle-wrap">
+          <input type="password" id="input-sandi-baru" minlength="8" placeholder="Minimal 8 karakter">
+          <button type="button" class="password-toggle-btn" id="tombol-lihat-sandi">Lihat</button>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn secondary" id="tombol-batal-reset">Batal</button>
+        <button type="button" class="btn" id="tombol-konfirmasi-reset">Reset</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const input = document.getElementById("input-sandi-baru");
+  input.focus();
+
+  document.getElementById("tombol-lihat-sandi").addEventListener("click", () => {
+    const tombol = document.getElementById("tombol-lihat-sandi");
+    const kini = input.type === "password";
+    input.type = kini ? "text" : "password";
+    tombol.textContent = kini ? "Sembunyikan" : "Lihat";
+  });
+
+  document.getElementById("tombol-batal-reset").addEventListener("click", tutupModalResetSandi);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) tutupModalResetSandi(); });
+  document.getElementById("tombol-konfirmasi-reset").addEventListener("click", () => konfirmasiResetSandi(userId, email));
+}
+
+function tutupModalResetSandi() {
+  const overlay = document.getElementById("modal-reset-sandi");
+  if (overlay) overlay.remove();
+}
+
+async function konfirmasiResetSandi(userId, email) {
+  const input = document.getElementById("input-sandi-baru");
+  const sandiBaru = input.value;
+
+  if (!sandiBaru || sandiBaru.length < 8) {
+    tampilkanToast("Sandi minimal 8 karakter.", "gagal");
+    return;
+  }
+
+  const tombol = document.getElementById("tombol-konfirmasi-reset");
+  tombol.disabled = true;
+  tombol.textContent = "Memproses...";
+
+  const { data: sesi } = await supabaseClient.auth.getSession();
+  const token = sesi?.session?.access_token;
+  if (!token) { tampilkanToast("Sesi tidak ditemukan, coba login ulang.", "gagal"); return; }
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/reset-password-admin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ target_user_id: userId, password_baru: sandiBaru }),
+    });
+    const hasil = await res.json();
+
+    if (!res.ok) {
+      tampilkanToast(hasil.error || "Gagal mereset sandi.", "gagal");
+      tombol.disabled = false;
+      tombol.textContent = "Reset";
+      return;
+    }
+
+    tampilkanToast(`Sandi ${email} berhasil direset.`, "sukses");
+    tutupModalResetSandi();
+    muatDaftarAdminAktifUtama();
+    muatRiwayatResetSandi();
+  } catch (e) {
+    tampilkanToast("Gagal menghubungi server. Pastikan Edge Function sudah di-deploy.", "gagal");
+    console.error(e);
+    tombol.disabled = false;
+    tombol.textContent = "Reset";
+  }
+}
+
+async function muatRiwayatResetSandi() {
+  const el = document.getElementById("tabel-riwayat-reset");
+  if (!el) return;
+  const { data, error } = await supabaseClient
+    .from("admin_activity_log")
+    .select("*")
+    .order("waktu", { ascending: false })
+    .limit(20);
+
+  if (error) { el.innerHTML = `<tr><td colspan="3">Gagal memuat data.</td></tr>`; return; }
+  el.innerHTML = data.length ? data.map(l => `
+    <tr>
+      <td>${escapeHtml(l.dilakukan_oleh_email || "-")}</td>
+      <td>Reset sandi untuk ${escapeHtml(l.target_email || "-")}</td>
+      <td>${formatTanggal(l.waktu)}</td>
+    </tr>
+  `).join("") : `<tr><td colspan="3">Belum ada riwayat.</td></tr>`;
 }
 
 // ================= SIDEBAR: ganti "lembar" tanpa scroll =================

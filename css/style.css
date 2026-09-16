@@ -775,6 +775,47 @@ input:focus, textarea:focus, select:focus {
   .lightbox-prev, .lightbox-next { width: 38px; height: 38px; font-size: 1.1rem; }
 }
 
+/* ---------- Modal (pop-up kecil, mis. Reset Sandi) ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,15,17,0.55);
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal-box {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+}
+.modal-box h3 { margin-top: 0; }
+.password-toggle-wrap { position: relative; }
+.password-toggle-wrap input { padding-right: 3.2rem; }
+.password-toggle-btn {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-600);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.modal-actions .btn { flex: 1; }
+
 /* ---------- Halaman Detail Berita/Kegiatan ---------- */
 .detail-meta {
   color: var(--ink-600);

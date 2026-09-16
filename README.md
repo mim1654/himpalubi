@@ -83,17 +83,27 @@ Ada 2 cara menambah admin baru:
 
 ### Cara 1 — Fitur "Undang Admin" di dashboard (disarankan)
 
-Perlu jalankan dulu `sql/migrasi_tahap4_undang_admin.sql` di Supabase (SQL Editor), dan **nyalakan kembali pendaftaran akun**:
+Perlu jalankan dulu `sql/migrasi_tahap4_undang_admin.sql` **dan** `sql/migrasi_tahap5_admin_utama.sql` di Supabase (SQL Editor, urut), dan **nyalakan kembali pendaftaran akun**:
 1. Supabase → **Authentication → Providers** → provider **Email** → nyalakan lagi **"Allow new users to sign up"**
-2. Ini tetap aman: siapa pun boleh bikin akun, tapi TIDAK dapat akses admin sama sekali kecuali emailnya sudah diundang oleh admin yang ada.
+2. Ini tetap aman: siapa pun boleh bikin akun, tapi TIDAK dapat akses admin sama sekali kecuali emailnya sudah diundang oleh admin utama.
 
-Setelah itu, alurnya:
-1. Login ke dashboard → menu **Kelola Admin** → isi email teman di form "Undang Admin Baru" → **Kirim Undangan**
+Menu **"Kelola Admin"** di dashboard sekarang **hanya terlihat untuk 1 akun admin utama** (default: email yang diisi di `migrasi_tahap5_admin_utama.sql`). Admin biasa sama sekali tidak melihat menu ini.
+
+Alurnya:
+1. Login sebagai admin utama → menu **Kelola Admin** → isi email teman di form "Undang Admin Baru" → **Kirim Undangan**
 2. Kirim link `admin/daftar.html` ke temanmu, minta dia daftar pakai **email yang sama persis** dengan yang diundang
-3. Begitu daftar, sistem otomatis mengenali undangannya dan langsung memberi akses admin (undangan otomatis hangus setelah dipakai)
-4. Kalau di project Supabase kamu ada verifikasi email aktif, temanmu perlu klik link konfirmasi di emailnya dulu sebelum bisa login
+3. Begitu daftar, sistem otomatis memberi akses admin **biasa** (bukan admin utama) — undangan otomatis hangus setelah dipakai
+4. Admin utama bisa **mencabut akses** atau **mereset sandi** admin biasa kapan saja lewat menu yang sama; riwayat reset sandi tercatat di bagian "Riwayat Reset Sandi" untuk transparansi
 
-Kamu juga bisa **mencabut akses admin** siapa pun (kecuali dirimu sendiri) langsung dari menu **Kelola Admin → Admin Aktif → Cabut Akses**, tanpa perlu ke Supabase.
+### Deploy Edge Function `reset-password-admin` (wajib untuk fitur Reset Sandi)
+
+Ini perlu dipasang lewat Supabase, **bukan** lewat upload file ke GitHub:
+1. Supabase → sidebar **Edge Functions** → **Deploy a new function** → **Via Editor**
+2. Beri nama: `reset-password-admin`
+3. Salin isi file `supabase/functions/reset-password-admin/index.ts` ke editor tersebut (hapus dulu kode bawaan/template)
+4. Klik **Deploy**
+
+Kunci `SUPABASE_SERVICE_ROLE_KEY` otomatis tersedia untuk Edge Function ini dari Supabase — **tidak perlu diisi manual**, dan **tidak pernah** ditulis di kode website.
 
 ### Cara 2 — Manual lewat Supabase (kalau tidak mau nyalakan sign-up publik)
 

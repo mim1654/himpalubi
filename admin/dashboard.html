@@ -40,10 +40,7 @@
         <li><a href="#kelola-pengaturan" data-section="kelola-pengaturan"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.5 4.5l2 2M17.5 17.5l2 2M19.5 4.5l-2 2M6.5 17.5l-2 2"/></svg>Pengaturan</a></li>
       </ul>
 
-      <p class="nav-group-label">Admin</p>
-      <ul>
-        <li><a href="#kelola-admin" data-section="kelola-admin"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4a3 3 0 100 6 3 3 0 000-6z"/><path d="M4 20c0-3.5 3.5-6 8-6s8 2.5 8 6"/><path d="M19 8l1.5 1.5L23 7"/></svg>Kelola Admin</a></li>
-      </ul>
+      <div id="grup-admin-slot"></div>
 
       <p class="nav-group-label">Lainnya</p>
       <ul>
@@ -318,46 +315,7 @@
       </div>
     </section>
 
-    <!-- ================= KELOLA ADMIN ================= -->
-    <section id="kelola-admin" class="admin-section">
-      <div class="admin-topbar">
-        <p class="eyebrow">Admin</p>
-        <h1>Kelola Admin</h1>
-        <p class="subtitle">Undang pengurus lain supaya bisa akses dashboard ini.</p>
-      </div>
-
-      <div class="card-panel">
-        <h3>Undang Admin Baru</h3>
-        <form id="form-undang-admin" class="form-grid">
-          <div class="field full">
-            <label for="email-undangan">Email Calon Admin</label>
-            <input type="email" id="email-undangan" name="email" required placeholder="nama@email.com">
-            <p class="hint">Setelah diundang, minta orang itu buka <strong>admin/daftar.html</strong> dan daftar pakai email yang sama.</p>
-          </div>
-          <div class="field full"><button type="submit" class="btn">Kirim Undangan</button></div>
-        </form>
-      </div>
-
-      <div class="card-panel">
-        <h3>Undangan Menunggu</h3>
-        <div class="table-wrap">
-        <table>
-          <thead><tr><th>Email</th><th>Diundang Tanggal</th><th>Aksi</th></tr></thead>
-          <tbody id="tabel-undangan-admin"><tr><td colspan="3">Memuat...</td></tr></tbody>
-        </table>
-        </div>
-      </div>
-
-      <div class="card-panel">
-        <h3>Admin Aktif</h3>
-        <div class="table-wrap">
-        <table>
-          <thead><tr><th>Email</th><th>Admin Sejak</th><th>Aksi</th></tr></thead>
-          <tbody id="tabel-admin-aktif"><tr><td colspan="3">Memuat...</td></tr></tbody>
-        </table>
-        </div>
-      </div>
-    </section>
+    <div id="kelola-admin-slot"></div>
 
   </main>
 </div>
@@ -370,7 +328,8 @@
   (async () => {
     await wajibLogin();
     pasangTombolLogout("tombol-logout");
-    tampilkanProfilAdmin();
+    await tampilkanProfilAdmin();
+    await renderKelolaAdminJikaUtama();
     pasangNavigasiTab();
 
     document.getElementById("form-berita").tanggal.valueAsDate = new Date();
@@ -401,10 +360,6 @@
 
     muatFormPengaturan();
     pasangFormPengaturan("form-pengaturan");
-
-    muatUndanganAdmin();
-    muatDaftarAdminAktif();
-    pasangFormUndangAdmin("form-undang-admin");
   })();
 </script>
 </body>
