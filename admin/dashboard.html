@@ -37,6 +37,8 @@
       <p class="nav-group-label">Organisasi</p>
       <ul>
         <li><a href="#kelola-program" data-section="kelola-program"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="M9 12l2 2 4-4"/></svg>Program Kerja</a></li>
+        <li><a href="#kelola-faq" data-section="kelola-faq"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5"/><line x1="12" y1="16.5" x2="12" y2="16.5"/></svg>FAQ</a></li>
+        <li><a href="#kelola-testimoni" data-section="kelola-testimoni"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a4.5 4.5 0 01-4.5 4.5H8l-4 3V11.5A4.5 4.5 0 018.5 7h8a4.5 4.5 0 014.5 4.5z"/></svg>Testimoni</a></li>
         <li><a href="#kelola-pengaturan" data-section="kelola-pengaturan"><svg class="ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.5 4.5l2 2M17.5 17.5l2 2M19.5 4.5l-2 2M6.5 17.5l-2 2"/></svg>Pengaturan</a></li>
       </ul>
 
@@ -292,6 +294,56 @@
       <div id="daftar-program-admin"><p>Memuat program kerja...</p></div>
     </section>
 
+    <!-- ================= FAQ ================= -->
+    <section id="kelola-faq" class="admin-section">
+      <div class="admin-topbar">
+        <p class="eyebrow">Organisasi</p>
+        <h1>Kelola FAQ</h1>
+        <p class="subtitle">Tampil di halaman Tentang, sebagai daftar pertanyaan yang bisa dibuka-tutup.</p>
+      </div>
+      <div class="card-panel">
+        <h3 id="judul-form-faq">Tambah Pertanyaan</h3>
+        <form id="form-faq" class="form-grid">
+          <div class="field full"><label for="pertanyaan-faq">Pertanyaan</label><input type="text" id="pertanyaan-faq" name="pertanyaan" required></div>
+          <div class="field full"><label for="jawaban-faq">Jawaban</label><textarea id="jawaban-faq" name="jawaban" required></textarea></div>
+          <div class="field"><label for="urutan-faq">Urutan Tampil (opsional)</label><input type="number" id="urutan-faq" name="urutan" min="1" placeholder="1"></div>
+          <div class="field full"><button type="submit" class="btn">Simpan FAQ</button></div>
+        </form>
+      </div>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Pertanyaan</th><th>Urutan</th><th>Aksi</th></tr></thead>
+        <tbody id="tabel-faq"><tr><td colspan="3">Memuat...</td></tr></tbody>
+      </table>
+      </div>
+    </section>
+
+    <!-- ================= TESTIMONI ================= -->
+    <section id="kelola-testimoni" class="admin-section">
+      <div class="admin-topbar">
+        <p class="eyebrow">Organisasi</p>
+        <h1>Kelola Testimoni</h1>
+        <p class="subtitle">Kutipan dari anggota/alumni, tampil di Beranda.</p>
+      </div>
+      <div class="card-panel">
+        <h3 id="judul-form-testimoni">Tambah Testimoni</h3>
+        <form id="form-testimoni" class="form-grid">
+          <div class="field"><label for="nama-testimoni">Nama</label><input type="text" id="nama-testimoni" name="nama" required></div>
+          <div class="field"><label for="jabatan-testimoni">Jabatan (opsional)</label><input type="text" id="jabatan-testimoni" name="jabatan" placeholder="Contoh: Ketua Umum 2023"></div>
+          <div class="field full"><label for="isi-testimoni">Isi Testimoni</label><textarea id="isi-testimoni" name="isi" required></textarea></div>
+          <div class="field"><label for="foto_url-testimoni">Tautan Foto (opsional)</label><input type="url" id="foto_url-testimoni" name="foto_url" placeholder="https://..."></div>
+          <div class="field"><label for="urutan-testimoni">Urutan Tampil (opsional)</label><input type="number" id="urutan-testimoni" name="urutan" min="1" placeholder="1"></div>
+          <div class="field full"><button type="submit" class="btn">Simpan Testimoni</button></div>
+        </form>
+      </div>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nama</th><th>Jabatan</th><th>Urutan</th><th>Aksi</th></tr></thead>
+        <tbody id="tabel-testimoni"><tr><td colspan="4">Memuat...</td></tr></tbody>
+      </table>
+      </div>
+    </section>
+
     <!-- ================= PENGATURAN ================= -->
     <section id="kelola-pengaturan" class="admin-section">
       <div class="admin-topbar">
@@ -303,8 +355,12 @@
         <div id="pesan-pengaturan"></div>
         <form id="form-pengaturan" class="form-grid">
           <div class="field"><label for="nama_organisasi">Nama Organisasi</label><input type="text" id="nama_organisasi" name="nama_organisasi" required></div>
-          <div class="field"><label for="tagline">Tagline Singkat</label><input type="text" id="tagline" name="tagline"></div>
+          <div class="field"><label for="tagline">Tagline Singkat (footer)</label><input type="text" id="tagline" name="tagline"></div>
+          <div class="field"><label for="tagline_hero">Judul Besar di Beranda</label><input type="text" id="tagline_hero" name="tagline_hero" placeholder="Contoh: Bergerak Bersama, Peduli untuk Semua"></div>
+          <div class="field"><label for="tahun_berdiri">Tahun Berdiri</label><input type="text" id="tahun_berdiri" name="tahun_berdiri" placeholder="Contoh: 2018"></div>
           <div class="field full"><label for="tentang">Tentang (untuk halaman Tentang &amp; Beranda)</label><textarea id="tentang" name="tentang" style="min-height:160px;"></textarea></div>
+          <div class="field full"><label for="visi">Visi</label><textarea id="visi" name="visi"></textarea></div>
+          <div class="field full"><label for="misi">Misi (satu baris per poin)</label><textarea id="misi" name="misi" style="min-height:120px;"></textarea></div>
           <div class="field full"><label for="alamat">Alamat</label><input type="text" id="alamat" name="alamat"></div>
           <div class="field"><label for="email-pengaturan">Email</label><input type="email" id="email-pengaturan" name="email"></div>
           <div class="field"><label for="telepon">Telepon / WhatsApp</label><input type="text" id="telepon" name="telepon"></div>
@@ -357,6 +413,12 @@
 
     muatDaftarProgramAdmin();
     pasangFormProgram("form-program");
+
+    muatTabelFaq();
+    pasangFormFaq("form-faq");
+
+    muatTabelTestimoni();
+    pasangFormTestimoni("form-testimoni");
 
     muatFormPengaturan();
     pasangFormPengaturan("form-pengaturan");

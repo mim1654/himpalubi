@@ -897,6 +897,113 @@ input:focus, textarea:focus, select:focus {
   border-radius: 50%;
 }
 
+/* ---------- Statistik Pencapaian (Beranda) ---------- */
+.stat-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+}
+.stat-mini { text-align: center; }
+.stat-mini .angka {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--gold-500);
+  font-weight: 700;
+  line-height: 1.1;
+}
+.stat-mini .label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--ink-600);
+  margin-top: 0.3rem;
+}
+@media (max-width: 720px) {
+  .stat-mini-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---------- Visi & Misi ---------- */
+.visi-misi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.visi-misi-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+}
+.visi-misi-card h3 { color: var(--gold-500); font-size: 1rem; margin-bottom: 0.75rem; }
+.visi-misi-card p { margin: 0; color: var(--ink-900); line-height: 1.7; }
+@media (max-width: 720px) { .visi-misi-grid { grid-template-columns: 1fr; } }
+
+/* ---------- FAQ (accordion pakai <details>) ---------- */
+.faq-list { max-width: 720px; }
+.faq-item {
+  border-bottom: 1px solid var(--line);
+}
+.faq-item summary {
+  cursor: pointer;
+  padding: 1.1rem 0;
+  font-weight: 600;
+  color: var(--ink-900);
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: "+";
+  font-size: 1.3rem;
+  color: var(--gold-500);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.faq-item[open] summary::after { transform: rotate(45deg); }
+.faq-item .faq-jawaban {
+  padding: 0 0 1.25rem;
+  color: var(--ink-600);
+  line-height: 1.7;
+}
+
+/* ---------- Testimoni ---------- */
+.testimoni-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+.testimoni-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+.testimoni-card .kutipan {
+  color: var(--ink-900);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1.25rem;
+}
+.testimoni-card .kutipan::before { content: open-quote; color: var(--gold-500); font-family: var(--font-display); font-size: 1.4rem; }
+.testimoni-card .kutipan::after { content: close-quote; color: var(--gold-500); font-family: var(--font-display); font-size: 1.4rem; }
+.testimoni-orang { display: flex; align-items: center; gap: 0.75rem; }
+.testimoni-orang .foto {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--gold-100); color: var(--gold-500);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 700; flex-shrink: 0;
+  overflow: hidden;
+}
+.testimoni-orang .foto img { width: 100%; height: 100%; object-fit: cover; }
+.testimoni-orang .nama { font-weight: 700; font-size: 0.9rem; }
+.testimoni-orang .jabatan { font-size: 0.8rem; color: var(--ink-600); }
+
 /* ---------- Empty State ---------- */
 .empty-state {
   text-align: center;

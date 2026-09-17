@@ -815,7 +815,11 @@ async function muatFormPengaturan() {
   if (error || !data) return;
   form.nama_organisasi.value = data.nama_organisasi || "";
   form.tagline.value = data.tagline || "";
+  form.tagline_hero.value = data.tagline_hero || "";
+  form.tahun_berdiri.value = data.tahun_berdiri || "";
   form.tentang.value = data.tentang || "";
+  form.visi.value = data.visi || "";
+  form.misi.value = data.misi || "";
   form.alamat.value = data.alamat || "";
   form.email.value = data.email || "";
   form.telepon.value = data.telepon || "";
@@ -832,7 +836,11 @@ function pasangFormPengaturan(formId) {
     const payload = {
       nama_organisasi: form.nama_organisasi.value.trim(),
       tagline: form.tagline.value.trim(),
+      tagline_hero: form.tagline_hero.value.trim(),
+      tahun_berdiri: form.tahun_berdiri.value.trim(),
       tentang: form.tentang.value.trim(),
+      visi: form.visi.value.trim(),
+      misi: form.misi.value.trim(),
       alamat: form.alamat.value.trim(),
       email: form.email.value.trim(),
       telepon: form.telepon.value.trim(),
@@ -849,6 +857,135 @@ function pasangFormPengaturan(formId) {
     pesanEl.className = "form-message success";
     pesanEl.textContent = "Pengaturan berhasil disimpan.";
   });
+}
+
+// ================= FAQ =================
+async function muatTabelFaq() {
+  const el = document.getElementById("tabel-faq");
+  if (!el) return;
+  el.innerHTML = skeletonBarisTabel(3, 2);
+  const { data, error } = await supabaseClient.from("faq").select("*").order("urutan", { ascending: true, nullsFirst: false });
+  if (error) { el.innerHTML = `<tr><td colspan="3">Gagal memuat data.</td></tr>`; return; }
+  if (!data.length) { el.innerHTML = `<tr><td colspan="3">${emptyState("Belum ada FAQ", "Tambahkan lewat form di atas.")}</td></tr>`; return; }
+  el.innerHTML = data.map(f => `
+    <tr>
+      <td>${escapeHtml(f.pertanyaan)}</td>
+      <td>${f.urutan ?? "-"}</td>
+      <td class="table-actions">
+        <button onclick="editFaq('${f.id}')">Edit</button>
+        <button onclick="hapusFaq('${f.id}')">Hapus</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function pasangFormFaq(formId) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = form.dataset.editId;
+    const payload = {
+      pertanyaan: form.pertanyaan.value.trim(),
+      jawaban: form.jawaban.value.trim(),
+      urutan: form.urutan.value ? parseInt(form.urutan.value, 10) : null,
+    };
+    const query = id
+      ? supabaseClient.from("faq").update(payload).eq("id", id)
+      : supabaseClient.from("faq").insert(payload);
+    const { error } = await query;
+    if (error) { tampilkanToast("Gagal menyimpan FAQ.", "gagal"); console.error(error); return; }
+    tampilkanToast(id ? "Perubahan disimpan." : "FAQ ditambahkan.", "sukses");
+    form.reset();
+    delete form.dataset.editId;
+    document.getElementById("judul-form-faq").textContent = "Tambah Pertanyaan";
+    muatTabelFaq();
+  });
+}
+
+async function editFaq(id) {
+  const { data } = await supabaseClient.from("faq").select("*").eq("id", id).single();
+  if (!data) return;
+  const form = document.getElementById("form-faq");
+  form.pertanyaan.value = data.pertanyaan;
+  form.jawaban.value = data.jawaban;
+  form.urutan.value = data.urutan ?? "";
+  form.dataset.editId = id;
+  document.getElementById("judul-form-faq").textContent = "Edit Pertanyaan";
+  form.scrollIntoView({ behavior: "smooth" });
+}
+
+async function hapusFaq(id) {
+  if (!confirm("Hapus FAQ ini?")) return;
+  await supabaseClient.from("faq").delete().eq("id", id);
+  muatTabelFaq();
+}
+
+// ================= TESTIMONI =================
+async function muatTabelTestimoni() {
+  const el = document.getElementById("tabel-testimoni");
+  if (!el) return;
+  el.innerHTML = skeletonBarisTabel(4, 2);
+  const { data, error } = await supabaseClient.from("testimoni").select("*").order("urutan", { ascending: true, nullsFirst: false });
+  if (error) { el.innerHTML = `<tr><td colspan="4">Gagal memuat data.</td></tr>`; return; }
+  if (!data.length) { el.innerHTML = `<tr><td colspan="4">${emptyState("Belum ada testimoni", "Tambahkan lewat form di atas.")}</td></tr>`; return; }
+  el.innerHTML = data.map(t => `
+    <tr>
+      <td>${escapeHtml(t.nama)}</td>
+      <td>${escapeHtml(t.jabatan || "-")}</td>
+      <td>${t.urutan ?? "-"}</td>
+      <td class="table-actions">
+        <button onclick="editTestimoni('${t.id}')">Edit</button>
+        <button onclick="hapusTestimoni('${t.id}')">Hapus</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function pasangFormTestimoni(formId) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = form.dataset.editId;
+    const payload = {
+      nama: form.nama.value.trim(),
+      jabatan: form.jabatan.value.trim(),
+      isi: form.isi.value.trim(),
+      foto_url: form.foto_url.value.trim() || null,
+      urutan: form.urutan.value ? parseInt(form.urutan.value, 10) : null,
+    };
+    const query = id
+      ? supabaseClient.from("testimoni").update(payload).eq("id", id)
+      : supabaseClient.from("testimoni").insert(payload);
+    const { error } = await query;
+    if (error) { tampilkanToast("Gagal menyimpan testimoni.", "gagal"); console.error(error); return; }
+    tampilkanToast(id ? "Perubahan disimpan." : "Testimoni ditambahkan.", "sukses");
+    form.reset();
+    delete form.dataset.editId;
+    document.getElementById("judul-form-testimoni").textContent = "Tambah Testimoni";
+    muatTabelTestimoni();
+  });
+}
+
+async function editTestimoni(id) {
+  const { data } = await supabaseClient.from("testimoni").select("*").eq("id", id).single();
+  if (!data) return;
+  const form = document.getElementById("form-testimoni");
+  form.nama.value = data.nama;
+  form.jabatan.value = data.jabatan || "";
+  form.isi.value = data.isi;
+  form.foto_url.value = data.foto_url || "";
+  form.urutan.value = data.urutan ?? "";
+  form.dataset.editId = id;
+  document.getElementById("judul-form-testimoni").textContent = "Edit Testimoni";
+  form.scrollIntoView({ behavior: "smooth" });
+}
+
+async function hapusTestimoni(id) {
+  if (!confirm("Hapus testimoni ini?")) return;
+  await supabaseClient.from("testimoni").delete().eq("id", id);
+  muatTabelTestimoni();
 }
 
 // ================= UTIL BERSAMA =================

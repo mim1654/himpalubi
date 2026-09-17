@@ -373,6 +373,102 @@ async function muatPengaturanFooter() {
   if (yt && data.youtube) yt.href = data.youtube;
 }
 
+// ================= BERANDA: Tagline Hero (dinamis dari Pengaturan) =================
+async function muatTaglineHero(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const { data } = await supabaseClient.from("pengaturan").select("tagline_hero").eq("id", 1).single();
+  if (data?.tagline_hero) el.textContent = data.tagline_hero;
+}
+
+// ================= BERANDA: Statistik Pencapaian =================
+async function muatStatistikBeranda(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  const [pengaturanRes, anggotaRes, programRes, pengurusRes] = await Promise.all([
+    supabaseClient.from("pengaturan").select("tahun_berdiri").eq("id", 1).single(),
+    supabaseClient.from("anggota").select("id", { count: "exact", head: true }).eq("kategori", "Anggota").eq("status", "Aktif"),
+    supabaseClient.from("program_kerja").select("id", { count: "exact", head: true }),
+    supabaseClient.from("anggota").select("divisi").eq("kategori", "Pengurus").eq("status", "Aktif"),
+  ]);
+
+  const divisiUnik = new Set((pengurusRes.data || []).map(r => r.divisi).filter(Boolean));
+  const tahun = pengaturanRes.data?.tahun_berdiri;
+
+  el.innerHTML = `
+    <div class="stat-mini"><span class="angka">${tahun ? "Sejak " + escapeHtml(tahun) : "—"}</span><span class="label">Berdiri</span></div>
+    <div class="stat-mini"><span class="angka">${anggotaRes.count ?? 0}</span><span class="label">Anggota Aktif</span></div>
+    <div class="stat-mini"><span class="angka">${divisiUnik.size}</span><span class="label">Divisi</span></div>
+    <div class="stat-mini"><span class="angka">${programRes.count ?? 0}</span><span class="label">Program Kerja</span></div>
+  `;
+}
+
+// ================= HALAMAN TENTANG: Visi & Misi =================
+async function muatVisiMisi(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const { data, error } = await supabaseClient.from("pengaturan").select("visi, misi").eq("id", 1).single();
+  if (error || !data || (!data.visi && !data.misi)) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML = `
+    <div class="visi-misi-grid">
+      <div class="visi-misi-card">
+        <h3>Visi</h3>
+        <p>${escapeHtml(data.visi || "Belum diisi.")}</p>
+      </div>
+      <div class="visi-misi-card">
+        <h3>Misi</h3>
+        <p>${escapeHtml(data.misi || "Belum diisi.").replace(/\n/g, "<br>")}</p>
+      </div>
+    </div>
+  `;
+}
+
+// ================= HALAMAN TENTANG: FAQ =================
+async function muatFaqHalaman(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const { data, error } = await supabaseClient.from("faq").select("*").order("urutan", { ascending: true, nullsFirst: false });
+  if (error || !data || data.length === 0) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML = data.map((f, i) => `
+    <details class="faq-item"${i === 0 ? " open" : ""}>
+      <summary>${escapeHtml(f.pertanyaan)}</summary>
+      <div class="faq-jawaban">${escapeHtml(f.jawaban).replace(/\n/g, "<br>")}</div>
+    </details>
+  `).join("");
+}
+
+// ================= BERANDA: Testimoni =================
+async function muatTestimoniBeranda(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const { data, error } = await supabaseClient.from("testimoni").select("*").order("urutan", { ascending: true, nullsFirst: false }).limit(6);
+  if (error || !data || data.length === 0) {
+    el.innerHTML = "";
+    const section = el.closest("section");
+    if (section) section.style.display = "none";
+    return;
+  }
+  el.innerHTML = data.map(t => `
+    <div class="testimoni-card">
+      <p class="kutipan">${escapeHtml(t.isi)}</p>
+      <div class="testimoni-orang">
+        <div class="foto">${t.foto_url ? `<img src="${t.foto_url}" alt="" loading="lazy">` : initial(t.nama)}</div>
+        <div>
+          <div class="nama">${escapeHtml(t.nama)}</div>
+          <div class="jabatan">${escapeHtml(t.jabatan || "")}</div>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
 // ================= FORM PENDAFTARAN (pendaftaran.html) =================
 function pasangFormPendaftaran(formId) {
   const form = document.getElementById(formId);
