@@ -16,9 +16,14 @@
       <nav class="main-nav" aria-label="Navigasi utama">
         <ul>
           <li><a href="index.html" data-page="beranda">Beranda</a></li>
-          <li><a href="tentang.html" data-page="tentang">Profil</a></li>
-          <li><a href="struktur.html" data-page="struktur">Struktur Organisasi</a></li>
-          <li><a href="program-kerja.html" data-page="program-kerja">Program Kerja</a></li>
+          <li class="has-dropdown">
+            <button class="dropdown-toggle" type="button" aria-expanded="false">Tentang <span class="caret">&#9662;</span></button>
+            <ul class="dropdown-menu">
+              <li><a href="tentang.html" data-page="tentang">Profil</a></li>
+              <li><a href="struktur.html" data-page="struktur">Struktur Organisasi</a></li>
+              <li><a href="program-kerja.html" data-page="program-kerja">Program Kerja</a></li>
+            </ul>
+          </li>
           <li><a href="kegiatan.html" data-page="kegiatan">Kegiatan</a></li>
           <li><a href="berita.html" data-page="berita">Berita</a></li>
           <li><a href="anggota.html" data-page="anggota">Anggota</a></li>

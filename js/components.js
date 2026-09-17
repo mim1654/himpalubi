@@ -51,14 +51,29 @@ function pasangDropdown() {
   const tombol = document.querySelector(".dropdown-toggle");
   const item = document.querySelector(".has-dropdown");
   if (!tombol || !item) return;
+
+  function tutup() {
+    item.classList.remove("terbuka");
+    tombol.setAttribute("aria-expanded", "false");
+  }
+
   tombol.addEventListener("click", (e) => {
     e.stopPropagation();
     const buka = item.classList.toggle("terbuka");
     tombol.setAttribute("aria-expanded", buka ? "true" : "false");
   });
-  document.addEventListener("click", () => {
-    item.classList.remove("terbuka");
-    tombol.setAttribute("aria-expanded", "false");
+
+  // Klik di luar dropdown menutupnya
+  document.addEventListener("click", tutup);
+
+  // Tombol Escape menutupnya
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") tutup();
+  });
+
+  // Klik menu lain di navbar (selain dropdown) juga menutupnya
+  document.querySelectorAll(".main-nav > ul > li:not(.has-dropdown) > a").forEach(link => {
+    link.addEventListener("click", tutup);
   });
 }
 
