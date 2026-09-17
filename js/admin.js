@@ -97,7 +97,7 @@ function pasangFormDaftarAdmin(formId) {
     }
 
     pesanEl.className = "form-message success";
-    pesanEl.textContent = "Akun berhasil dibuat. Kalau email kamu sudah diundang, kamu otomatis jadi admin — coba cek email untuk konfirmasi (kalau diminta), lalu login.";
+    pesanEl.textContent = "Akun berhasil dibuat. Kalau email kamu sudah diundang, kamu langsung dapat akses admin — coba login sekarang.";
     form.reset();
   });
 }
