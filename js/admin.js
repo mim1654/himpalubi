@@ -658,11 +658,58 @@ async function muatTabelPendaftaran() {
       <td>${formatTanggal(p.created_at)}</td>
       <td>${badgeStatus(p.status)}</td>
       <td class="table-actions">
+        <button onclick="bukaModalDetailPendaftar('${p.id}')">Detail</button>
         <button onclick="ubahStatusPendaftaran('${p.id}','Diterima')">Terima</button>
         <button onclick="ubahStatusPendaftaran('${p.id}','Ditolak')">Tolak</button>
       </td>
     </tr>
   `).join("") : `<tr><td colspan="6">${emptyState("Belum ada pendaftar", "Pendaftar baru akan muncul di sini.")}</td></tr>`;
+}
+
+// ---------- Modal Detail Pendaftar ----------
+async function bukaModalDetailPendaftar(id) {
+  const { data, error } = await supabaseClient.from("pendaftaran").select("*").eq("id", id).single();
+  if (error || !data) { tampilkanToast("Gagal memuat detail pendaftar.", "gagal"); return; }
+
+  const baris = (label, nilai) => `
+    <div style="display:flex; justify-content:space-between; gap:1rem; padding:0.6rem 0; border-bottom:1px solid var(--line);">
+      <span style="color:var(--ink-600); font-size:0.88rem;">${escapeHtml(label)}</span>
+      <span style="font-weight:600; text-align:right;">${nilai}</span>
+    </div>`;
+
+  const ttl = data.tempat_lahir || data.tanggal_lahir
+    ? `${escapeHtml(data.tempat_lahir || "-")}, ${data.tanggal_lahir ? formatTanggal(data.tanggal_lahir) : "-"}`
+    : "-";
+
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.id = "modal-detail-pendaftar";
+  overlay.innerHTML = `
+    <div class="modal-box" style="max-width:460px; max-height:85vh; overflow-y:auto;">
+      <h3>Detail Pendaftar</h3>
+      <div>
+        ${baris("Nama Lengkap", escapeHtml(data.nama))}
+        ${baris("NIM", escapeHtml(data.nim || "-"))}
+        ${baris("Program Studi", escapeHtml(data.program_studi || "-"))}
+        ${baris("Angkatan", escapeHtml(data.angkatan || "-"))}
+        ${baris("Tempat, Tanggal Lahir", ttl)}
+        ${baris("No. WhatsApp", escapeHtml(data.no_wa || "-"))}
+        ${baris("Email", escapeHtml(data.email || "-"))}
+        ${baris("Status", badgeStatus(data.status))}
+        ${baris("Tanggal Daftar", formatTanggal(data.created_at))}
+      </div>
+      <div style="margin-top:1rem;">
+        <span style="color:var(--ink-600); font-size:0.88rem; display:block; margin-bottom:0.4rem;">Alasan Bergabung</span>
+        <p style="margin:0; line-height:1.6;">${escapeHtml(data.alasan || "-")}</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn secondary" id="tombol-tutup-detail-pendaftar">Tutup</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.getElementById("tombol-tutup-detail-pendaftar").addEventListener("click", () => overlay.remove());
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
 }
 
 async function ubahStatusPendaftaran(id, status) {

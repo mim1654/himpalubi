@@ -528,6 +528,8 @@ function pasangFormPendaftaran(formId) {
       nim: form.nim.value.trim(),
       program_studi: form.program_studi.value.trim(),
       angkatan: form.angkatan.value.trim(),
+      tempat_lahir: form.tempat_lahir.value.trim(),
+      tanggal_lahir: form.tanggal_lahir.value,
       no_wa: form.no_wa.value.trim(),
       email: form.email.value.trim(),
       alasan: form.alasan.value.trim(),
