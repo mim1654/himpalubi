@@ -299,6 +299,12 @@ function bukaModalResetSandi(userId, email) {
   const input = document.getElementById("input-sandi-baru");
   input.focus();
 
+  function tutupPakaiEscape(e) {
+    if (e.key === "Escape") tutupModalResetSandi();
+  }
+  _escapeHandlerResetSandi = tutupPakaiEscape;
+  document.addEventListener("keydown", tutupPakaiEscape);
+
   document.getElementById("tombol-lihat-sandi").addEventListener("click", () => {
     const tombol = document.getElementById("tombol-lihat-sandi");
     const kini = input.type === "password";
@@ -311,9 +317,15 @@ function bukaModalResetSandi(userId, email) {
   document.getElementById("tombol-konfirmasi-reset").addEventListener("click", () => konfirmasiResetSandi(userId, email));
 }
 
+let _escapeHandlerResetSandi = null;
+
 function tutupModalResetSandi() {
   const overlay = document.getElementById("modal-reset-sandi");
   if (overlay) overlay.remove();
+  if (_escapeHandlerResetSandi) {
+    document.removeEventListener("keydown", _escapeHandlerResetSandi);
+    _escapeHandlerResetSandi = null;
+  }
 }
 
 async function konfirmasiResetSandi(userId, email) {
@@ -708,8 +720,21 @@ async function bukaModalDetailPendaftar(id) {
     </div>
   `;
   document.body.appendChild(overlay);
-  document.getElementById("tombol-tutup-detail-pendaftar").addEventListener("click", () => overlay.remove());
-  overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+
+  const tombolTutup = document.getElementById("tombol-tutup-detail-pendaftar");
+  tombolTutup.focus();
+
+  function tutup() {
+    overlay.remove();
+    document.removeEventListener("keydown", escHandler);
+  }
+  function escHandler(e) {
+    if (e.key === "Escape") tutup();
+  }
+  document.addEventListener("keydown", escHandler);
+
+  tombolTutup.addEventListener("click", tutup);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) tutup(); });
 }
 
 async function ubahStatusPendaftaran(id, status) {
@@ -865,6 +890,8 @@ async function muatFormPengaturan() {
   form.tagline_hero.value = data.tagline_hero || "";
   form.tahun_berdiri.value = data.tahun_berdiri || "";
   form.tentang.value = data.tentang || "";
+  form.sejarah.value = data.sejarah || "";
+  form.tujuan.value = data.tujuan || "";
   form.visi.value = data.visi || "";
   form.misi.value = data.misi || "";
   form.alamat.value = data.alamat || "";
@@ -886,6 +913,8 @@ function pasangFormPengaturan(formId) {
       tagline_hero: form.tagline_hero.value.trim(),
       tahun_berdiri: form.tahun_berdiri.value.trim(),
       tentang: form.tentang.value.trim(),
+      sejarah: form.sejarah.value.trim(),
+      tujuan: form.tujuan.value.trim(),
       visi: form.visi.value.trim(),
       misi: form.misi.value.trim(),
       alamat: form.alamat.value.trim(),

@@ -41,9 +41,26 @@ function pasangHamburger() {
   const tombol = document.getElementById("tombol-menu");
   const nav = document.getElementById("nav-wrap");
   if (!tombol || !nav) return;
-  tombol.addEventListener("click", () => {
+
+  function tutup() {
+    nav.classList.remove("terbuka");
+    tombol.setAttribute("aria-expanded", "false");
+  }
+
+  tombol.addEventListener("click", (e) => {
+    e.stopPropagation();
     const buka = nav.classList.toggle("terbuka");
     tombol.setAttribute("aria-expanded", buka ? "true" : "false");
+  });
+
+  // Klik di luar panel menutupnya
+  document.addEventListener("click", (e) => {
+    if (!nav.contains(e.target) && e.target !== tombol) tutup();
+  });
+
+  // Tombol Escape menutupnya
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") tutup();
   });
 }
 

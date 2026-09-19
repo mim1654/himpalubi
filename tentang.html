@@ -34,13 +34,21 @@
   </section>
 
   <section>
-    <div class="container" style="max-width:760px;" id="tentang-konten">
+    <div class="container" style="max-width:760px;" id="tentang-konten" aria-live="polite">
       <p>Memuat...</p>
     </div>
   </section>
 
   <section>
-    <div class="container" style="max-width:900px;" id="visi-misi-konten"></div>
+    <div class="container" style="max-width:760px;" id="sejarah-konten" aria-live="polite"></div>
+  </section>
+
+  <section>
+    <div class="container" style="max-width:760px;" id="tujuan-konten" aria-live="polite"></div>
+  </section>
+
+  <section>
+    <div class="container" style="max-width:900px;" id="visi-misi-konten" aria-live="polite"></div>
   </section>
 
   <section>
@@ -48,7 +56,7 @@
       <div class="section-head">
         <h2>Pertanyaan Umum</h2>
       </div>
-      <div class="faq-list" id="faq-konten"></div>
+      <div class="faq-list" id="faq-konten" aria-live="polite"></div>
     </div>
   </section>
 </main>
@@ -61,6 +69,7 @@
 <script src="js/components.js"></script>
 <script>
   muatTentangHalaman("tentang-konten");
+  muatSejarahTujuan("sejarah-konten", "tujuan-konten");
   muatVisiMisi("visi-misi-konten");
   muatFaqHalaman("faq-konten");
 </script>

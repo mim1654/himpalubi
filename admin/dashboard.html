@@ -96,7 +96,7 @@
         <div class="table-wrap">
 <table>
           <thead><tr><th>Nama</th><th>Tanggal</th><th>Status</th></tr></thead>
-          <tbody id="pendaftar-terbaru"><tr><td colspan="3">Memuat...</td></tr></tbody>
+          <tbody id="pendaftar-terbaru" aria-live="polite"><tr><td colspan="3">Memuat...</td></tr></tbody>
         </table>
 </div>
       </div>
@@ -127,7 +127,7 @@
       <div class="table-wrap">
 <table>
         <thead><tr><th>Judul</th><th>Tanggal</th><th>Penulis</th><th>Aksi</th></tr></thead>
-        <tbody id="tabel-berita"><tr><td colspan="4">Memuat...</td></tr></tbody>
+        <tbody id="tabel-berita" aria-live="polite"><tr><td colspan="4">Memuat...</td></tr></tbody>
       </table>
 </div>
     </section>
@@ -156,7 +156,7 @@
       <div class="table-wrap">
 <table>
         <thead><tr><th>Nama Kegiatan</th><th>Tanggal</th><th>Penyelenggara</th><th>Aksi</th></tr></thead>
-        <tbody id="tabel-kegiatan"><tr><td colspan="4">Memuat...</td></tr></tbody>
+        <tbody id="tabel-kegiatan" aria-live="polite"><tr><td colspan="4">Memuat...</td></tr></tbody>
       </table>
 </div>
     </section>
@@ -180,7 +180,7 @@
       <div class="table-wrap">
 <table>
         <thead><tr><th>Foto</th><th>Judul</th><th>Tanggal</th><th>Aksi</th></tr></thead>
-        <tbody id="tabel-galeri"><tr><td colspan="4">Memuat...</td></tr></tbody>
+        <tbody id="tabel-galeri" aria-live="polite"><tr><td colspan="4">Memuat...</td></tr></tbody>
       </table>
 </div>
     </section>
@@ -209,7 +209,7 @@
       <div class="table-wrap">
 <table>
         <thead><tr><th>Nama</th><th>Angkatan</th><th>Status</th><th>Aksi</th></tr></thead>
-        <tbody id="tabel-anggota"><tr><td colspan="4">Memuat...</td></tr></tbody>
+        <tbody id="tabel-anggota" aria-live="polite"><tr><td colspan="4">Memuat...</td></tr></tbody>
       </table>
 </div>
     </section>
@@ -247,7 +247,7 @@
       <div class="table-wrap">
 <table>
         <thead><tr><th>Urutan</th><th>Nama</th><th>Jabatan</th><th>Divisi</th><th>Aksi</th></tr></thead>
-        <tbody id="tabel-struktur"><tr><td colspan="5">Memuat...</td></tr></tbody>
+        <tbody id="tabel-struktur" aria-live="polite"><tr><td colspan="5">Memuat...</td></tr></tbody>
       </table>
 </div>
     </section>
@@ -262,7 +262,7 @@
       <div class="table-wrap">
 <table>
         <thead><tr><th>Nama</th><th>NIM</th><th>No. WA</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead>
-        <tbody id="tabel-pendaftaran"><tr><td colspan="6">Memuat...</td></tr></tbody>
+        <tbody id="tabel-pendaftaran" aria-live="polite"><tr><td colspan="6">Memuat...</td></tr></tbody>
       </table>
 </div>
     </section>
@@ -291,7 +291,7 @@
           <div class="field full"><button type="submit" class="btn">Simpan Program</button></div>
         </form>
       </div>
-      <div id="daftar-program-admin"><p>Memuat program kerja...</p></div>
+      <div id="daftar-program-admin" aria-live="polite"><p>Memuat program kerja...</p></div>
     </section>
 
     <!-- ================= FAQ ================= -->
@@ -313,7 +313,7 @@
       <div class="table-wrap">
       <table>
         <thead><tr><th>Pertanyaan</th><th>Urutan</th><th>Aksi</th></tr></thead>
-        <tbody id="tabel-faq"><tr><td colspan="3">Memuat...</td></tr></tbody>
+        <tbody id="tabel-faq" aria-live="polite"><tr><td colspan="3">Memuat...</td></tr></tbody>
       </table>
       </div>
     </section>
@@ -339,7 +339,7 @@
       <div class="table-wrap">
       <table>
         <thead><tr><th>Nama</th><th>Jabatan</th><th>Urutan</th><th>Aksi</th></tr></thead>
-        <tbody id="tabel-testimoni"><tr><td colspan="4">Memuat...</td></tr></tbody>
+        <tbody id="tabel-testimoni" aria-live="polite"><tr><td colspan="4">Memuat...</td></tr></tbody>
       </table>
       </div>
     </section>
@@ -359,6 +359,8 @@
           <div class="field"><label for="tagline_hero">Judul Besar di Beranda</label><input type="text" id="tagline_hero" name="tagline_hero" placeholder="Contoh: Bergerak Bersama, Peduli untuk Semua"></div>
           <div class="field"><label for="tahun_berdiri">Tahun Berdiri</label><input type="text" id="tahun_berdiri" name="tahun_berdiri" placeholder="Contoh: 2018"></div>
           <div class="field full"><label for="tentang">Tentang (untuk halaman Tentang &amp; Beranda)</label><textarea id="tentang" name="tentang" style="min-height:160px;"></textarea></div>
+          <div class="field full"><label for="sejarah">Sejarah Organisasi</label><textarea id="sejarah" name="sejarah" style="min-height:120px;"></textarea></div>
+          <div class="field full"><label for="tujuan">Tujuan Organisasi (satu baris per poin)</label><textarea id="tujuan" name="tujuan" style="min-height:100px;"></textarea></div>
           <div class="field full"><label for="visi">Visi</label><textarea id="visi" name="visi"></textarea></div>
           <div class="field full"><label for="misi">Misi (satu baris per poin)</label><textarea id="misi" name="misi" style="min-height:120px;"></textarea></div>
           <div class="field full"><label for="alamat">Alamat</label><input type="text" id="alamat" name="alamat"></div>

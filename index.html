@@ -16,6 +16,21 @@
 <meta name="twitter:description" content="Website resmi HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa Universitas PGRI Argopuro Jember. Info berita, kegiatan, struktur organisasi, dan pendaftaran anggota.">
 <meta name="twitter:image" content="https://mim1654.github.io/himpalubi/img/logo.png">
 <link rel="icon" type="image/png" href="img/favicon.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://mim1654.github.io/himpalubi/#organization",
+  "name": "HIMPALUBI",
+  "alternateName": "Himpunan Mahasiswa Pendidikan Luar Biasa",
+  "url": "https://mim1654.github.io/himpalubi/",
+  "logo": "https://mim1654.github.io/himpalubi/img/logo.png",
+  "parentOrganization": {
+    "@type": "CollegeOrUniversity",
+    "name": "Universitas PGRI Argopuro Jember"
+  }
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -45,7 +60,7 @@
         <h2>Tentang HIMPALUBI</h2>
         <a href="tentang.html">Selengkapnya</a>
       </div>
-      <p id="tentang-ringkas-teks">Memuat...</p>
+      <p id="tentang-ringkas-teks" aria-live="polite">Memuat...</p>
       <div class="stat-mini-grid" id="statistik-beranda"></div>
     </div>
   </section>
@@ -56,7 +71,7 @@
         <h2>Kegiatan Terbaru</h2>
         <a href="kegiatan.html">Lihat semua kegiatan</a>
       </div>
-      <div class="card-grid-3" id="kegiatan-terbaru-grid">
+      <div class="card-grid-3" id="kegiatan-terbaru-grid" aria-live="polite">
         <p>Memuat kegiatan...</p>
       </div>
     </div>
@@ -68,7 +83,7 @@
         <h2>Berita Terbaru</h2>
         <a href="berita.html">Lihat semua berita</a>
       </div>
-      <div class="card-grid-3" id="berita-terbaru-grid">
+      <div class="card-grid-3" id="berita-terbaru-grid" aria-live="polite">
         <p>Memuat berita...</p>
       </div>
     </div>
@@ -79,7 +94,17 @@
       <div class="section-head">
         <h2>Kata Mereka</h2>
       </div>
-      <div class="testimoni-grid" id="testimoni-beranda"></div>
+      <div class="testimoni-grid" id="testimoni-beranda" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container" style="max-width:640px; text-align:center;">
+      <div class="section-head" style="justify-content:center;">
+        <h2>Hubungi Kami</h2>
+      </div>
+      <div id="kontak-ringkas-beranda" aria-live="polite"></div>
+      <p style="margin-top:1rem;"><a href="kontak.html" class="btn secondary">Lihat Info Kontak Lengkap</a></p>
     </div>
   </section>
 </main>
@@ -97,6 +122,7 @@
   muatKegiatanTerbaru("kegiatan-terbaru-grid");
   muatBeritaKartu("berita-terbaru-grid", 3);
   muatTestimoniBeranda("testimoni-beranda");
+  muatKontakRingkasBeranda("kontak-ringkas-beranda");
 </script>
 </body>
 </html>

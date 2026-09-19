@@ -35,7 +35,7 @@ async function muatBerita(elId, batas, kategori) {
         <p class="excerpt">${escapeHtml(ringkas(item.isi, 180))}</p>
         <a href="detail.html?id=${item.id}&kategori=${kategori}" class="more">Baca Selengkapnya &rarr;</a>
       </div>
-      ${item.foto_url ? `<img src="${item.foto_url}" alt="" loading="lazy">` : ""}
+      ${item.foto_url ? `<img src="${item.foto_url}" alt="Foto ${escapeHtml(item.judul)}" loading="lazy">` : ""}
     </li>
   `).join("");
 }
@@ -76,7 +76,7 @@ async function muatDetailKonten(elId, backLinkId) {
       ${formatTanggal(data.tanggal)}${data.penulis ? ` &middot; ${escapeHtml(data.penulis)}` : ""}
     </div>
     <h1>${escapeHtml(data.judul)}</h1>
-    ${data.foto_url ? `<img src="${data.foto_url}" alt="" class="detail-photo" loading="lazy">` : ""}
+    ${data.foto_url ? `<img src="${data.foto_url}" alt="Foto ${escapeHtml(data.judul)}" class="detail-photo" loading="lazy">` : ""}
     <div class="detail-isi">${paragraf || "<p>Belum ada isi.</p>"}</div>
   `;
 }
@@ -101,7 +101,7 @@ async function muatKegiatanTerbaru(elId) {
 
   el.innerHTML = data.map(item => `
     <a href="detail.html?id=${item.id}&kategori=Kegiatan" class="news-photo-card" style="text-decoration:none;">
-      ${item.foto_url ? `<img src="${item.foto_url}" alt="" loading="lazy">` : ""}
+      ${item.foto_url ? `<img src="${item.foto_url}" alt="Foto ${escapeHtml(item.judul)}" loading="lazy">` : ""}
       <span class="tag">Kegiatan</span>
       <h4>${escapeHtml(item.judul)}</h4>
     </a>
@@ -130,7 +130,7 @@ async function muatBeritaKartu(elId, batas) {
 
   el.innerHTML = data.map(item => `
     <a href="detail.html?id=${item.id}&kategori=Berita" class="content-card" style="text-decoration:none; color:inherit; display:block;">
-      ${item.foto_url ? `<img src="${item.foto_url}" class="thumb" alt="" loading="lazy">` : ""}
+      ${item.foto_url ? `<img src="${item.foto_url}" class="thumb" alt="Foto ${escapeHtml(item.judul)}" loading="lazy">` : ""}
       <div class="body">
         <time>${formatTanggal(item.tanggal)}</time>
         <h4>${escapeHtml(item.judul)}</h4>
@@ -185,7 +185,7 @@ async function muatAnggota(elId) {
 function kartuAnggota(a) {
   return `
     <div class="member-card">
-      <div class="photo">${a.foto_url ? `<img src="${a.foto_url}" alt="" loading="lazy">` : initial(a.nama)}</div>
+      <div class="photo">${a.foto_url ? `<img src="${a.foto_url}" alt="Foto ${escapeHtml(a.nama)}" loading="lazy">` : initial(a.nama)}</div>
       <h3>${escapeHtml(a.nama)}</h3>
       <div class="role">${escapeHtml(a.jabatan || "Anggota")}</div>
     </div>
@@ -341,6 +341,22 @@ async function muatTentangRingkas(elId) {
   el.textContent = ringkas(data.tentang || "", 260);
 }
 
+// ================= BERANDA: Ringkasan Kontak =================
+async function muatKontakRingkasBeranda(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const { data, error } = await supabaseClient.from("pengaturan").select("alamat, email, telepon").eq("id", 1).single();
+  if (error || !data || (!data.alamat && !data.email && !data.telepon)) {
+    el.innerHTML = "";
+    return;
+  }
+  const baris = [];
+  if (data.alamat) baris.push(`<p style="margin:0.3rem 0;">${escapeHtml(data.alamat)}</p>`);
+  if (data.email) baris.push(`<p style="margin:0.3rem 0;">${escapeHtml(data.email)}</p>`);
+  if (data.telepon) baris.push(`<p style="margin:0.3rem 0;">${escapeHtml(data.telepon)}</p>`);
+  el.innerHTML = baris.join("");
+}
+
 // ================= HALAMAN KONTAK =================
 async function muatKontakHalaman() {
   const { data, error } = await supabaseClient.from("pengaturan").select("*").eq("id", 1).single();
@@ -404,6 +420,34 @@ async function muatStatistikBeranda(elId) {
   `;
 }
 
+// ================= HALAMAN TENTANG: Sejarah & Tujuan =================
+async function muatSejarahTujuan(sejarahElId, tujuanElId) {
+  const elSejarah = document.getElementById(sejarahElId);
+  const elTujuan = document.getElementById(tujuanElId);
+  if (!elSejarah && !elTujuan) return;
+
+  const { data, error } = await supabaseClient.from("pengaturan").select("sejarah, tujuan").eq("id", 1).single();
+  if (error || !data) return;
+
+  if (elSejarah) {
+    if (data.sejarah) {
+      const paragraf = data.sejarah.split(/\n+/).filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join("");
+      elSejarah.innerHTML = `<h2>Sejarah</h2>${paragraf}`;
+    } else {
+      elSejarah.innerHTML = "";
+    }
+  }
+
+  if (elTujuan) {
+    if (data.tujuan) {
+      const poin = data.tujuan.split(/\n+/).filter(Boolean).map(t => `<li>${escapeHtml(t)}</li>`).join("");
+      elTujuan.innerHTML = `<h2>Tujuan</h2><ul style="line-height:1.9;">${poin}</ul>`;
+    } else {
+      elTujuan.innerHTML = "";
+    }
+  }
+}
+
 // ================= HALAMAN TENTANG: Visi & Misi =================
 async function muatVisiMisi(elId) {
   const el = document.getElementById(elId);
@@ -459,7 +503,7 @@ async function muatTestimoniBeranda(elId) {
     <div class="testimoni-card">
       <p class="kutipan">${escapeHtml(t.isi)}</p>
       <div class="testimoni-orang">
-        <div class="foto">${t.foto_url ? `<img src="${t.foto_url}" alt="" loading="lazy">` : initial(t.nama)}</div>
+        <div class="foto">${t.foto_url ? `<img src="${t.foto_url}" alt="Foto ${escapeHtml(t.nama)}" loading="lazy">` : initial(t.nama)}</div>
         <div>
           <div class="nama">${escapeHtml(t.nama)}</div>
           <div class="jabatan">${escapeHtml(t.jabatan || "")}</div>
