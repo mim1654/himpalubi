@@ -718,25 +718,61 @@ input:focus, textarea:focus, select:focus {
 .admin-section { display: none; }
 .admin-section.aktif { display: block; }
 
+.admin-mobile-topbar { display: none; }
+.admin-drawer-backdrop { display: none; }
+
 @media (max-width: 900px) {
-  .admin-shell { grid-template-columns: 1fr; }
-  .admin-sidebar {
-    position: static;
-    height: auto;
-    flex-direction: row;
+  .admin-shell { display: block; }
+  .admin-mobile-topbar {
+    display: flex;
     align-items: center;
-    overflow-x: auto;
-    padding: 1rem;
-    gap: 1rem;
+    justify-content: space-between;
+    background: var(--teal-900);
+    padding: 0.85rem 1.1rem;
+    position: sticky;
+    top: 0;
+    z-index: 60;
   }
-  .admin-sidebar .brand { margin-bottom: 0; flex-shrink: 0; }
-  .admin-sidebar nav { display: flex; flex: none; }
-  .admin-sidebar nav .nav-group-label { display: none; }
-  .admin-sidebar nav ul { display: flex; gap: 0.4rem; }
-  .admin-sidebar nav a { white-space: nowrap; }
-  .admin-profile { border-top: none; margin-top: 0; padding-top: 0; flex-shrink: 0; }
-  .admin-profile .info .email { display: none; }
+  .admin-mobile-topbar .brand { margin: 0; }
+  .admin-mobile-topbar .tombol-buka-sidebar {
+    background: none;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    cursor: pointer;
+  }
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 84vw;
+    max-width: 320px;
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+    z-index: 90;
+    box-shadow: 8px 0 30px rgba(0,0,0,0.25);
+  }
+  .admin-sidebar.terbuka { transform: translateX(0); }
+  .admin-sidebar .brand { display: none; }
+  .admin-drawer-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 80;
+  }
+  .admin-drawer-backdrop.terbuka { display: block; }
   .admin-main { padding: 1.25rem; }
+}
+
+@media (min-width: 901px) {
+  .admin-sidebar { transform: none !important; }
 }
 
 .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -812,6 +848,66 @@ input:focus, textarea:focus, select:focus {
 @media (max-width: 600px) {
   .lightbox-prev, .lightbox-next { width: 38px; height: 38px; font-size: 1.1rem; }
 }
+
+/* ---------- Pencarian ---------- */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,15,17,0.55);
+  z-index: 260;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4rem 1rem;
+}
+.search-box {
+  background: var(--white);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 560px;
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+.search-box .search-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+.search-box .search-input-wrap svg { color: var(--ink-600); flex-shrink: 0; }
+.search-box input {
+  border: none;
+  outline: none;
+  font-size: 1.05rem;
+  flex: 1;
+  padding: 0;
+}
+.search-box .tutup-search { background: none; border: none; cursor: pointer; color: var(--ink-600); font-size: 1.3rem; }
+.search-results { overflow-y: auto; padding: 0.5rem; }
+.search-group { margin-bottom: 0.5rem; }
+.search-group h4 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-600);
+  padding: 0.6rem 0.75rem 0.3rem;
+  margin: 0;
+}
+.search-result-item {
+  display: block;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ink-900);
+}
+.search-result-item:hover { background: var(--sage-100); }
+.search-result-item .label { font-weight: 600; font-size: 0.92rem; }
+.search-result-item .meta { font-size: 0.8rem; color: var(--ink-600); }
+.search-empty { padding: 2rem; text-align: center; color: var(--ink-600); }
 
 /* ---------- Modal (pop-up kecil, mis. Reset Sandi) ---------- */
 .modal-overlay {

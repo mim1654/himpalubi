@@ -12,6 +12,7 @@ async function muatKomponen() {
       tandaiMenuAktif();
       pasangHamburger();
       pasangDropdown();
+      if (typeof pasangPencarian === "function") pasangPencarian("tombol-search");
     } catch (e) {
       console.error("Gagal memuat header", e);
     }

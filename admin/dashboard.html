@@ -10,8 +10,15 @@
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
+<div class="admin-mobile-topbar">
+  <a href="#ringkasan" class="brand"><picture><source srcset="../img/logo.webp" type="image/webp"><img src="../img/logo.png" alt="" width="34" height="34" style="width:34px;height:34px;object-fit:cover;border-radius:50%;"></picture>HIM<strong style="color:var(--gold-500)">PALUBI</strong></a>
+  <button type="button" class="tombol-buka-sidebar" id="tombol-buka-sidebar" aria-label="Buka menu admin">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</div>
+<div class="admin-drawer-backdrop" id="admin-drawer-backdrop"></div>
 <div class="admin-shell">
-  <aside class="admin-sidebar">
+  <aside class="admin-sidebar" id="admin-sidebar">
     <a href="#ringkasan" class="brand"><picture><source srcset="../img/logo.webp" type="image/webp"><img src="../img/logo.png" alt="" width="40" height="40" style="width:40px;height:40px;object-fit:cover;border-radius:50%;"></picture>HIM<strong style="color:var(--gold-500)">PALUBI</strong></a>
 
     <nav aria-label="Navigasi admin">
@@ -124,6 +131,9 @@
           <div class="field full"><button type="submit" class="btn">Simpan Berita</button></div>
         </form>
       </div>
+      <div style="margin-bottom:1rem;">
+        <button type="button" class="btn secondary" id="tombol-unduh-word-berita">Unduh Semua Berita (Word)</button>
+      </div>
       <div class="table-wrap">
 <table>
         <thead><tr><th>Judul</th><th>Tanggal</th><th>Penulis</th><th>Aksi</th></tr></thead>
@@ -195,7 +205,8 @@
       <div class="card-panel">
         <h3 id="judul-form-anggota">Tambah Anggota</h3>
         <form id="form-anggota" class="form-grid">
-          <div class="field full"><label for="nama-anggota">Nama</label><input type="text" id="nama-anggota" name="nama" required></div>
+          <div class="field"><label for="nama-anggota">Nama</label><input type="text" id="nama-anggota" name="nama" required></div>
+          <div class="field"><label for="nim-anggota">NIM</label><input type="text" id="nim-anggota" name="nim"></div>
           <div class="field"><label for="jabatan-anggota">Jabatan (opsional)</label><input type="text" id="jabatan-anggota" name="jabatan"></div>
           <div class="field"><label for="angkatan-anggota">Angkatan</label><input type="text" id="angkatan-anggota" name="angkatan" required></div>
           <div class="field full"><label for="foto_url_anggota">Tautan Foto (opsional)</label><input type="url" id="foto_url_anggota" name="foto_url" placeholder="https://..."></div>
@@ -206,10 +217,28 @@
           <div class="field full"><button type="submit" class="btn">Simpan Anggota</button></div>
         </form>
       </div>
+
+      <div class="card-panel">
+        <h3>Import Anggota dari Excel (Massal)</h3>
+        <p class="hint">File harus punya baris judul kolom: <strong>Nama, NIM, Jabatan, Angkatan, Status</strong>. Kolom Jabatan &amp; Status boleh kosong (default: Anggota / Aktif).</p>
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:1rem;">
+          <button type="button" class="btn secondary" id="tombol-unduh-template-anggota">Unduh Template Excel</button>
+          <label class="btn secondary" style="cursor:pointer; margin:0;">
+            Pilih File &amp; Import
+            <input type="file" id="input-import-anggota" accept=".xlsx,.xls,.csv" style="display:none;">
+          </label>
+        </div>
+        <div id="pesan-import-anggota" style="margin-top:1rem;"></div>
+      </div>
+
+      <div style="margin-bottom:1rem;">
+        <button type="button" class="btn secondary" id="tombol-unduh-excel-anggota">Unduh Semua Data Anggota (Excel)</button>
+      </div>
+
       <div class="table-wrap">
 <table>
-        <thead><tr><th>Nama</th><th>Angkatan</th><th>Status</th><th>Aksi</th></tr></thead>
-        <tbody id="tabel-anggota" aria-live="polite"><tr><td colspan="4">Memuat...</td></tr></tbody>
+        <thead><tr><th>Nama</th><th>NIM</th><th>Angkatan</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody id="tabel-anggota" aria-live="polite"><tr><td colspan="5">Memuat...</td></tr></tbody>
       </table>
 </div>
     </section>
@@ -379,6 +408,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
 <script src="../js/supabaseClient.js"></script>
 <script src="../js/public.js"></script>
 <script src="../js/admin.js"></script>
@@ -389,6 +420,7 @@
     await tampilkanProfilAdmin();
     await renderKelolaAdminJikaUtama();
     pasangNavigasiTab();
+    pasangDrawerMobile();
 
     document.getElementById("form-berita").tanggal.valueAsDate = new Date();
     document.getElementById("form-kegiatan").tanggal.valueAsDate = new Date();
@@ -398,6 +430,7 @@
 
     muatTabelKonten("Berita", "tabel-berita");
     pasangFormKonten("form-berita", "Berita", () => muatTabelKonten("Berita", "tabel-berita"));
+    pasangExportWordBerita();
 
     muatTabelKonten("Kegiatan", "tabel-kegiatan");
     pasangFormKonten("form-kegiatan", "Kegiatan", () => muatTabelKonten("Kegiatan", "tabel-kegiatan"));
@@ -407,6 +440,7 @@
 
     muatTabelOrang("Anggota", "tabel-anggota");
     pasangFormOrang("form-anggota", "Anggota");
+    pasangImportExportAnggota();
 
     muatTabelOrang("Pengurus", "tabel-struktur");
     pasangFormOrang("form-struktur", "Pengurus");

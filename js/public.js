@@ -711,6 +711,113 @@ function aturMeta(selector, atribut, nilai) {
   if (el) el.setAttribute(atribut, nilai);
 }
 
+// ================= PENCARIAN KESELURUHAN =================
+function pasangPencarian(tombolId) {
+  const tombol = document.getElementById(tombolId);
+  if (!tombol) return;
+  tombol.addEventListener("click", bukaPencarian);
+}
+
+let _timerPencarian = null;
+
+function bukaPencarian() {
+  if (document.getElementById("overlay-pencarian")) return;
+
+  const overlay = document.createElement("div");
+  overlay.className = "search-overlay";
+  overlay.id = "overlay-pencarian";
+  overlay.innerHTML = `
+    <div class="search-box">
+      <div class="search-input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="input-pencarian" placeholder="Cari berita, kegiatan, anggota, program kerja..." aria-label="Kata kunci pencarian">
+        <button class="tutup-search" id="tombol-tutup-search" aria-label="Tutup pencarian">&times;</button>
+      </div>
+      <div class="search-results" id="hasil-pencarian" aria-live="polite">
+        <p class="search-empty">Ketik kata kunci untuk mulai mencari.</p>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const input = document.getElementById("input-pencarian");
+  input.focus();
+
+  function tutup() {
+    overlay.remove();
+    document.removeEventListener("keydown", escHandler);
+  }
+  function escHandler(e) {
+    if (e.key === "Escape") tutup();
+  }
+  document.addEventListener("keydown", escHandler);
+  document.getElementById("tombol-tutup-search").addEventListener("click", tutup);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) tutup(); });
+
+  input.addEventListener("input", () => {
+    clearTimeout(_timerPencarian);
+    const kata = input.value.trim();
+    if (kata.length < 2) {
+      document.getElementById("hasil-pencarian").innerHTML = `<p class="search-empty">Ketik minimal 2 huruf.</p>`;
+      return;
+    }
+    _timerPencarian = setTimeout(() => jalankanPencarian(kata), 350);
+  });
+}
+
+async function jalankanPencarian(kata) {
+  const hasilEl = document.getElementById("hasil-pencarian");
+  if (!hasilEl) return;
+  hasilEl.innerHTML = `<p class="search-empty">Mencari...</p>`;
+
+  const kunci = `%${kata}%`;
+  const [beritaRes, kegiatanRes, anggotaRes, programRes] = await Promise.all([
+    supabaseClient.from("berita").select("id, judul, tanggal").eq("kategori", "Berita").ilike("judul", kunci).limit(5),
+    supabaseClient.from("berita").select("id, judul, tanggal").eq("kategori", "Kegiatan").ilike("judul", kunci).limit(5),
+    supabaseClient.from("anggota").select("id, nama, jabatan, kategori").ilike("nama", kunci).limit(5),
+    supabaseClient.from("program_kerja").select("id, nama_program, divisi").ilike("nama_program", kunci).limit(5),
+  ]);
+
+  const grup = [];
+
+  if (beritaRes.data?.length) {
+    grup.push({
+      judul: "Berita",
+      items: beritaRes.data.map(b => `<a class="search-result-item" href="detail.html?id=${b.id}&kategori=Berita"><div class="label">${escapeHtml(b.judul)}</div><div class="meta">${formatTanggal(b.tanggal)}</div></a>`),
+    });
+  }
+  if (kegiatanRes.data?.length) {
+    grup.push({
+      judul: "Kegiatan",
+      items: kegiatanRes.data.map(k => `<a class="search-result-item" href="detail.html?id=${k.id}&kategori=Kegiatan"><div class="label">${escapeHtml(k.judul)}</div><div class="meta">${formatTanggal(k.tanggal)}</div></a>`),
+    });
+  }
+  if (anggotaRes.data?.length) {
+    grup.push({
+      judul: "Anggota & Pengurus",
+      items: anggotaRes.data.map(a => `<a class="search-result-item" href="${a.kategori === "Pengurus" ? "struktur.html" : "anggota.html"}"><div class="label">${escapeHtml(a.nama)}</div><div class="meta">${escapeHtml(a.jabatan || (a.kategori === "Pengurus" ? "Pengurus" : "Anggota"))}</div></a>`),
+    });
+  }
+  if (programRes.data?.length) {
+    grup.push({
+      judul: "Program Kerja",
+      items: programRes.data.map(p => `<a class="search-result-item" href="program-kerja.html"><div class="label">${escapeHtml(p.nama_program)}</div><div class="meta">${escapeHtml(p.divisi)}</div></a>`),
+    });
+  }
+
+  if (!grup.length) {
+    hasilEl.innerHTML = `<p class="search-empty">Tidak ada hasil untuk "${escapeHtml(kata)}".</p>`;
+    return;
+  }
+
+  hasilEl.innerHTML = grup.map(g => `
+    <div class="search-group">
+      <h4>${g.judul}</h4>
+      ${g.items.join("")}
+    </div>
+  `).join("");
+}
+
 // ================= TOAST: notifikasi halus (pengganti alert()) =================
 function tampilkanToast(pesan, jenis) {
   let wrap = document.querySelector(".toast-wrap");

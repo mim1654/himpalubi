@@ -392,6 +392,149 @@ async function muatRiwayatResetSandi() {
   `).join("") : `<tr><td colspan="3">${emptyState("Belum ada riwayat", "Riwayat reset sandi akan tercatat di sini.")}</td></tr>`;
 }
 
+// ================= ANGGOTA: Import Massal & Export Excel =================
+function pasangImportExportAnggota() {
+  const tombolTemplate = document.getElementById("tombol-unduh-template-anggota");
+  const inputImport = document.getElementById("input-import-anggota");
+  const tombolExport = document.getElementById("tombol-unduh-excel-anggota");
+  const pesanEl = document.getElementById("pesan-import-anggota");
+
+  if (tombolTemplate) {
+    tombolTemplate.addEventListener("click", () => {
+      const data = [
+        { Nama: "Contoh Nama", NIM: "231F10014", Jabatan: "", Angkatan: "2023", Status: "Aktif" },
+      ];
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Template");
+      XLSX.writeFile(wb, "template-import-anggota.xlsx");
+    });
+  }
+
+  if (inputImport) {
+    inputImport.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      pesanEl.className = "form-message info";
+      pesanEl.textContent = "Membaca file...";
+
+      try {
+        const data = await file.arrayBuffer();
+        const wb = XLSX.read(data);
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws);
+
+        if (!rows.length) {
+          pesanEl.className = "form-message error";
+          pesanEl.textContent = "File kosong atau format kolom tidak dikenali.";
+          return;
+        }
+
+        const payload = rows
+          .filter(r => r.Nama || r.nama)
+          .map(r => ({
+            nama: String(r.Nama || r.nama || "").trim(),
+            nim: r.NIM || r.nim ? String(r.NIM || r.nim).trim() : null,
+            jabatan: r.Jabatan || r.jabatan ? String(r.Jabatan || r.jabatan).trim() : null,
+            angkatan: r.Angkatan || r.angkatan ? String(r.Angkatan || r.angkatan).trim() : null,
+            status: (r.Status || r.status || "Aktif").trim(),
+            kategori: "Anggota",
+          }));
+
+        if (!payload.length) {
+          pesanEl.className = "form-message error";
+          pesanEl.textContent = "Tidak ada baris valid (kolom Nama wajib diisi).";
+          return;
+        }
+
+        const { error } = await supabaseClient.from("anggota").insert(payload);
+        if (error) {
+          pesanEl.className = "form-message error";
+          pesanEl.textContent = "Gagal import: " + error.message;
+          console.error(error);
+          return;
+        }
+
+        pesanEl.className = "form-message success";
+        pesanEl.textContent = `${payload.length} anggota berhasil diimport.`;
+        tampilkanToast(`${payload.length} anggota ditambahkan.`, "sukses");
+        inputImport.value = "";
+        muatTabelOrang("Anggota", "tabel-anggota");
+        muatRingkasan();
+      } catch (err) {
+        pesanEl.className = "form-message error";
+        pesanEl.textContent = "Gagal membaca file. Pastikan formatnya .xlsx, .xls, atau .csv.";
+        console.error(err);
+      }
+    });
+  }
+
+  if (tombolExport) {
+    tombolExport.addEventListener("click", async () => {
+      const { data, error } = await supabaseClient.from("anggota").select("*").eq("kategori", "Anggota").order("angkatan", { ascending: false });
+      if (error || !data) { tampilkanToast("Gagal mengambil data.", "gagal"); return; }
+
+      const rows = data.map(a => ({
+        Nama: a.nama,
+        NIM: a.nim || "",
+        Jabatan: a.jabatan || "",
+        Angkatan: a.angkatan || "",
+        Status: a.status,
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Anggota");
+      XLSX.writeFile(wb, `data-anggota-himpalubi-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    });
+  }
+}
+
+// ================= BERITA: Export Word =================
+function pasangExportWordBerita() {
+  const tombol = document.getElementById("tombol-unduh-word-berita");
+  if (!tombol) return;
+  tombol.addEventListener("click", async () => {
+    tombol.disabled = true;
+    tombol.textContent = "Menyiapkan file...";
+
+    const { data, error } = await supabaseClient.from("berita").select("*").eq("kategori", "Berita").order("tanggal", { ascending: false });
+
+    tombol.disabled = false;
+    tombol.textContent = "Unduh Semua Berita (Word)";
+
+    if (error || !data || !data.length) {
+      tampilkanToast("Tidak ada berita untuk diunduh.", "gagal");
+      return;
+    }
+
+    const isiHtml = data.map(b => `
+      <h1>${escapeHtml(b.judul)}</h1>
+      <p><em>${formatTanggal(b.tanggal)}${b.penulis ? " &middot; " + escapeHtml(b.penulis) : ""}</em></p>
+      ${(b.isi || "").split(/\n+/).filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join("")}
+      <hr>
+    `).join("");
+
+    const htmlLengkap = `
+      <html><head><meta charset="utf-8"><title>Berita HIMPALUBI</title></head>
+      <body style="font-family: Calibri, Arial, sans-serif;">
+        <h1 style="text-align:center;">Kumpulan Berita HIMPALUBI</h1>
+        <p style="text-align:center;">Diunduh pada ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</p>
+        <hr>
+        ${isiHtml}
+      </body></html>
+    `;
+
+    const blob = htmlDocx.asBlob(htmlLengkap);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `kumpulan-berita-himpalubi-${new Date().toISOString().slice(0, 10)}.docx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+}
 // ================= SIDEBAR: ganti "lembar" tanpa scroll =================
 function pasangNavigasiTab() {
   const sections = document.querySelectorAll(".admin-section");
@@ -407,6 +550,7 @@ function pasangNavigasiTab() {
     document.querySelector(".admin-main").scrollTo({ top: 0, behavior: "instant" });
     window.scrollTo({ top: 0, behavior: "instant" });
     history.replaceState(null, "", `#${idBagian}`);
+    tutupDrawerMobile();
   }
 
   links.forEach(link => {
@@ -419,6 +563,30 @@ function pasangNavigasiTab() {
   const awal = window.location.hash.replace("#", "");
   const bagianAwal = document.getElementById(awal) ? awal : "ringkasan";
   tampilkanBagian(bagianAwal);
+}
+
+// ================= DRAWER SIDEBAR (khusus tampilan HP) =================
+function pasangDrawerMobile() {
+  const tombolBuka = document.getElementById("tombol-buka-sidebar");
+  const sidebar = document.getElementById("admin-sidebar");
+  const backdrop = document.getElementById("admin-drawer-backdrop");
+  if (!tombolBuka || !sidebar || !backdrop) return;
+
+  tombolBuka.addEventListener("click", () => {
+    sidebar.classList.add("terbuka");
+    backdrop.classList.add("terbuka");
+  });
+  backdrop.addEventListener("click", tutupDrawerMobile);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") tutupDrawerMobile();
+  });
+}
+
+function tutupDrawerMobile() {
+  const sidebar = document.getElementById("admin-sidebar");
+  const backdrop = document.getElementById("admin-drawer-backdrop");
+  if (sidebar) sidebar.classList.remove("terbuka");
+  if (backdrop) backdrop.classList.remove("terbuka");
 }
 
 // ================= DASHBOARD: RINGKASAN =================
@@ -578,6 +746,7 @@ async function muatTabelOrang(kategori, tabelElId) {
     el.innerHTML = data.map(a => `
       <tr>
         <td>${escapeHtml(a.nama)}</td>
+        <td>${escapeHtml(a.nim || "-")}</td>
         <td>${escapeHtml(a.angkatan || "-")}</td>
         <td>${badgeStatusAnggota(a.status)}</td>
         <td class="table-actions">
@@ -608,6 +777,7 @@ function pasangFormOrang(formId, kategori) {
       payload.urutan = form.urutan.value ? parseInt(form.urutan.value, 10) : null;
     } else {
       payload.angkatan = form.angkatan.value.trim();
+      payload.nim = form.nim.value.trim() || null;
     }
 
     const query = id
@@ -640,6 +810,7 @@ async function editOrang(id, kategori) {
     form.urutan.value = data.urutan ?? "";
   } else {
     form.angkatan.value = data.angkatan || "";
+    form.nim.value = data.nim || "";
   }
   form.dataset.editId = id;
   document.getElementById(cfg.judulFormId).textContent = cfg.labelEdit;
