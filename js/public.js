@@ -513,6 +513,34 @@ async function muatTestimoniBeranda(elId) {
   `).join("");
 }
 
+// ================= TICKER: Tulisan Berjalan (otomatis + manual) =================
+async function muatTickerBerjalan() {
+  const bar = document.getElementById("ticker-bar");
+  const track = document.getElementById("ticker-track");
+  if (!bar || !track) return;
+
+  const [pengaturanRes, beritaRes, kegiatanRes] = await Promise.all([
+    supabaseClient.from("pengaturan").select("teks_berjalan").eq("id", 1).single(),
+    supabaseClient.from("berita").select("judul").eq("kategori", "Berita").order("tanggal", { ascending: false }).limit(3),
+    supabaseClient.from("berita").select("judul").eq("kategori", "Kegiatan").order("tanggal", { ascending: false }).limit(3),
+  ]);
+
+  const potongan = [];
+  if (pengaturanRes.data?.teks_berjalan) potongan.push(pengaturanRes.data.teks_berjalan);
+  (beritaRes.data || []).forEach(b => potongan.push(`Berita: ${b.judul}`));
+  (kegiatanRes.data || []).forEach(k => potongan.push(`Kegiatan: ${k.judul}`));
+
+  if (!potongan.length) {
+    bar.hidden = true;
+    return;
+  }
+
+  const isiTeks = potongan.map(escapeHtml).join('<span class="pemisah">&bull;</span>');
+  // Digandakan supaya animasi scroll terlihat menyambung terus-menerus
+  track.innerHTML = `${isiTeks}<span class="pemisah">&bull;</span>${isiTeks}`;
+  bar.hidden = false;
+}
+
 // ================= FORM PENDAFTARAN (pendaftaran.html) =================
 function pasangFormPendaftaran(formId) {
   const form = document.getElementById(formId);

@@ -392,7 +392,69 @@ async function muatRiwayatResetSandi() {
   `).join("") : `<tr><td colspan="3">${emptyState("Belum ada riwayat", "Riwayat reset sandi akan tercatat di sini.")}</td></tr>`;
 }
 
-// ================= ANGGOTA: Import Massal & Export Excel =================
+// ================= UPLOAD FOTO (Supabase Storage) =================
+// Kompres gambar di browser sebelum upload, supaya hemat kuota & cepat.
+function kompresGambar(file, maxDimensi = 1200, kualitas = 0.8) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e) => { img.src = e.target.result; };
+    reader.onerror = reject;
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxDimensi || height > maxDimensi) {
+        if (width > height) { height = Math.round(height * (maxDimensi / width)); width = maxDimensi; }
+        else { width = Math.round(width * (maxDimensi / height)); height = maxDimensi; }
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => resolve(blob), "image/jpeg", kualitas);
+    };
+    img.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Upload file terpilih ke Supabase Storage, kembalikan URL publik.
+// Kalau tidak ada file baru dipilih, kembalikan urlLama (dipakai saat edit).
+async function unggahFotoJikaAda(inputFileId, urlLama) {
+  const input = document.getElementById(inputFileId);
+  if (!input || !input.files || !input.files[0]) return urlLama || null;
+
+  const fileAsli = input.files[0];
+  const blobKecil = await kompresGambar(fileAsli);
+  const namaFile = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+
+  const { error } = await supabaseClient.storage.from("foto").upload(namaFile, blobKecil, {
+    contentType: "image/jpeg",
+    upsert: false,
+  });
+  if (error) {
+    throw new Error("Gagal upload foto: " + error.message);
+  }
+  const { data } = supabaseClient.storage.from("foto").getPublicUrl(namaFile);
+  return data.publicUrl;
+}
+
+function pasangPratinjauFoto(inputFileId, previewElId) {
+  const input = document.getElementById(inputFileId);
+  const preview = document.getElementById(previewElId);
+  if (!input || !preview) return;
+  input.addEventListener("change", () => {
+    if (input.files && input.files[0]) {
+      const url = URL.createObjectURL(input.files[0]);
+      preview.innerHTML = `<img src="${url}" alt="" style="width:80px;height:80px;object-fit:cover;border-radius:8px;">`;
+    }
+  });
+}
+
+function tampilkanFotoLama(previewElId, url) {
+  const preview = document.getElementById(previewElId);
+  if (!preview) return;
+  preview.innerHTML = url ? `<img src="${url}" alt="" style="width:80px;height:80px;object-fit:cover;border-radius:8px;">` : "";
+}
 function pasangImportExportAnggota() {
   const tombolTemplate = document.getElementById("tombol-unduh-template-anggota");
   const inputImport = document.getElementById("input-import-anggota");
@@ -489,51 +551,115 @@ function pasangImportExportAnggota() {
   }
 }
 
-// ================= BERITA: Export Word =================
-function pasangExportWordBerita() {
-  const tombol = document.getElementById("tombol-unduh-word-berita");
-  if (!tombol) return;
-  tombol.addEventListener("click", async () => {
-    tombol.disabled = true;
-    tombol.textContent = "Menyiapkan file...";
-
-    const { data, error } = await supabaseClient.from("berita").select("*").eq("kategori", "Berita").order("tanggal", { ascending: false });
-
-    tombol.disabled = false;
-    tombol.textContent = "Unduh Semua Berita (Word)";
-
-    if (error || !data || !data.length) {
-      tampilkanToast("Tidak ada berita untuk diunduh.", "gagal");
-      return;
-    }
-
-    const isiHtml = data.map(b => `
-      <h1>${escapeHtml(b.judul)}</h1>
-      <p><em>${formatTanggal(b.tanggal)}${b.penulis ? " &middot; " + escapeHtml(b.penulis) : ""}</em></p>
-      ${(b.isi || "").split(/\n+/).filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join("")}
-      <hr>
-    `).join("");
-
-    const htmlLengkap = `
-      <html><head><meta charset="utf-8"><title>Berita HIMPALUBI</title></head>
-      <body style="font-family: Calibri, Arial, sans-serif;">
-        <h1 style="text-align:center;">Kumpulan Berita HIMPALUBI</h1>
-        <p style="text-align:center;">Diunduh pada ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</p>
-        <hr>
-        ${isiHtml}
-      </body></html>
-    `;
-
-    const blob = htmlDocx.asBlob(htmlLengkap);
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `kumpulan-berita-himpalubi-${new Date().toISOString().slice(0, 10)}.docx`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+// ================= TAB DALAM 1 SECTION (Kelola Konten) =================
+function pasangSubTab(containerSelector) {
+  const container = document.querySelector(containerSelector);
+  if (!container) return;
+  const tombolTab = container.querySelectorAll(".tab-btn");
+  tombolTab.forEach(tombol => {
+    tombol.addEventListener("click", () => {
+      tombolTab.forEach(t => { t.classList.remove("aktif"); t.setAttribute("aria-selected", "false"); });
+      tombol.classList.add("aktif");
+      tombol.setAttribute("aria-selected", "true");
+      container.querySelectorAll(".tab-panel").forEach(panel => {
+        panel.hidden = panel.id !== tombol.dataset.tabTarget;
+        panel.classList.toggle("aktif", panel.id === tombol.dataset.tabTarget);
+      });
+    });
   });
+}
+
+// ================= DOWNLOAD WORD PER-ITEM (Berita/Kegiatan/Program) =================
+function buatDocxDanUnduh(html, namaFile) {
+  const htmlLengkap = `<html><head><meta charset="utf-8"></head><body style="font-family: Calibri, Arial, sans-serif;">${html}</body></html>`;
+  const blob = htmlDocx.asBlob(htmlLengkap);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = namaFile;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function namaFileAman(teks) {
+  return teks.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 60);
+}
+
+async function unduhSatuKonten(id, kategori) {
+  const { data, error } = await supabaseClient.from("berita").select("*").eq("id", id).single();
+  if (error || !data) { tampilkanToast("Gagal mengambil data.", "gagal"); return; }
+  const isiHtml = `
+    <h1>${escapeHtml(data.judul)}</h1>
+    <p><em>${formatTanggal(data.tanggal)}${data.penulis ? " &middot; " + escapeHtml(data.penulis) : ""}</em></p>
+    ${(data.isi || "").split(/\n+/).filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join("")}
+  `;
+  buatDocxDanUnduh(isiHtml, `${namaFileAman(data.judul)}.docx`);
+}
+
+async function unduhSatuProgram(id) {
+  const { data, error } = await supabaseClient.from("program_kerja").select("*").eq("id", id).single();
+  if (error || !data) { tampilkanToast("Gagal mengambil data.", "gagal"); return; }
+  const isiHtml = `
+    <h1>${escapeHtml(data.nama_program)}</h1>
+    <p><em>Divisi: ${escapeHtml(data.divisi)} &middot; Status: ${escapeHtml(data.status)}</em></p>
+    ${data.deskripsi ? `<p>${escapeHtml(data.deskripsi)}</p>` : ""}
+  `;
+  buatDocxDanUnduh(isiHtml, `${namaFileAman(data.nama_program)}.docx`);
+}
+
+// ================= DOWNLOAD SEMUA (Berita/Kegiatan/Program) =================
+async function unduhSemuaKonten(kategori, namaTombolId) {
+  const tombol = document.getElementById(namaTombolId);
+  const labelAsli = tombol.textContent;
+  tombol.disabled = true;
+  tombol.textContent = "Menyiapkan file...";
+
+  const { data, error } = await supabaseClient.from("berita").select("*").eq("kategori", kategori).order("tanggal", { ascending: false });
+
+  tombol.disabled = false;
+  tombol.textContent = labelAsli;
+
+  if (error || !data || !data.length) { tampilkanToast(`Tidak ada ${kategori.toLowerCase()} untuk diunduh.`, "gagal"); return; }
+
+  const isiHtml = data.map(b => `
+    <h1>${escapeHtml(b.judul)}</h1>
+    <p><em>${formatTanggal(b.tanggal)}${b.penulis ? " &middot; " + escapeHtml(b.penulis) : ""}</em></p>
+    ${(b.isi || "").split(/\n+/).filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join("")}
+    <hr>
+  `).join("");
+
+  buatDocxDanUnduh(
+    `<h1 style="text-align:center;">Kumpulan ${escapeHtml(kategori)} HIMPALUBI</h1><hr>${isiHtml}`,
+    `kumpulan-${kategori.toLowerCase()}-himpalubi-${new Date().toISOString().slice(0, 10)}.docx`
+  );
+}
+
+async function unduhSemuaProgram() {
+  const tombol = document.getElementById("tombol-unduh-word-program");
+  const labelAsli = tombol.textContent;
+  tombol.disabled = true;
+  tombol.textContent = "Menyiapkan file...";
+
+  const { data, error } = await supabaseClient.from("program_kerja").select("*").order("divisi");
+
+  tombol.disabled = false;
+  tombol.textContent = labelAsli;
+
+  if (error || !data || !data.length) { tampilkanToast("Tidak ada program kerja untuk diunduh.", "gagal"); return; }
+
+  const isiHtml = data.map(p => `
+    <h1>${escapeHtml(p.nama_program)}</h1>
+    <p><em>Divisi: ${escapeHtml(p.divisi)} &middot; Status: ${escapeHtml(p.status)}</em></p>
+    ${p.deskripsi ? `<p>${escapeHtml(p.deskripsi)}</p>` : ""}
+    <hr>
+  `).join("");
+
+  buatDocxDanUnduh(
+    `<h1 style="text-align:center;">Kumpulan Program Kerja HIMPALUBI</h1><hr>${isiHtml}`,
+    `kumpulan-program-kerja-himpalubi-${new Date().toISOString().slice(0, 10)}.docx`
+  );
 }
 // ================= SIDEBAR: ganti "lembar" tanpa scroll =================
 function pasangNavigasiTab() {
@@ -632,8 +758,8 @@ async function muatRingkasan() {
 
 // ================= BERITA & KEGIATAN (tabel "berita", beda kategori) =================
 const KONTEN_CONFIG = {
-  Berita: { formId: "form-berita", judulFormId: "judul-form-berita", tabelElId: "tabel-berita", labelTambah: "Tambah Berita", labelEdit: "Edit Berita" },
-  Kegiatan: { formId: "form-kegiatan", judulFormId: "judul-form-kegiatan", tabelElId: "tabel-kegiatan", labelTambah: "Tambah Kegiatan", labelEdit: "Edit Kegiatan" },
+  Berita: { formId: "form-berita", judulFormId: "judul-form-berita", tabelElId: "tabel-berita", labelTambah: "Tambah Berita", labelEdit: "Edit Berita", fotoInputId: "foto_url", fotoPreviewId: "preview-foto_url" },
+  Kegiatan: { formId: "form-kegiatan", judulFormId: "judul-form-kegiatan", tabelElId: "tabel-kegiatan", labelTambah: "Tambah Kegiatan", labelEdit: "Edit Kegiatan", fotoInputId: "foto_url-kegiatan", fotoPreviewId: "preview-foto_url-kegiatan" },
 };
 
 async function muatTabelKonten(kategori, tabelElId) {
@@ -650,6 +776,7 @@ async function muatTabelKonten(kategori, tabelElId) {
       <td>${escapeHtml(b.penulis || "-")}</td>
       <td class="table-actions">
         <button onclick="editKonten('${b.id}','${kategori}')">Edit</button>
+        <button onclick="unduhSatuKonten('${b.id}','${kategori}')">Download</button>
         <button onclick="hapusKonten('${b.id}','${kategori}')">Hapus</button>
       </td>
     </tr>
@@ -660,16 +787,31 @@ function pasangFormKonten(formId, kategori) {
   const form = document.getElementById(formId);
   if (!form) return;
   const cfg = KONTEN_CONFIG[kategori];
+  pasangPratinjauFoto(cfg.fotoInputId, cfg.fotoPreviewId);
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = form.dataset.editId;
+    const tombolSimpan = form.querySelector("button[type=submit]");
+    tombolSimpan.disabled = true;
+    tombolSimpan.textContent = "Menyimpan...";
+
+    let fotoUrl;
+    try {
+      fotoUrl = await unggahFotoJikaAda(cfg.fotoInputId, form.dataset.fotoLama || null);
+    } catch (err) {
+      tampilkanToast(err.message, "gagal");
+      tombolSimpan.disabled = false;
+      tombolSimpan.textContent = "Simpan " + kategori;
+      return;
+    }
+
     const payload = {
       judul: form.judul.value.trim(),
       isi: form.isi.value.trim(),
       tanggal: form.tanggal.value,
       penulis: form.penulis.value.trim(),
-      foto_url: form.foto_url.value.trim() || null,
+      foto_url: fotoUrl,
       kategori,
     };
     const query = id
@@ -677,12 +819,16 @@ function pasangFormKonten(formId, kategori) {
       : supabaseClient.from("berita").insert(payload);
 
     const { error } = await query;
+    tombolSimpan.disabled = false;
+    tombolSimpan.textContent = "Simpan " + kategori;
     if (error) { tampilkanToast("Gagal menyimpan data.", "gagal"); console.error(error); return; }
 
     tampilkanToast(id ? "Perubahan disimpan." : "Data berhasil ditambahkan.", "sukses");
     form.reset();
     form.tanggal.valueAsDate = new Date();
     delete form.dataset.editId;
+    delete form.dataset.fotoLama;
+    document.getElementById(cfg.fotoPreviewId).innerHTML = "";
     document.getElementById(cfg.judulFormId).textContent = cfg.labelTambah;
     muatTabelKonten(kategori, cfg.tabelElId);
     muatRingkasan();
@@ -698,7 +844,8 @@ async function editKonten(id, kategori) {
   form.isi.value = data.isi;
   form.tanggal.value = data.tanggal;
   form.penulis.value = data.penulis || "";
-  form.foto_url.value = data.foto_url || "";
+  form.dataset.fotoLama = data.foto_url || "";
+  tampilkanFotoLama(cfg.fotoPreviewId, data.foto_url);
   form.dataset.editId = id;
   document.getElementById(cfg.judulFormId).textContent = cfg.labelEdit;
   form.scrollIntoView({ behavior: "smooth" });
@@ -714,8 +861,8 @@ async function hapusKonten(id, kategori) {
 
 // ================= ANGGOTA & STRUKTUR PENGURUS (tabel "anggota", beda kategori) =================
 const ORANG_CONFIG = {
-  Anggota: { formId: "form-anggota", judulFormId: "judul-form-anggota", tabelElId: "tabel-anggota", labelTambah: "Tambah Anggota", labelEdit: "Edit Anggota", hasDivisi: false },
-  Pengurus: { formId: "form-struktur", judulFormId: "judul-form-struktur", tabelElId: "tabel-struktur", labelTambah: "Tambah Pengurus", labelEdit: "Edit Pengurus", hasDivisi: true },
+  Anggota: { formId: "form-anggota", judulFormId: "judul-form-anggota", tabelElId: "tabel-anggota", labelTambah: "Tambah Anggota", labelEdit: "Edit Anggota", hasDivisi: false, fotoInputId: "foto_url_anggota", fotoPreviewId: "preview-foto_url_anggota" },
+  Pengurus: { formId: "form-struktur", judulFormId: "judul-form-struktur", tabelElId: "tabel-struktur", labelTambah: "Tambah Pengurus", labelEdit: "Edit Pengurus", hasDivisi: true, fotoInputId: "foto_url-struktur", fotoPreviewId: "preview-foto_url-struktur" },
 };
 
 async function muatTabelOrang(kategori, tabelElId) {
@@ -761,14 +908,29 @@ function pasangFormOrang(formId, kategori) {
   const form = document.getElementById(formId);
   if (!form) return;
   const cfg = ORANG_CONFIG[kategori];
+  pasangPratinjauFoto(cfg.fotoInputId, cfg.fotoPreviewId);
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = form.dataset.editId;
+    const tombolSimpan = form.querySelector("button[type=submit]");
+    tombolSimpan.disabled = true;
+    tombolSimpan.textContent = "Menyimpan...";
+
+    let fotoUrl;
+    try {
+      fotoUrl = await unggahFotoJikaAda(cfg.fotoInputId, form.dataset.fotoLama || null);
+    } catch (err) {
+      tampilkanToast(err.message, "gagal");
+      tombolSimpan.disabled = false;
+      tombolSimpan.textContent = cfg.labelTambah;
+      return;
+    }
+
     const payload = {
       nama: form.nama.value.trim(),
       jabatan: form.jabatan.value.trim(),
-      foto_url: form.foto_url.value.trim() || null,
+      foto_url: fotoUrl,
       status: form.status.value,
       kategori,
     };
@@ -785,11 +947,15 @@ function pasangFormOrang(formId, kategori) {
       : supabaseClient.from("anggota").insert(payload);
 
     const { error } = await query;
+    tombolSimpan.disabled = false;
+    tombolSimpan.textContent = cfg.labelTambah;
     if (error) { tampilkanToast("Gagal menyimpan data.", "gagal"); console.error(error); return; }
 
     tampilkanToast(id ? "Perubahan disimpan." : "Data berhasil ditambahkan.", "sukses");
     form.reset();
     delete form.dataset.editId;
+    delete form.dataset.fotoLama;
+    document.getElementById(cfg.fotoPreviewId).innerHTML = "";
     document.getElementById(cfg.judulFormId).textContent = cfg.labelTambah;
     muatTabelOrang(kategori, cfg.tabelElId);
     muatRingkasan();
@@ -803,7 +969,8 @@ async function editOrang(id, kategori) {
   const form = document.getElementById(cfg.formId);
   form.nama.value = data.nama;
   form.jabatan.value = data.jabatan || "";
-  form.foto_url.value = data.foto_url || "";
+  form.dataset.fotoLama = data.foto_url || "";
+  tampilkanFotoLama(cfg.fotoPreviewId, data.foto_url);
   form.status.value = data.status;
   if (cfg.hasDivisi) {
     form.divisi.value = data.divisi || "";
@@ -960,18 +1127,43 @@ async function muatTabelGaleri() {
 function pasangFormGaleri(formId) {
   const form = document.getElementById(formId);
   if (!form) return;
+  pasangPratinjauFoto("foto_url-galeri", "preview-foto_url-galeri");
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    const tombolSimpan = form.querySelector("button[type=submit]");
+    tombolSimpan.disabled = true;
+    tombolSimpan.textContent = "Mengunggah...";
+
+    let fotoUrl;
+    try {
+      fotoUrl = await unggahFotoJikaAda("foto_url-galeri", null);
+    } catch (err) {
+      tampilkanToast(err.message, "gagal");
+      tombolSimpan.disabled = false;
+      tombolSimpan.textContent = "Tambah ke Galeri";
+      return;
+    }
+    if (!fotoUrl) {
+      tampilkanToast("Pilih foto terlebih dahulu.", "gagal");
+      tombolSimpan.disabled = false;
+      tombolSimpan.textContent = "Tambah ke Galeri";
+      return;
+    }
+
     const payload = {
       judul: form.judul.value.trim() || null,
       tanggal: form.tanggal.value,
-      foto_url: form.foto_url.value.trim(),
+      foto_url: fotoUrl,
     };
     const { error } = await supabaseClient.from("galeri").insert(payload);
+    tombolSimpan.disabled = false;
+    tombolSimpan.textContent = "Tambah ke Galeri";
     if (error) { tampilkanToast("Gagal menambah foto.", "gagal"); console.error(error); return; }
     tampilkanToast("Foto ditambahkan ke galeri.", "sukses");
     form.reset();
     form.tanggal.valueAsDate = new Date();
+    document.getElementById("preview-foto_url-galeri").innerHTML = "";
     muatTabelGaleri();
   });
 }
@@ -999,6 +1191,7 @@ async function muatDaftarProgramAdmin() {
         <td>${badgeStatusProgram(p.status)}</td>
         <td class="table-actions">
           <button onclick="editProgram('${p.id}')">Edit</button>
+          <button onclick="unduhSatuProgram('${p.id}')">Download</button>
           <button onclick="hapusProgram('${p.id}')">Hapus</button>
         </td>
       </tr>`).join("") + `</tbody></table></div>`;
@@ -1063,6 +1256,7 @@ async function muatFormPengaturan() {
   form.tentang.value = data.tentang || "";
   form.sejarah.value = data.sejarah || "";
   form.tujuan.value = data.tujuan || "";
+  form.teks_berjalan.value = data.teks_berjalan || "";
   form.visi.value = data.visi || "";
   form.misi.value = data.misi || "";
   form.alamat.value = data.alamat || "";
@@ -1086,6 +1280,7 @@ function pasangFormPengaturan(formId) {
       tentang: form.tentang.value.trim(),
       sejarah: form.sejarah.value.trim(),
       tujuan: form.tujuan.value.trim(),
+      teks_berjalan: form.teks_berjalan.value.trim(),
       visi: form.visi.value.trim(),
       misi: form.misi.value.trim(),
       alamat: form.alamat.value.trim(),
@@ -1192,24 +1387,44 @@ async function muatTabelTestimoni() {
 function pasangFormTestimoni(formId) {
   const form = document.getElementById(formId);
   if (!form) return;
+  pasangPratinjauFoto("foto_url-testimoni", "preview-foto_url-testimoni");
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = form.dataset.editId;
+    const tombolSimpan = form.querySelector("button[type=submit]");
+    tombolSimpan.disabled = true;
+    tombolSimpan.textContent = "Menyimpan...";
+
+    let fotoUrl;
+    try {
+      fotoUrl = await unggahFotoJikaAda("foto_url-testimoni", form.dataset.fotoLama || null);
+    } catch (err) {
+      tampilkanToast(err.message, "gagal");
+      tombolSimpan.disabled = false;
+      tombolSimpan.textContent = "Simpan Testimoni";
+      return;
+    }
+
     const payload = {
       nama: form.nama.value.trim(),
       jabatan: form.jabatan.value.trim(),
       isi: form.isi.value.trim(),
-      foto_url: form.foto_url.value.trim() || null,
+      foto_url: fotoUrl,
       urutan: form.urutan.value ? parseInt(form.urutan.value, 10) : null,
     };
     const query = id
       ? supabaseClient.from("testimoni").update(payload).eq("id", id)
       : supabaseClient.from("testimoni").insert(payload);
     const { error } = await query;
+    tombolSimpan.disabled = false;
+    tombolSimpan.textContent = "Simpan Testimoni";
     if (error) { tampilkanToast("Gagal menyimpan testimoni.", "gagal"); console.error(error); return; }
     tampilkanToast(id ? "Perubahan disimpan." : "Testimoni ditambahkan.", "sukses");
     form.reset();
     delete form.dataset.editId;
+    delete form.dataset.fotoLama;
+    document.getElementById("preview-foto_url-testimoni").innerHTML = "";
     document.getElementById("judul-form-testimoni").textContent = "Tambah Testimoni";
     muatTabelTestimoni();
   });
@@ -1222,7 +1437,8 @@ async function editTestimoni(id) {
   form.nama.value = data.nama;
   form.jabatan.value = data.jabatan || "";
   form.isi.value = data.isi;
-  form.foto_url.value = data.foto_url || "";
+  form.dataset.fotoLama = data.foto_url || "";
+  tampilkanFotoLama("preview-foto_url-testimoni", data.foto_url);
   form.urutan.value = data.urutan ?? "";
   form.dataset.editId = id;
   document.getElementById("judul-form-testimoni").textContent = "Edit Testimoni";

@@ -13,6 +13,7 @@ async function muatKomponen() {
       pasangHamburger();
       pasangDropdown();
       if (typeof pasangPencarian === "function") pasangPencarian("tombol-search");
+      if (typeof muatTickerBerjalan === "function") muatTickerBerjalan();
     } catch (e) {
       console.error("Gagal memuat header", e);
     }
