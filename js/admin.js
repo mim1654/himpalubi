@@ -419,12 +419,13 @@ function kompresGambar(file, maxDimensi = 1200, kualitas = 0.8) {
 
 // Upload file terpilih ke Supabase Storage, kembalikan URL publik.
 // Kalau tidak ada file baru dipilih, kembalikan urlLama (dipakai saat edit).
-async function unggahFotoJikaAda(inputFileId, urlLama) {
+// maxDimensi: 1200 untuk foto Berita/Kegiatan/Galeri, 500 untuk foto profil (Anggota/Struktur/Testimoni).
+async function unggahFotoJikaAda(inputFileId, urlLama, maxDimensi = 1200) {
   const input = document.getElementById(inputFileId);
   if (!input || !input.files || !input.files[0]) return urlLama || null;
 
   const fileAsli = input.files[0];
-  const blobKecil = await kompresGambar(fileAsli);
+  const blobKecil = await kompresGambar(fileAsli, maxDimensi);
   const namaFile = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
 
   const { error } = await supabaseClient.storage.from("foto").upload(namaFile, blobKecil, {
@@ -436,6 +437,18 @@ async function unggahFotoJikaAda(inputFileId, urlLama) {
   }
   const { data } = supabaseClient.storage.from("foto").getPublicUrl(namaFile);
   return data.publicUrl;
+}
+
+// Hapus foto lama dari Storage supaya tidak jadi "sampah" yang makan kuota.
+// Aman dipanggil walau url bukan dari Storage kita (misal link imgur lama) — akan gagal diam-diam, tidak masalah.
+async function hapusFotoDariStorage(url) {
+  if (!url || !url.includes("/storage/v1/object/public/foto/")) return;
+  try {
+    const namaFile = url.split("/storage/v1/object/public/foto/")[1];
+    if (namaFile) await supabaseClient.storage.from("foto").remove([namaFile]);
+  } catch (e) {
+    console.error("Gagal menghapus foto lama:", e);
+  }
 }
 
 function pasangPratinjauFoto(inputFileId, previewElId) {
@@ -823,6 +836,10 @@ function pasangFormKonten(formId, kategori) {
     tombolSimpan.textContent = "Simpan " + kategori;
     if (error) { tampilkanToast("Gagal menyimpan data.", "gagal"); console.error(error); return; }
 
+    // Kalau foto diganti, hapus foto lama supaya tidak jadi sampah di Storage
+    const fotoLama = form.dataset.fotoLama;
+    if (fotoLama && fotoLama !== fotoUrl) hapusFotoDariStorage(fotoLama);
+
     tampilkanToast(id ? "Perubahan disimpan." : "Data berhasil ditambahkan.", "sukses");
     form.reset();
     form.tanggal.valueAsDate = new Date();
@@ -853,7 +870,9 @@ async function editKonten(id, kategori) {
 
 async function hapusKonten(id, kategori) {
   if (!confirm("Hapus data ini?")) return;
+  const { data } = await supabaseClient.from("berita").select("foto_url").eq("id", id).single();
   await supabaseClient.from("berita").delete().eq("id", id);
+  if (data?.foto_url) hapusFotoDariStorage(data.foto_url);
   const cfg = KONTEN_CONFIG[kategori];
   muatTabelKonten(kategori, cfg.tabelElId);
   muatRingkasan();
@@ -919,7 +938,7 @@ function pasangFormOrang(formId, kategori) {
 
     let fotoUrl;
     try {
-      fotoUrl = await unggahFotoJikaAda(cfg.fotoInputId, form.dataset.fotoLama || null);
+      fotoUrl = await unggahFotoJikaAda(cfg.fotoInputId, form.dataset.fotoLama || null, 500);
     } catch (err) {
       tampilkanToast(err.message, "gagal");
       tombolSimpan.disabled = false;
@@ -950,6 +969,9 @@ function pasangFormOrang(formId, kategori) {
     tombolSimpan.disabled = false;
     tombolSimpan.textContent = cfg.labelTambah;
     if (error) { tampilkanToast("Gagal menyimpan data.", "gagal"); console.error(error); return; }
+
+    const fotoLama = form.dataset.fotoLama;
+    if (fotoLama && fotoLama !== fotoUrl) hapusFotoDariStorage(fotoLama);
 
     tampilkanToast(id ? "Perubahan disimpan." : "Data berhasil ditambahkan.", "sukses");
     form.reset();
@@ -986,7 +1008,9 @@ async function editOrang(id, kategori) {
 
 async function hapusOrang(id, kategori) {
   if (!confirm("Hapus data ini?")) return;
+  const { data } = await supabaseClient.from("anggota").select("foto_url").eq("id", id).single();
   await supabaseClient.from("anggota").delete().eq("id", id);
+  if (data?.foto_url) hapusFotoDariStorage(data.foto_url);
   const cfg = ORANG_CONFIG[kategori];
   muatTabelOrang(kategori, cfg.tabelElId);
   muatRingkasan();
@@ -1170,7 +1194,9 @@ function pasangFormGaleri(formId) {
 
 async function hapusGaleri(id) {
   if (!confirm("Hapus foto ini?")) return;
+  const { data } = await supabaseClient.from("galeri").select("foto_url").eq("id", id).single();
   await supabaseClient.from("galeri").delete().eq("id", id);
+  if (data?.foto_url) hapusFotoDariStorage(data.foto_url);
   muatTabelGaleri();
 }
 
@@ -1398,7 +1424,7 @@ function pasangFormTestimoni(formId) {
 
     let fotoUrl;
     try {
-      fotoUrl = await unggahFotoJikaAda("foto_url-testimoni", form.dataset.fotoLama || null);
+      fotoUrl = await unggahFotoJikaAda("foto_url-testimoni", form.dataset.fotoLama || null, 500);
     } catch (err) {
       tampilkanToast(err.message, "gagal");
       tombolSimpan.disabled = false;
@@ -1420,6 +1446,8 @@ function pasangFormTestimoni(formId) {
     tombolSimpan.disabled = false;
     tombolSimpan.textContent = "Simpan Testimoni";
     if (error) { tampilkanToast("Gagal menyimpan testimoni.", "gagal"); console.error(error); return; }
+    const fotoLama = form.dataset.fotoLama;
+    if (fotoLama && fotoLama !== fotoUrl) hapusFotoDariStorage(fotoLama);
     tampilkanToast(id ? "Perubahan disimpan." : "Testimoni ditambahkan.", "sukses");
     form.reset();
     delete form.dataset.editId;
@@ -1447,7 +1475,9 @@ async function editTestimoni(id) {
 
 async function hapusTestimoni(id) {
   if (!confirm("Hapus testimoni ini?")) return;
+  const { data } = await supabaseClient.from("testimoni").select("foto_url").eq("id", id).single();
   await supabaseClient.from("testimoni").delete().eq("id", id);
+  if (data?.foto_url) hapusFotoDariStorage(data.foto_url);
   muatTabelTestimoni();
 }
 
