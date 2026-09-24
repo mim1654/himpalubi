@@ -347,7 +347,7 @@ async function muatKontakRingkasBeranda(elId) {
   if (!el) return;
   const { data, error } = await supabaseClient.from("pengaturan").select("alamat, email, telepon").eq("id", 1).single();
   if (error || !data || (!data.alamat && !data.email && !data.telepon)) {
-    el.innerHTML = "";
+    el.innerHTML = emptyState("Info kontak belum diisi", "Alamat, email, dan telepon akan tampil di sini setelah admin mengisinya lewat Pengaturan.");
     return;
   }
   const baris = [];
