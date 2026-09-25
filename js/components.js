@@ -71,9 +71,10 @@ function pasangDropdown() {
   const item = document.querySelector(".has-dropdown");
   if (!tombol || !item) return;
 
-  function tutup() {
+  function tutup(kembalikanFokus) {
     item.classList.remove("terbuka");
     tombol.setAttribute("aria-expanded", "false");
+    if (kembalikanFokus) tombol.focus();
   }
 
   tombol.addEventListener("click", (e) => {
@@ -82,17 +83,22 @@ function pasangDropdown() {
     tombol.setAttribute("aria-expanded", buka ? "true" : "false");
   });
 
-  // Klik di luar dropdown menutupnya
-  document.addEventListener("click", tutup);
+  // Klik di luar dropdown menutupnya (tanpa perlu kembalikan fokus)
+  document.addEventListener("click", () => tutup(false));
 
-  // Tombol Escape menutupnya
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") tutup();
+  // Tombol Escape menutupnya DAN mengembalikan fokus ke tombol pemicu
+  item.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") tutup(true);
   });
 
   // Klik menu lain di navbar (selain dropdown) juga menutupnya
   document.querySelectorAll(".main-nav > ul > li:not(.has-dropdown) > a").forEach(link => {
-    link.addEventListener("click", tutup);
+    link.addEventListener("click", () => tutup(false));
+  });
+
+  // Tutup otomatis kalau fokus keluar sepenuhnya dari area dropdown (mis. Tab ke elemen lain)
+  item.addEventListener("focusout", (e) => {
+    if (!item.contains(e.relatedTarget)) tutup(false);
   });
 }
 

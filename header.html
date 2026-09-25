@@ -1,0 +1,49 @@
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <picture>
+        <source srcset="img/logo.webp" type="image/webp">
+        <img src="img/logo.png" alt="" class="brand-emblem" width="52" height="52" aria-hidden="true">
+      </picture>
+      <span class="brand-text">HIMPALUBI<span class="full-name">Universitas PGRI Argopuro Jember</span></span>
+    </a>
+
+    <button class="hamburger" id="tombol-menu" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="nav-wrap">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="nav-wrap" id="nav-wrap">
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <ul>
+          <li><a href="index.html" data-page="beranda">Beranda</a></li>
+          <li class="has-dropdown">
+            <button class="dropdown-toggle" type="button" aria-expanded="false" aria-controls="dropdown-tentang">
+              Tentang <span class="caret" aria-hidden="true">&#9662;</span>
+            </button>
+            <ul class="dropdown-menu" id="dropdown-tentang">
+              <li><a href="tentang.html" data-page="tentang">Profil</a></li>
+              <li><a href="struktur.html" data-page="struktur">Struktur Organisasi</a></li>
+              <li><a href="program-kerja.html" data-page="program-kerja">Program Kerja</a></li>
+            </ul>
+          </li>
+          <li><a href="kegiatan.html" data-page="kegiatan">Kegiatan</a></li>
+          <li><a href="berita.html" data-page="berita">Berita</a></li>
+          <li><a href="anggota.html" data-page="anggota">Anggota</a></li>
+          <li><a href="galeri.html" data-page="galeri">Galeri</a></li>
+          <li><a href="kontak.html" data-page="kontak">Kontak</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn" id="tombol-search" aria-label="Cari" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <a href="admin/login.html" class="nav-btn outline">Masuk</a>
+        <a href="pendaftaran.html" class="nav-btn solid">Daftar</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="ticker-bar" id="ticker-bar" hidden>
+  <div class="ticker-track" id="ticker-track"></div>
+</div>
