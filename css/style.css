@@ -134,53 +134,45 @@ a:hover { color: var(--teal-900); }
 }
 
 .nav-wrap {
-  display: none;
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.14);
-  padding: 1.25rem;
-  min-width: 250px;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 1.25rem;
-  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
-.nav-wrap.terbuka { display: flex; }
 
 .main-nav ul {
   list-style: none;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 1.6rem;
   margin: 0;
   padding: 0;
+  flex-wrap: wrap;
 }
 .main-nav a {
-  display: block;
+  display: inline-block;
   color: var(--ink-900);
   text-decoration: none;
   font-weight: 500;
   font-size: 0.95rem;
-  padding: 0.5rem 0.4rem;
-  border-radius: 6px;
-  border-bottom: none;
+  padding: 0.3rem 0.1rem;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
 }
 .main-nav a:hover,
 .main-nav a[aria-current="page"] {
-  background: var(--sage-100);
+  border-bottom-color: var(--gold-500);
   color: var(--gold-500);
+  background: none;
 }
 
 .nav-actions {
   display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--line);
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0;
+  border-top: none;
 }
 .nav-btn {
   display: inline-block;
@@ -203,6 +195,21 @@ a:hover { color: var(--teal-900); }
   border: 1.5px solid var(--gold-500);
 }
 .nav-btn.solid:hover { background: #a30d26; }
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: none;
+  color: var(--ink-900);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.icon-btn:hover { border-color: var(--ink-900); }
 
 /* ---------- Tulisan Berjalan (Ticker) ---------- */
 .ticker-bar {
@@ -230,53 +237,59 @@ a:hover { color: var(--teal-900); }
   .ticker-bar { overflow-x: auto; }
 }
 
-/* ---------- Dropdown "Tentang" (bersarang di dalam panel menu) ---------- */
-.has-dropdown { position: static; width: 100%; }
+/* ---------- Dropdown "Tentang" (flyout di desktop, inline saat panel mobile) ---------- */
+.has-dropdown { position: relative; }
 .dropdown-toggle {
   background: none;
   border: none;
   font: inherit;
   cursor: pointer;
-  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 0.3rem;
   color: var(--ink-900);
   font-weight: 500;
   font-size: 0.95rem;
-  padding: 0.5rem 0.4rem;
-  border-radius: 6px;
+  padding: 0.3rem 0.1rem;
+  border-bottom: 2px solid transparent;
 }
-.dropdown-toggle:hover { background: var(--sage-100); }
+.dropdown-toggle:hover { color: var(--gold-500); }
 .dropdown-toggle .caret { font-size: 0.65rem; margin-top: 2px; }
 .dropdown-menu {
   display: none;
-  position: static;
-  background: none;
-  border: none;
-  box-shadow: none;
-  min-width: 0;
-  padding: 0.25rem 0 0 0.9rem;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  min-width: 220px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.14);
+  padding: 0.5rem;
   list-style: none;
-  margin: 0;
+  margin: 0.6rem 0 0;
+  z-index: 40;
 }
 .has-dropdown.terbuka .dropdown-menu { display: block; }
 .dropdown-menu li a {
   display: block;
-  padding: 0.45rem 0.4rem;
-  color: var(--ink-600);
+  padding: 0.55rem 0.75rem;
+  color: var(--ink-900);
   text-decoration: none;
   font-size: 0.9rem;
   border-bottom: none;
   border-radius: 6px;
 }
-.dropdown-menu li a:hover { background: var(--sage-100); color: var(--gold-500); }
+.dropdown-menu li a:hover,
+.dropdown-menu li a[aria-current="page"] {
+  background: var(--sage-100);
+  color: var(--gold-500);
+}
 
-/* ---------- Tombol Menu (hamburger, tampil di semua ukuran layar) ---------- */
+/* ---------- Tombol Menu (hamburger, cuma untuk layar sempit) ---------- */
 .site-header .container { position: relative; }
 .hamburger {
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: center;
   gap: 5px;
@@ -292,8 +305,47 @@ a:hover { color: var(--teal-900); }
 .hamburger span { display: block; width: 20px; height: 2px; background: var(--ink-900); border-radius: 2px; }
 .hamburger:hover { border-color: var(--ink-900); }
 
-@media (max-width: 480px) {
-  .nav-wrap { left: 1rem; right: 1rem; min-width: 0; }
+@media (max-width: 900px) {
+  .hamburger { display: flex; }
+  .nav-wrap {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 1rem;
+    left: 1rem;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.14);
+    padding: 1.25rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+    z-index: 45;
+  }
+  .nav-wrap.terbuka { display: flex; }
+  .main-nav ul { flex-direction: column; align-items: stretch; gap: 0.4rem; }
+  .main-nav a { padding: 0.55rem 0.5rem; border-radius: 6px; border-bottom: none; }
+  .main-nav a:hover, .main-nav a[aria-current="page"] { background: var(--sage-100); }
+  .has-dropdown { position: static; width: 100%; }
+  .dropdown-toggle { width: 100%; justify-content: space-between; padding: 0.55rem 0.5rem; border-radius: 6px; }
+  .dropdown-toggle:hover { background: var(--sage-100); }
+  .dropdown-menu {
+    position: static;
+    box-shadow: none;
+    border: none;
+    min-width: 0;
+    padding: 0.25rem 0 0 0.9rem;
+    margin: 0;
+  }
+  .nav-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+  .nav-actions .icon-btn { align-self: flex-start; }
 }
 
 /* ---------- Hero ---------- */

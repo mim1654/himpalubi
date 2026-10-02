@@ -347,7 +347,7 @@ async function muatKontakRingkasBeranda(elId) {
   if (!el) return;
   const { data, error } = await supabaseClient.from("pengaturan").select("alamat, email, telepon").eq("id", 1).single();
   if (error || !data || (!data.alamat && !data.email && !data.telepon)) {
-    el.innerHTML = emptyState("Info kontak belum diisi", "Alamat, email, dan telepon akan tampil di sini setelah admin mengisinya lewat Pengaturan.");
+    el.innerHTML = "";
     return;
   }
   const baris = [];
@@ -614,7 +614,9 @@ function pasangFormPendaftaran(formId) {
 
     if (error) {
       pesanEl.className = "form-message error";
-      pesanEl.textContent = "Pendaftaran gagal terkirim. Coba lagi sebentar lagi.";
+      pesanEl.textContent = error.code === "23505"
+        ? "NIM ini sudah pernah terdaftar sebelumnya. Hubungi pengurus kalau ini keliru."
+        : "Pendaftaran gagal terkirim. Coba lagi sebentar lagi.";
       console.error(error);
       return;
     }
@@ -732,6 +734,22 @@ function perbaruiMetaDetail(data, kategori) {
   aturMeta('meta[name="twitter:title"]', "content", judul);
   aturMeta('meta[name="twitter:description"]', "content", deskripsi);
   aturMeta('meta[name="twitter:image"]', "content", gambar);
+
+  const ldEl = document.getElementById("ld-json-detail");
+  if (ldEl) {
+    const ld = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: data.judul,
+      description: deskripsi,
+      datePublished: data.tanggal,
+      image: gambar,
+      url: url,
+      publisher: { "@type": "Organization", name: "HIMPALUBI", url: BASE, logo: `${BASE}img/logo.png` },
+    };
+    if (data.penulis) ld.author = { "@type": "Person", name: data.penulis };
+    ldEl.textContent = JSON.stringify(ld);
+  }
 }
 
 function aturMeta(selector, atribut, nilai) {
