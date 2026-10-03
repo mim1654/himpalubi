@@ -23,7 +23,30 @@ async function muatBerita(elId, batas, kategori) {
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = `<li>${emptyState(`Belum ada ${kategori.toLowerCase()}`, "Konten akan tampil di sini begitu admin mempublikasikannya.")}</li>`;
+    if (kategori === "Berita") {
+      el.innerHTML = `
+        <li class="news-item">
+          <time datetime="2025-04-12">12 April 2025</time>
+          <div>
+            <h3><a href="index.html#berita" style="color:inherit; text-decoration:none;">Pelantikan Dewan Pengurus HIMPALUBI UNIPAR Periode 2025/2026</a></h3>
+            <p class="excerpt">Serah terima jabatan ketua umum dan jajaran dewan pengurus diselenggarakan dengan khidmat di hadapan pimpinan program studi dan senat mahasiswa.</p>
+            <span class="more" style="color:var(--primary-container); font-weight:600;">Warta Resmi Organisasi</span>
+          </div>
+          <img src="img/berita-1.jpg" alt="Foto Pelantikan Pengurus" loading="lazy" onerror="this.style.display='none'">
+        </li>
+        <li class="news-item">
+          <time datetime="2025-04-08">08 April 2025</time>
+          <div>
+            <h3><a href="index.html#berita" style="color:inherit; text-decoration:none;">Mahasiswa PLB UNIPAR Raih Juara Inovasi Media Pembelajaran Inklusif</a></h3>
+            <p class="excerpt">Delegasi mahasiswa berhasil mengembangkan media pembelajaran adaptif ramah tunarungu dalam kompetisi karya inovasi tingkat regional.</p>
+            <span class="more" style="color:var(--primary-container); font-weight:600;">Prestasi Mahasiswa</span>
+          </div>
+          <img src="img/berita-2.jpg" alt="Foto Prestasi Mahasiswa" loading="lazy" onerror="this.style.display='none'">
+        </li>
+      `;
+      return;
+    }
+    el.innerHTML = `<li>${emptyState(`Belum ada ${kategori.toLowerCase()}`, "Konten resmi akan tampil di sini begitu admin mempublikasikannya.", { icon: "event_available", btnText: "Kembali ke Beranda", btnHref: "index.html" })}</li>`;
     return;
   }
 
@@ -81,63 +104,481 @@ async function muatDetailKonten(elId, backLinkId) {
   `;
 }
 
-// ================= BERANDA: Kegiatan Terbaru (3 kartu foto) =================
+// ================= BERANDA: Kegiatan Terbaru (3 kartu) =================
 async function muatKegiatanTerbaru(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
-  el.innerHTML = skeletonCards(3, skeletonPhotoCard);
 
-  const { data, error } = await supabaseClient
-    .from("berita")
-    .select("*")
-    .eq("kategori", "Kegiatan")
-    .order("tanggal", { ascending: false })
-    .limit(3);
+  let data = null;
+  try {
+    const res = await supabaseClient
+      .from("berita")
+      .select("*")
+      .eq("kategori", "Kegiatan")
+      .order("tanggal", { ascending: false })
+      .limit(3);
+    data = res.data;
+  } catch (e) {
+    console.warn("Info: Menampilkan agenda kurasi HIMPALUBI", e);
+  }
 
-  if (error || !data || data.length === 0) {
-    el.innerHTML = emptyState("Belum ada kegiatan", "Kegiatan terbaru akan muncul di sini setelah dipublikasikan.");
+  // Jika admin telah mempublikasikan kegiatan dinamis di Supabase
+  if (data && data.length > 0) {
+    el.innerHTML = data.map(item => `
+      <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
+        <div class="relative h-48 bg-surface-container overflow-hidden">
+          <img src="${item.foto_url || 'img/kegiatan-1.jpg'}" alt="Foto ${escapeHtml(item.judul)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.onerror=null; this.src='img/kegiatan-1.jpg';">
+          <div class="absolute top-3.5 left-3.5 bg-primary-container text-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+            ${formatTanggal(item.tanggal)}
+          </div>
+          <div class="absolute top-3.5 right-3.5 bg-inverse-surface/85 text-surface-bright px-2.5 py-0.5 rounded-full text-[11px] font-medium">
+            Kegiatan Resmi
+          </div>
+        </div>
+        <div class="p-5 flex flex-col flex-1">
+          <h3 class="text-base font-bold text-on-surface mb-2 group-hover:text-primary-container transition-colors line-clamp-2">
+            <a href="detail.html?id=${item.id}&kategori=Kegiatan" class="hover:underline">${escapeHtml(item.judul)}</a>
+          </h3>
+          <p class="text-xs text-secondary mb-5 flex-1 line-clamp-3 leading-relaxed">
+            ${escapeHtml(ringkas(item.isi, 120))}
+          </p>
+          <div class="flex items-center justify-between pt-3 border-t border-surface-container mt-auto">
+            <span class="flex items-center gap-1 text-secondary text-xs">
+              <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">event</span>
+              ${formatTanggal(item.tanggal)}
+            </span>
+            <a href="detail.html?id=${item.id}&kategori=Kegiatan" class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary text-xs font-semibold transition-colors">
+              Detail
+            </a>
+          </div>
+        </div>
+      </article>
+    `).join("");
     return;
   }
 
-  el.innerHTML = data.map(item => `
-    <a href="detail.html?id=${item.id}&kategori=Kegiatan" class="news-photo-card" style="text-decoration:none;">
-      ${item.foto_url ? `<img src="${item.foto_url}" alt="Foto ${escapeHtml(item.judul)}" loading="lazy">` : ""}
-      <span class="tag">Kegiatan</span>
-      <h4>${escapeHtml(item.judul)}</h4>
-    </a>
-  `).join("");
+  // Jika belum ada data kegiatan di database
+  el.innerHTML = emptyState(
+    "Belum ada kegiatan yang diunggah",
+    "Saat ini belum ada publikasi agenda kegiatan atau program kerja di database. Pengurus akan segera memperbarui jadwal kegiatan mendatang.",
+    {
+      icon: "event_busy",
+      btnText: "Lihat Seluruh Kegiatan",
+      btnHref: "kegiatan.html"
+    }
+  );
 }
 
-// ================= BERANDA: Berita Terbaru (3 kartu biasa) =================
+// ================= HALAMAN KEGIATAN (kegiatan.html) =================
+async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSectionId = "featured-event-section", counterId = "eventCounterNotice") {
+  const grid = document.getElementById(gridId);
+  const featuredSec = document.getElementById(featuredSectionId);
+  const counterNotice = document.getElementById(counterId);
+
+  if (!grid) return;
+
+  let data = null;
+  try {
+    const res = await supabaseClient
+      .from("berita")
+      .select("*")
+      .eq("kategori", "Kegiatan")
+      .order("tanggal", { ascending: false });
+    data = res.data;
+  } catch (err) {
+    console.warn("Info: Tidak dapat memuat kegiatan dari Supabase.", err);
+  }
+
+  // Jika tidak ada data kegiatan di database
+  if (!data || data.length === 0) {
+    if (featuredSec) featuredSec.style.display = "none";
+    if (counterNotice) {
+      counterNotice.innerHTML = `Menampilkan: <strong class="text-on-surface">0 Program Terjadwal</strong>`;
+    }
+    grid.innerHTML = emptyState(
+      "Belum ada kegiatan yang diunggah",
+      "Saat ini belum ada publikasi agenda kegiatan atau program kerja di database. Pengurus akan segera memperbarui jadwal kegiatan mendatang.",
+      {
+        icon: "event_busy",
+        btnText: "Hubungi Pengurus",
+        btnHref: "kontak.html"
+      }
+    );
+    return;
+  }
+
+  // Jika ada data kegiatan
+  if (counterNotice) {
+    counterNotice.innerHTML = `Menampilkan: <strong class="text-on-surface">${data.length} Program Terjadwal</strong>`;
+  }
+
+  // 1. Render Featured Section (Sorotan Utama) menggunakan kegiatan terbaru
+  if (featuredSec) {
+    featuredSec.style.display = "block";
+    const fItem = data[0];
+    featuredSec.innerHTML = `
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-6 rounded-full bg-primary-container" aria-hidden="true"></span>
+          <h2 class="text-xl sm:text-2xl font-bold text-on-surface">Sorotan Utama Kegiatan Terdekat</h2>
+        </div>
+        <span class="hidden sm:inline-flex items-center gap-1 text-xs text-primary-container font-semibold">
+          <span class="material-symbols-outlined text-[18px]" aria-hidden="true">verified</span>
+          <span>Kegiatan Terbaru</span>
+        </span>
+      </div>
+
+      <div class="bg-surface-container-lowest rounded-2xl shadow-xl border border-surface-container overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        <!-- Media Column -->
+        <div class="lg:col-span-5 relative min-h-[280px] sm:min-h-[340px] lg:min-h-full bg-surface-container">
+          <img class="w-full h-full object-cover" alt="${escapeHtml(fItem.judul)}" src="${fItem.foto_url || 'img/kegiatan-1.jpg'}" onerror="this.onerror=null; this.src='img/hero-image.png';">
+          <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent lg:hidden" aria-hidden="true"></div>
+          <div class="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container text-on-primary text-xs font-bold tracking-wide uppercase shadow-md">
+            <span class="w-2 h-2 rounded-full bg-on-primary animate-ping" aria-hidden="true"></span>
+            <span>Publikasi Resmi</span>
+          </div>
+        </div>
+
+        <!-- Content Column -->
+        <div class="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-between">
+          <div>
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs font-bold">
+                Kegiatan Resmi Himpunan
+              </span>
+              <span class="px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-semibold">
+                ${formatTanggal(fItem.tanggal)}
+              </span>
+            </div>
+
+            <h3 class="text-xl sm:text-2xl font-bold text-on-surface mb-4 leading-snug">
+              <a href="detail.html?id=${fItem.id}&kategori=Kegiatan" class="hover:underline hover:text-primary-container transition-colors">${escapeHtml(fItem.judul)}</a>
+            </h3>
+
+            <p class="text-sm sm:text-base text-secondary mb-6 leading-relaxed">
+              ${escapeHtml(ringkas(fItem.isi, 240))}
+            </p>
+
+            <!-- Key Details Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 p-4 rounded-xl bg-surface-container-low">
+              <div class="flex items-start gap-3">
+                <div class="w-9 h-9 rounded-lg bg-primary-fixed flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-on-primary-fixed-variant text-[20px]" aria-hidden="true">calendar_today</span>
+                </div>
+                <div class="min-w-0">
+                  <div class="text-xs text-secondary font-medium">Hari &amp; Tanggal</div>
+                  <div class="text-sm font-semibold text-on-surface truncate">${formatTanggal(fItem.tanggal)}</div>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3">
+                <div class="w-9 h-9 rounded-lg bg-primary-fixed flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-on-primary-fixed-variant text-[20px]" aria-hidden="true">verified</span>
+                </div>
+                <div class="min-w-0">
+                  <div class="text-xs text-secondary font-medium">Penyelenggara</div>
+                  <div class="text-sm font-semibold text-on-surface truncate">HIMPALUBI UNIPAR</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Row -->
+          <div class="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-t border-surface-container">
+            <div class="text-xs text-secondary font-medium">
+              Sivitas Akademika PLB UNIPAR Jember
+            </div>
+
+            <div class="flex items-center gap-3">
+              <a class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-primary-container hover:bg-primary text-on-primary text-xs font-semibold transition-colors shadow-md min-h-[44px]" href="detail.html?id=${fItem.id}&kategori=Kegiatan">
+                <span>Lihat Detail Agenda</span>
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // 2. Render Grid Kegiatan
+  grid.innerHTML = data.map((item) => `
+    <article class="event-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-surface-container overflow-hidden flex flex-col justify-between group" data-category="all" data-status="open" data-period="all">
+      <div>
+        <div class="relative h-48 w-full overflow-hidden bg-surface-container">
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${escapeHtml(item.judul)}" src="${item.foto_url || 'img/kegiatan-1.jpg'}" onerror="this.onerror=null; this.src='img/kegiatan-1.jpg';">
+          <div class="absolute top-3 left-3">
+            <span class="px-2.5 py-1 rounded-full bg-primary-container text-on-primary text-xs font-semibold shadow-sm">
+              Kegiatan Resmi
+            </span>
+          </div>
+          <div class="absolute top-3 right-3 bg-surface-container-lowest/95 backdrop-blur px-2.5 py-1 rounded-lg shadow-sm text-center">
+            <div class="text-[10px] uppercase font-bold text-primary-container">AGENDA</div>
+            <div class="text-xs font-extrabold text-on-surface leading-none">${formatTanggal(item.tanggal)}</div>
+          </div>
+        </div>
+
+        <div class="p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-flex items-center gap-1 text-xs font-semibold text-primary-container">
+              <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+              Publikasi Resmi
+            </span>
+            <span class="text-secondary/50">&bull;</span>
+            <span class="text-xs text-secondary">HIMPALUBI</span>
+          </div>
+
+          <h3 class="text-base font-bold text-on-surface mb-2 line-clamp-2 group-hover:text-primary-container transition-colors">
+            <a href="detail.html?id=${item.id}&kategori=Kegiatan" class="hover:underline">${escapeHtml(item.judul)}</a>
+          </h3>
+
+          <p class="text-xs text-secondary line-clamp-2 mb-4 leading-relaxed">
+            ${escapeHtml(ringkas(item.isi, 120))}
+          </p>
+
+          <div class="flex flex-col gap-2 bg-surface-container-low p-3 rounded-xl text-xs text-secondary">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-primary-container shrink-0">event</span>
+              <span class="truncate">${formatTanggal(item.tanggal)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-5 pt-0">
+        <a class="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-full bg-surface-container hover:bg-primary-container hover:text-on-primary text-on-surface text-xs font-semibold transition-all min-h-[44px]" href="detail.html?id=${item.id}&kategori=Kegiatan">
+          <span>Lihat Detail Kegiatan</span>
+          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+        </a>
+      </div>
+    </article>
+  `).join("");
+
+  // Inisialisasi filter setelah card dimasukkan ke DOM
+  inisialisasiFilterKegiatan();
+}
+
+function inisialisasiFilterKegiatan() {
+  const searchInput = document.getElementById("eventSearchInput");
+  const statusSelect = document.getElementById("statusFilterSelect");
+  const periodSelect = document.getElementById("periodFilterSelect");
+  const filterPills = document.querySelectorAll(".category-filter-btn");
+  const eventCards = document.querySelectorAll(".event-card");
+  const counterNotice = document.getElementById("eventCounterNotice");
+
+  let currentCategory = "all";
+
+  function filterEvents() {
+    const searchTerm = (searchInput?.value || "").toLowerCase().trim();
+    const currentStatus = statusSelect?.value || "all";
+    const currentPeriod = periodSelect?.value || "all";
+
+    let visibleCount = 0;
+
+    eventCards.forEach((card) => {
+      const cardCategory = card.dataset.category || "";
+      const cardStatus = card.dataset.status || "";
+      const cardPeriod = card.dataset.period || "";
+      const cardText = card.textContent.toLowerCase();
+
+      const matchCategory = currentCategory === "all" || cardCategory === currentCategory;
+      const matchStatus = currentStatus === "all" || cardStatus === currentStatus;
+      const matchPeriod = currentPeriod === "all" || cardPeriod === currentPeriod;
+      const matchSearch = !searchTerm || cardText.includes(searchTerm);
+
+      if (matchCategory && matchStatus && matchPeriod && matchSearch) {
+        card.classList.remove("hidden");
+        visibleCount++;
+      } else {
+        card.classList.add("hidden");
+      }
+    });
+
+    if (counterNotice) {
+      counterNotice.innerHTML = `Menampilkan: <strong class="text-on-surface">${visibleCount} Program</strong>`;
+    }
+  }
+
+  if (searchInput) searchInput.addEventListener("input", filterEvents);
+  if (statusSelect) statusSelect.addEventListener("change", filterEvents);
+  if (periodSelect) periodSelect.addEventListener("change", filterEvents);
+
+  filterPills.forEach((pill) => {
+    pill.addEventListener("click", () => {
+      filterPills.forEach((p) => {
+        p.classList.remove("bg-primary-container", "text-on-primary");
+        p.classList.add("bg-surface-container-lowest", "text-secondary");
+      });
+      pill.classList.remove("bg-surface-container-lowest", "text-secondary");
+      pill.classList.add("bg-primary-container", "text-on-primary");
+      currentCategory = pill.dataset.category || "all";
+      filterEvents();
+    });
+  });
+}
+
+// ================= BERANDA: Berita Terbaru (3 kartu) =================
 async function muatBeritaKartu(elId, batas) {
   const el = document.getElementById(elId);
   if (!el) return;
-  el.innerHTML = skeletonCards(batas || 3, skeletonContentCard);
 
-  let query = supabaseClient
-    .from("berita")
-    .select("*")
-    .eq("kategori", "Berita")
-    .order("tanggal", { ascending: false });
-  if (batas) query = query.limit(batas);
+  let data = null;
+  try {
+    let query = supabaseClient
+      .from("berita")
+      .select("*")
+      .eq("kategori", "Berita")
+      .order("tanggal", { ascending: false });
+    if (batas) query = query.limit(batas);
+    const res = await query;
+    data = res.data;
+  } catch (e) {
+    console.warn("Info: Menampilkan warta kurasi HIMPALUBI", e);
+  }
 
-  const { data, error } = await query;
-
-  if (error || !data || data.length === 0) {
-    el.innerHTML = emptyState("Belum ada berita", "Berita terbaru akan muncul di sini setelah dipublikasikan.");
+  if (data && data.length > 0) {
+    el.innerHTML = data.map(item => `
+      <article class="bg-surface-container-low rounded-2xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
+        <div class="flex items-center gap-2 text-xs text-secondary mb-2.5">
+          <span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold">Warta</span>
+          <span>${formatTanggal(item.tanggal)}</span>
+        </div>
+        <h3 class="text-base font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
+          <a href="detail.html?id=${item.id}&kategori=Berita" class="hover:underline">${escapeHtml(item.judul)}</a>
+        </h3>
+        <p class="text-xs text-secondary line-clamp-3 mb-4 flex-1 leading-relaxed">
+          ${escapeHtml(ringkas(item.isi, 120))}
+        </p>
+        <a href="detail.html?id=${item.id}&kategori=Berita" class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-container hover:text-primary mt-auto">
+          <span>Baca Selengkapnya</span>
+          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+        </a>
+      </article>
+    `).join("");
     return;
   }
 
-  el.innerHTML = data.map(item => `
-    <a href="detail.html?id=${item.id}&kategori=Berita" class="content-card" style="text-decoration:none; color:inherit; display:block;">
-      ${item.foto_url ? `<img src="${item.foto_url}" class="thumb" alt="Foto ${escapeHtml(item.judul)}" loading="lazy">` : ""}
-      <div class="body">
-        <time>${formatTanggal(item.tanggal)}</time>
-        <h4>${escapeHtml(item.judul)}</h4>
-        <p>${escapeHtml(ringkas(item.isi, 110))}</p>
+  // Tampilan berita kurasi bawaan jika database kosong
+  el.innerHTML = `
+    <article class="bg-surface-container-low rounded-2xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
+      <div class="flex items-center gap-2 text-xs text-secondary mb-2.5">
+        <span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold">Organisasi</span>
+        <span>12 April 2025</span>
       </div>
-    </a>
+      <h3 class="text-base font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
+        <a href="berita.html" class="hover:underline">Pelantikan Dewan Pengurus HIMPALUBI UNIPAR Periode 2025/2026</a>
+      </h3>
+      <p class="text-xs text-secondary line-clamp-3 mb-4 flex-1 leading-relaxed">
+        Serah terima jabatan ketua umum dan jajaran dewan pengurus diselenggarakan dengan khidmat di hadapan pimpinan prodi dan senat mahasiswa.
+      </p>
+      <a href="berita.html" class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-container hover:text-primary mt-auto">
+        <span>Baca Selengkapnya</span>
+        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+      </a>
+    </article>
+
+    <article class="bg-surface-container-low rounded-2xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
+      <div class="flex items-center gap-2 text-xs text-secondary mb-2.5">
+        <span class="px-2.5 py-0.5 rounded-full bg-surface-container-highest text-secondary font-medium">Prestasi</span>
+        <span>08 April 2025</span>
+      </div>
+      <h3 class="text-base font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
+        <a href="berita.html" class="hover:underline">Mahasiswa PLB UNIPAR Raih Juara Inovasi Media Pembelajaran Inklusif</a>
+      </h3>
+      <p class="text-xs text-secondary line-clamp-3 mb-4 flex-1 leading-relaxed">
+        Delegasi mahasiswa berhasil mengembangkan aplikasi ramah tunarungu dalam kompetisi karya inovasi pembelajaran tingkat regional.
+      </p>
+      <a href="berita.html" class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-container hover:text-primary mt-auto">
+        <span>Baca Selengkapnya</span>
+        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+      </a>
+    </article>
+
+    <article class="bg-surface-container-low rounded-2xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
+      <div class="flex items-center gap-2 text-xs text-secondary mb-2.5">
+        <span class="px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-semibold">Akademik</span>
+        <span>25 Maret 2025</span>
+      </div>
+      <h3 class="text-base font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
+        <a href="berita.html" class="hover:underline">Sosialisasi Kurikulum OBE dan Program Magang Inklusi Semester Genap</a>
+      </h3>
+      <p class="text-xs text-secondary line-clamp-3 mb-4 flex-1 leading-relaxed">
+        Pengenalan skema magang kemitraan di sekolah luar biasa dan pusat terapi anak berkebutuhan khusus wilayah Jember dan sekitarnya.
+      </p>
+      <a href="berita.html" class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-container hover:text-primary mt-auto">
+        <span>Baca Selengkapnya</span>
+        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+      </a>
+    </article>
+  `;
+}
+
+// ================= PENGURUS BERANDA (index.html) =================
+async function muatPengurusBeranda(elId = "pengurus-beranda-grid", batas = 5) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  el.innerHTML = Array(batas).fill(0).map(() => `
+    <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-surface-container text-center flex flex-col items-center animate-pulse">
+      <div class="w-24 h-24 rounded-full bg-surface-container mb-3 mt-1"></div>
+      <div class="w-20 h-5 rounded-full bg-surface-container mb-2"></div>
+      <div class="w-32 h-5 bg-surface-container rounded mb-1"></div>
+      <div class="w-24 h-4 bg-surface-container rounded"></div>
+    </div>
   `).join("");
+
+  let data = null;
+  try {
+    const res = await supabaseClient
+      .from("anggota")
+      .select("*")
+      .eq("kategori", "Pengurus")
+      .eq("status", "Aktif")
+      .order("urutan", { ascending: true, nullsFirst: false })
+      .order("nama")
+      .limit(batas);
+    data = res.data;
+  } catch (err) {
+    console.warn("Info: Tidak dapat memuat pengurus dari Supabase.", err);
+  }
+
+  if (data && data.length > 0) {
+    el.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5";
+    el.innerHTML = data.map((p, idx) => {
+      const isPucuk = idx === 0 || (p.jabatan && p.jabatan.toLowerCase().includes("ketua umum"));
+      const initialName = initial(p.nama);
+      const photoHtml = p.foto_url
+        ? `<img src="${p.foto_url}" alt="Foto ${escapeHtml(p.nama)}" class="w-full h-full object-cover rounded-full" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full rounded-full ${isPucuk ? 'bg-primary-fixed text-primary-container' : 'bg-surface-container-high text-on-surface'} flex items-center justify-center font-bold text-lg sm:text-xl\\'>${initialName}</div>'">`
+        : `<div class="w-full h-full rounded-full ${isPucuk ? 'bg-primary-fixed text-primary-container' : 'bg-surface-container-high text-on-surface'} flex items-center justify-center font-bold text-lg sm:text-xl">${initialName}</div>`;
+
+      return `
+        <div class="bg-surface-container-lowest p-4 sm:p-5 rounded-2xl shadow-sm border border-surface-container text-center flex flex-col items-center relative overflow-hidden group hover:border-primary/20 hover:shadow-md transition-all">
+          ${isPucuk ? '<div class="absolute top-0 left-0 right-0 h-1.5 bg-primary-container" aria-hidden="true"></div>' : ''}
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden p-1 bg-surface-container shadow-sm mb-3 ${isPucuk ? 'mt-1' : ''}">
+            ${photoHtml}
+          </div>
+          <span class="px-2.5 py-0.5 rounded-full ${isPucuk ? 'bg-primary-container text-on-primary font-semibold' : 'bg-surface-container text-secondary font-medium'} text-label-sm mb-1.5">
+            ${escapeHtml(p.divisi || (isPucuk ? "Pucuk Pimpinan" : "BPH Inti"))}
+          </span>
+          <h3 class="text-title-md font-bold text-on-surface mb-0.5 line-clamp-1" title="${escapeHtml(p.nama)}">${escapeHtml(p.nama)}</h3>
+          <p class="text-label-md ${isPucuk ? 'text-primary-container font-semibold' : 'text-secondary font-medium'} mb-1">${escapeHtml(p.jabatan || "Pengurus")}</p>
+        </div>
+      `;
+    }).join("");
+    return;
+  }
+
+  // Jika belum ada data pengurus di database
+  el.className = "w-full col-span-full";
+  el.innerHTML = emptyState(
+    "Belum ada data pengurus yang diunggah",
+    "Saat ini data susunan dewan pengurus HIMPALUBI belum diunggah ke database. Data pengurus akan tampil secara otomatis setelah diperbarui oleh administrator.",
+    {
+      icon: "badge",
+      btnText: "Lihat Struktur Lengkap",
+      btnHref: "struktur.html"
+    }
+  );
 }
 
 // ================= HALAMAN ANGGOTA: dikelompokkan per angkatan =================
@@ -146,21 +587,30 @@ async function muatAnggota(elId) {
   if (!el) return;
   el.innerHTML = skeletonMemberGrid(4);
 
-  const { data, error } = await supabaseClient
-    .from("anggota")
-    .select("*")
-    .eq("kategori", "Anggota")
-    .eq("status", "Aktif")
-    .order("angkatan", { ascending: false });
-
-  if (error) {
-    el.innerHTML = `<p class="form-message error">Data anggota belum bisa dimuat.</p>`;
-    console.error(error);
-    return;
+  let data = null;
+  try {
+    const res = await supabaseClient
+      .from("anggota")
+      .select("*")
+      .eq("kategori", "Anggota")
+      .eq("status", "Aktif")
+      .order("angkatan", { ascending: false })
+      .order("nama", { ascending: true });
+    data = res.data;
+  } catch (err) {
+    console.warn("Info: Tidak dapat memuat anggota dari Supabase.", err);
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = emptyState("Belum ada data anggota", "Data anggota akan tampil di sini setelah ditambahkan admin.");
+    el.innerHTML = emptyState(
+      "Belum ada data anggota",
+      "Saat ini direktori data anggota himpunan belum diunggah ke database. Data akan tampil di sini setelah ditambahkan oleh pengurus.",
+      {
+        icon: "groups",
+        btnText: "Daftar Jadi Anggota",
+        btnHref: "pendaftaran.html"
+      }
+    );
     return;
   }
 
@@ -173,9 +623,13 @@ async function muatAnggota(elId) {
   el.innerHTML = Object.keys(kelompok)
     .sort((a, b) => b.localeCompare(a, "id", { numeric: true }))
     .map(angkatan => `
-      <div class="angkatan-group">
-        <h3>Angkatan ${escapeHtml(angkatan)}</h3>
-        <div class="member-grid">
+      <div class="mb-10 last:mb-0">
+        <div class="flex items-center gap-2 pb-3 mb-6 border-b border-surface-container">
+          <span class="w-2.5 h-6 rounded-full bg-primary-container" aria-hidden="true"></span>
+          <h2 class="text-xl sm:text-2xl font-bold text-on-surface">Angkatan ${escapeHtml(angkatan)}</h2>
+          <span class="ml-auto text-xs px-2.5 py-0.5 rounded-full bg-surface-container text-secondary font-medium">${kelompok[angkatan].length} Mahasiswa</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           ${kelompok[angkatan].map(kartuAnggota).join("")}
         </div>
       </div>
@@ -183,11 +637,19 @@ async function muatAnggota(elId) {
 }
 
 function kartuAnggota(a) {
+  const initialName = initial(a.nama);
+  const photoHtml = a.foto_url
+    ? `<img src="${a.foto_url}" alt="Foto ${escapeHtml(a.nama)}" class="w-full h-full object-cover rounded-full" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-lg\\'>${initialName}</div>'">`
+    : `<div class="w-full h-full rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-lg">${initialName}</div>`;
+
   return `
-    <div class="member-card">
-      <div class="photo">${a.foto_url ? `<img src="${a.foto_url}" alt="Foto ${escapeHtml(a.nama)}" loading="lazy">` : initial(a.nama)}</div>
-      <h3>${escapeHtml(a.nama)}</h3>
-      <div class="role">${escapeHtml(a.jabatan || "Anggota")}</div>
+    <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-surface-container text-center flex flex-col items-center hover:border-primary/20 hover:shadow-md transition-all">
+      <div class="w-20 h-20 rounded-full overflow-hidden p-1 bg-surface-container shadow-sm mb-3">
+        ${photoHtml}
+      </div>
+      <h3 class="text-title-md font-bold text-on-surface mb-0.5 line-clamp-1" title="${escapeHtml(a.nama)}">${escapeHtml(a.nama)}</h3>
+      <div class="text-label-md text-secondary font-medium">${escapeHtml(a.jabatan || "Anggota")}</div>
+      ${a.nim ? `<div class="text-label-sm text-secondary/70 font-mono mt-1">${escapeHtml(a.nim)}</div>` : ''}
     </div>
   `;
 }
@@ -198,22 +660,30 @@ async function muatStruktur(elId) {
   if (!el) return;
   el.innerHTML = skeletonMemberGrid(4);
 
-  const { data, error } = await supabaseClient
-    .from("anggota")
-    .select("*")
-    .eq("kategori", "Pengurus")
-    .eq("status", "Aktif")
-    .order("urutan", { ascending: true, nullsFirst: false })
-    .order("nama");
-
-  if (error) {
-    el.innerHTML = `<p class="form-message error">Struktur organisasi belum bisa dimuat.</p>`;
-    console.error(error);
-    return;
+  let data = null;
+  try {
+    const res = await supabaseClient
+      .from("anggota")
+      .select("*")
+      .eq("kategori", "Pengurus")
+      .eq("status", "Aktif")
+      .order("urutan", { ascending: true, nullsFirst: false })
+      .order("nama");
+    data = res.data;
+  } catch (err) {
+    console.warn("Info: Tidak dapat memuat struktur dari Supabase.", err);
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = emptyState("Struktur belum diisi", "Susunan BPH dan divisi akan tampil di sini setelah diisi admin.");
+    el.innerHTML = emptyState(
+      "Belum ada data struktur pengurus",
+      "Susunan Badan Pengurus Harian (BPH) dan divisi belum diunggah ke database. Pengurus akan segera memperbarui struktur kepengurusan.",
+      {
+        icon: "account_tree",
+        btnText: "Kembali ke Beranda",
+        btnHref: "index.html"
+      }
+    );
     return;
   }
 
@@ -224,9 +694,13 @@ async function muatStruktur(elId) {
   });
 
   el.innerHTML = urutkanDivisi(Object.keys(kelompok)).map(divisi => `
-    <div class="angkatan-group">
-      <h3>${escapeHtml(divisi)}</h3>
-      <div class="member-grid">
+    <div class="mb-10 last:mb-0">
+      <div class="flex items-center gap-2 pb-3 mb-6 border-b border-surface-container">
+        <span class="w-2.5 h-6 rounded-full bg-primary-container" aria-hidden="true"></span>
+        <h2 class="text-xl sm:text-2xl font-bold text-on-surface">${escapeHtml(divisi)}</h2>
+        <span class="ml-auto text-xs px-2.5 py-0.5 rounded-full bg-surface-container text-secondary font-medium">${kelompok[divisi].length} Fungsionaris</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         ${kelompok[divisi].map(kartuAnggota).join("")}
       </div>
     </div>
@@ -239,38 +713,53 @@ async function muatProgramKerja(elId) {
   if (!el) return;
   el.innerHTML = Array(3).fill(0).map(skeletonProgramItem).join("");
 
-  const { data, error } = await supabaseClient
-    .from("program_kerja")
-    .select("*")
-    .order("divisi");
-
-  if (error) {
-    el.innerHTML = `<p class="form-message error">Program kerja belum bisa dimuat.</p>`;
-    console.error(error);
-    return;
+  let data = null;
+  try {
+    const res = await supabaseClient
+      .from("program_kerja")
+      .select("*")
+      .order("divisi");
+    data = res.data;
+  } catch (err) {
+    console.warn("Info: Tidak dapat memuat program kerja dari Supabase.", err);
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = emptyState("Belum ada program kerja", "Program kerja tiap divisi akan tampil di sini setelah ditambahkan.");
+    el.innerHTML = emptyState(
+      "Belum ada program kerja yang diunggah",
+      "Daftar program kerja per divisi untuk periode kepengurusan ini belum diunggah ke database.",
+      {
+        icon: "checklist",
+        btnText: "Lihat Kegiatan Terjadwal",
+        btnHref: "kegiatan.html"
+      }
+    );
     return;
   }
 
   const kelompok = {};
   data.forEach(p => {
-    (kelompok[p.divisi] = kelompok[p.divisi] || []).push(p);
+    const div = p.divisi || "Umum";
+    (kelompok[div] = kelompok[div] || []).push(p);
   });
 
   el.innerHTML = urutkanDivisi(Object.keys(kelompok)).map(divisi => `
-    <div class="angkatan-group">
-      <h3>${escapeHtml(divisi)}</h3>
-      <div class="program-list">
+    <div class="mb-10 last:mb-0">
+      <div class="flex items-center gap-2 pb-3 mb-6 border-b border-surface-container">
+        <span class="w-2.5 h-6 rounded-full bg-primary-container" aria-hidden="true"></span>
+        <h2 class="text-xl sm:text-2xl font-bold text-on-surface">${escapeHtml(divisi)}</h2>
+        <span class="ml-auto text-xs px-2.5 py-0.5 rounded-full bg-surface-container text-secondary font-medium">${kelompok[divisi].length} Program</span>
+      </div>
+      <div class="flex flex-col gap-3">
         ${kelompok[divisi].map(p => `
-          <div class="program-item">
-            <div>
-              <h4>${escapeHtml(p.nama_program)}</h4>
-              ${p.deskripsi ? `<p>${escapeHtml(p.deskripsi)}</p>` : ""}
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-surface-container-lowest border border-surface-container shadow-sm hover:border-primary/20 transition-all">
+            <div class="flex-1">
+              <h3 class="text-base font-bold text-on-surface mb-1">${escapeHtml(p.nama_program)}</h3>
+              ${p.deskripsi ? `<p class="text-xs text-secondary leading-relaxed">${escapeHtml(p.deskripsi)}</p>` : ""}
             </div>
-            ${badgeStatusProgram(p.status)}
+            <div class="shrink-0">
+              ${badgeStatusProgram(p.status)}
+            </div>
           </div>
         `).join("")}
       </div>
@@ -287,8 +776,15 @@ function urutkanDivisi(daftar) {
 }
 
 function badgeStatusProgram(status) {
-  const kelas = { Direncanakan: "menunggu", Berjalan: "diterima", Selesai: "aktif" }[status] || "menunggu";
-  return `<span class="badge ${kelas}">${escapeHtml(status || "")}</span>`;
+  if (!status) return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-surface-container text-secondary">Rencana</span>`;
+  const s = status.toLowerCase();
+  if (s === "selesai" || s === "terlaksana") {
+    return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="material-symbols-outlined text-[14px]">check_circle</span>Selesai</span>`;
+  }
+  if (s === "berjalan" || s === "proses" || s === "sedang berjalan") {
+    return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200"><span class="material-symbols-outlined text-[14px]">sync</span>Sedang Berjalan</span>`;
+  }
+  return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-surface-container text-secondary"><span class="material-symbols-outlined text-[14px]">schedule</span>Direncanakan</span>`;
 }
 
 // ================= HALAMAN GALERI =================
@@ -303,17 +799,76 @@ async function muatGaleriHalaman(elId) {
     .order("tanggal", { ascending: false });
 
   if (error) {
-    el.innerHTML = `<p class="form-message error">Galeri belum bisa dimuat.</p>`;
+    el.innerHTML = `<p class="form-message error col-span-full">Galeri belum bisa dimuat. Silakan muat ulang halaman.</p>`;
     console.error(error);
     return;
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = emptyState("Galeri masih kosong", "Foto kegiatan akan tampil di sini setelah diunggah admin.");
+    el.innerHTML = emptyState(
+      "Belum ada foto galeri yang diunggah",
+      "Dokumentasi foto kegiatan HIMPALUBI akan segera diperbarui oleh tim pengurus.",
+      {
+        icon: "photo_library",
+        btnText: "Kembali ke Beranda",
+        btnHref: "index.html"
+      }
+    );
     return;
   }
 
-  el.innerHTML = data.map(g => `<img src="${g.foto_url}" alt="${escapeHtml(g.judul || "")}" loading="lazy">`).join("");
+  el.innerHTML = data.map(g => `
+    <div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-surface-container h-64 border border-surface-container cursor-pointer">
+      <img src="${g.foto_url}" alt="${escapeHtml(g.judul || 'Foto Galeri')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
+      <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/20 to-transparent flex flex-col justify-end p-4 text-on-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <h3 class="text-sm font-bold text-on-primary leading-snug line-clamp-2">${escapeHtml(g.judul || '')}</h3>
+        ${g.keterangan ? `<p class="text-xs text-secondary-fixed-dim mt-0.5 line-clamp-1">${escapeHtml(g.keterangan)}</p>` : ''}
+      </div>
+    </div>
+  `).join("");
+}
+
+// ================= BERANDA: Galeri Momen Kegiatan (4 foto) =================
+async function muatGaleriBeranda(elId = "galeri-beranda-grid", batas = 4) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  let data = null;
+  try {
+    const res = await supabaseClient
+      .from("galeri")
+      .select("*")
+      .order("tanggal", { ascending: false })
+      .limit(batas);
+    data = res.data;
+  } catch (err) {
+    console.warn("Info: Tidak dapat memuat galeri dari Supabase.", err);
+  }
+
+  // Jika belum ada data galeri di database
+  if (!data || data.length === 0) {
+    el.innerHTML = emptyState(
+      "Belum ada dokumentasi galeri yang diunggah",
+      "Foto dokumentasi kegiatan dan program kerja akan tampil di sini begitu dipublikasikan oleh pengurus.",
+      {
+        icon: "photo_library",
+        btnText: "Lihat Seluruh Kegiatan",
+        btnHref: "kegiatan.html"
+      }
+    );
+    return;
+  }
+
+  el.innerHTML = data.map((item) => `
+    <div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-surface-container h-64 border border-surface-container cursor-pointer">
+      <img src="${item.foto_url || 'img/kegiatan-1.jpg'}" alt="${escapeHtml(item.judul || 'Dokumentasi Kegiatan')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.onerror=null; this.src='img/kegiatan-1.jpg';">
+      <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/30 to-transparent flex flex-col justify-end p-4 text-on-primary">
+        <span class="text-[11px] uppercase tracking-wider font-bold text-primary-fixed mb-0.5 block">${item.tanggal ? formatTanggal(item.tanggal) : 'Dokumentasi'}</span>
+        <h3 class="text-sm sm:text-base font-bold text-on-primary leading-snug line-clamp-2 group-hover:text-primary-fixed-dim transition-colors">${escapeHtml(item.judul || 'Dokumentasi Kegiatan')}</h3>
+        ${item.keterangan ? `<p class="text-xs text-secondary-fixed-dim mt-0.5 line-clamp-1">${escapeHtml(item.keterangan)}</p>` : ''}
+      </div>
+    </div>
+  `).join("");
 }
 
 // ================= HALAMAN TENTANG =================
@@ -410,13 +965,39 @@ async function muatStatistikBeranda(elId) {
   ]);
 
   const divisiUnik = new Set((pengurusRes.data || []).map(r => r.divisi).filter(Boolean));
-  const tahun = pengaturanRes.data?.tahun_berdiri;
+  let labelTahun = "Sejak 2008";
+  if (tahun) {
+    labelTahun = tahun.toLowerCase().startsWith("sejak") ? escapeHtml(tahun) : "Sejak " + escapeHtml(tahun);
+  }
 
   el.innerHTML = `
-    <div class="stat-mini"><span class="angka">${tahun ? "Sejak " + escapeHtml(tahun) : "—"}</span><span class="label">Berdiri</span></div>
-    <div class="stat-mini"><span class="angka">${anggotaRes.count ?? 0}</span><span class="label">Anggota Aktif</span></div>
-    <div class="stat-mini"><span class="angka">${divisiUnik.size}</span><span class="label">Divisi</span></div>
-    <div class="stat-mini"><span class="angka">${programRes.count ?? 0}</span><span class="label">Program Kerja</span></div>
+    <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm hover:bg-surface-container-lowest/15 transition-all duration-200 text-center group">
+      <span class="angka text-xs sm:text-base font-bold text-primary-fixed-dim leading-snug group-hover:scale-105 transition-transform break-words">
+        ${labelTahun}
+      </span>
+      <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Berdiri</span>
+    </div>
+
+    <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm hover:bg-surface-container-lowest/15 transition-all duration-200 text-center group">
+      <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-primary leading-tight group-hover:scale-105 transition-transform">
+        ${anggotaRes.count ?? 0}
+      </span>
+      <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Anggota Aktif</span>
+    </div>
+
+    <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm hover:bg-surface-container-lowest/15 transition-all duration-200 text-center group">
+      <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-primary-fixed leading-tight group-hover:scale-105 transition-transform">
+        ${divisiUnik.size || 0}
+      </span>
+      <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Divisi</span>
+    </div>
+
+    <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm hover:bg-surface-container-lowest/15 transition-all duration-200 text-center group">
+      <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-primary leading-tight group-hover:scale-105 transition-transform">
+        ${programRes.count ?? 0}
+      </span>
+      <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Program Kerja</span>
+    </div>
   `;
 }
 
@@ -513,32 +1094,38 @@ async function muatTestimoniBeranda(elId) {
   `).join("");
 }
 
-// ================= TICKER: Tulisan Berjalan (otomatis + manual) =================
+// ================= TICKER / WARTA: Pengumuman Statis (Stay) =================
 async function muatTickerBerjalan() {
   const bar = document.getElementById("ticker-bar");
   const track = document.getElementById("ticker-track");
   if (!bar || !track) return;
 
-  const [pengaturanRes, beritaRes, kegiatanRes] = await Promise.all([
-    supabaseClient.from("pengaturan").select("teks_berjalan").eq("id", 1).single(),
-    supabaseClient.from("berita").select("judul").eq("kategori", "Berita").order("tanggal", { ascending: false }).limit(3),
-    supabaseClient.from("berita").select("judul").eq("kategori", "Kegiatan").order("tanggal", { ascending: false }).limit(3),
-  ]);
+  const fallbackPotongan = [
+    "Selamat datang di Portal Resmi HIMPALUBI UNIPAR Jember",
+    "Pendaftaran Calon Anggota Baru Gelombang 2026/2027 telah dibuka"
+  ];
 
-  const potongan = [];
-  if (pengaturanRes.data?.teks_berjalan) potongan.push(pengaturanRes.data.teks_berjalan);
-  (beritaRes.data || []).forEach(b => potongan.push(`Berita: ${b.judul}`));
-  (kegiatanRes.data || []).forEach(k => potongan.push(`Kegiatan: ${k.judul}`));
+  try {
+    const [pengaturanRes, beritaRes, kegiatanRes] = await Promise.all([
+      supabaseClient.from("pengaturan").select("teks_berjalan").eq("id", 1).maybeSingle(),
+      supabaseClient.from("berita").select("judul").eq("kategori", "Berita").order("tanggal", { ascending: false }).limit(2),
+      supabaseClient.from("berita").select("judul").eq("kategori", "Kegiatan").order("tanggal", { ascending: false }).limit(2),
+    ]);
 
-  if (!potongan.length) {
-    bar.hidden = true;
-    return;
+    const potongan = [];
+    if (pengaturanRes?.data?.teks_berjalan) potongan.push(pengaturanRes.data.teks_berjalan);
+    (beritaRes?.data || []).forEach(b => potongan.push(`Berita: ${b.judul}`));
+    (kegiatanRes?.data || []).forEach(k => potongan.push(`Kegiatan: ${k.judul}`));
+
+    const listTeks = potongan.length ? potongan : fallbackPotongan;
+    const isiTeks = listTeks.map(t => `<span class="truncate">${escapeHtml(t)}</span>`).join(' <span class="pemisah text-primary-container font-bold shrink-0">&bull;</span> ');
+    track.innerHTML = isiTeks;
+    bar.hidden = false;
+  } catch (e) {
+    const isiTeks = fallbackPotongan.map(t => `<span class="truncate">${escapeHtml(t)}</span>`).join(' <span class="pemisah text-primary-container font-bold shrink-0">&bull;</span> ');
+    track.innerHTML = isiTeks;
+    bar.hidden = false;
   }
-
-  const isiTeks = potongan.map(escapeHtml).join('<span class="pemisah">&bull;</span>');
-  // Digandakan supaya animasi scroll terlihat menyambung terus-menerus
-  track.innerHTML = `${isiTeks}<span class="pemisah">&bull;</span>${isiTeks}`;
-  bar.hidden = false;
 }
 
 // ================= FORM PENDAFTARAN (pendaftaran.html) =================
@@ -643,7 +1230,11 @@ function ringkas(teks, panjang) {
 }
 function initial(nama) {
   if (!nama) return "?";
-  return nama.trim().charAt(0).toUpperCase();
+  const parts = nama.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return nama.trim().slice(0, 2).toUpperCase();
 }
 // ================= SKELETON LOADING: placeholder shimmer sebelum data siap =================
 function skeletonListItem() {
@@ -675,20 +1266,27 @@ function skeletonCards(jumlah, fn) {
   return Array(jumlah || 3).fill(0).map(fn).join("");
 }
 function skeletonMemberCard() {
-  return `<div class="member-card">
-    <span class="skeleton skeleton-circle"></span>
-    <span class="skeleton skeleton-title" style="margin-top:0.75rem;"></span>
-    <span class="skeleton skeleton-text short"></span>
-  </div>`;
+  return `
+    <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-surface-container text-center flex flex-col items-center animate-pulse">
+      <div class="w-20 h-20 rounded-full bg-surface-container mb-3"></div>
+      <div class="w-28 h-5 bg-surface-container rounded mb-1.5"></div>
+      <div class="w-20 h-4 bg-surface-container rounded"></div>
+    </div>
+  `;
 }
 function skeletonMemberGrid(jumlah) {
-  return `<div class="member-grid">${skeletonCards(jumlah || 4, skeletonMemberCard)}</div>`;
+  return `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">${skeletonCards(jumlah || 4, skeletonMemberCard)}</div>`;
 }
 function skeletonParagraf(jumlah) {
   return Array(jumlah || 3).fill(0).map((_, i) => `<span class="skeleton skeleton-text${i === (jumlah || 3) - 1 ? " short" : ""}"></span>`).join("");
 }
 function skeletonProgramItem() {
-  return `<div class="program-item"><span class="skeleton skeleton-title" style="width:60%;"></span></div>`;
+  return `
+    <div class="p-4 rounded-xl bg-surface-container-lowest border border-surface-container animate-pulse flex items-center justify-between">
+      <div class="w-1/2 h-5 bg-surface-container rounded"></div>
+      <div class="w-20 h-6 bg-surface-container rounded-full"></div>
+    </div>
+  `;
 }
 function skeletonGaleri(jumlah) {
   return Array(jumlah || 6).fill('<span class="skeleton skeleton-image"></span>').join("");
@@ -698,13 +1296,25 @@ function skeletonBarisTabel(kolom, jumlahBaris) {
   return Array(jumlahBaris || 3).fill(baris).join("");
 }
 
-// ================= EMPTY STATE: tampilan "belum ada data" yang lebih baik =================
-function emptyState(judul, deskripsi) {
+// ================= EMPTY STATE: tampilan "belum ada data" yang bersih & responsif =================
+function emptyState(judul, deskripsi, options = {}) {
+  const icon = (typeof options === "string" ? options : options.icon) || "event_busy";
+  const btnText = typeof options === "object" ? options.btnText : "";
+  const btnHref = typeof options === "object" ? options.btnHref : "";
+
   return `
-    <div class="empty-state">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M8 14h8"/></svg>
-      <h4>${escapeHtml(judul)}</h4>
-      <p>${escapeHtml(deskripsi)}</p>
+    <div class="col-span-full w-full py-10 px-6 sm:px-8 rounded-2xl bg-surface-container-lowest border border-surface-container text-center flex flex-col items-center justify-center shadow-sm my-2">
+      <div class="w-14 h-14 rounded-2xl bg-primary-fixed/60 text-primary-container flex items-center justify-center mb-3.5 shadow-sm">
+        <span class="material-symbols-outlined text-[28px]">${escapeHtml(icon)}</span>
+      </div>
+      <h4 class="text-base sm:text-lg font-bold text-on-surface mb-1.5 tracking-tight">${escapeHtml(judul)}</h4>
+      <p class="text-xs sm:text-sm text-secondary max-w-md mx-auto leading-relaxed ${btnText ? 'mb-4' : 'mb-0'}">${escapeHtml(deskripsi)}</p>
+      ${btnText && btnHref ? `
+        <a href="${escapeHtml(btnHref)}" class="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-primary-container hover:bg-primary text-on-primary text-xs font-semibold transition-all shadow-sm min-h-[40px]">
+          <span>${escapeHtml(btnText)}</span>
+          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+        </a>
+      ` : ""}
     </div>
   `;
 }

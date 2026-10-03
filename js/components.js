@@ -1,5 +1,8 @@
-// Memuat header & footer bersama ke setiap halaman publik,
-// lalu menyalakan menu hamburger (HP) dan dropdown "Tentang".
+// =========================================================
+// HIMPALUBI — Komponen Header & Footer Bersama
+// Memuat partials/header.html dan partials/footer.html ke slot
+// serta menangani interaktivitas navbar, dropdown, dan aksesibilitas.
+// =========================================================
 
 async function muatKomponen() {
   const headerSlot = document.getElementById("site-header-slot");
@@ -7,13 +10,16 @@ async function muatKomponen() {
 
   if (headerSlot) {
     try {
-      const res = await fetch("partials/header.html");
-      headerSlot.innerHTML = await res.text();
-      tandaiMenuAktif();
-      pasangHamburger();
-      pasangDropdown();
-      if (typeof pasangPencarian === "function") pasangPencarian("tombol-search");
-      if (typeof muatTickerBerjalan === "function") muatTickerBerjalan();
+      let res = await fetch("partials/header.html");
+      if (!res.ok) res = await fetch("header.html");
+      if (res.ok) {
+        headerSlot.innerHTML = await res.text();
+        tandaiMenuAktif();
+        pasangHamburger();
+        pasangDropdown();
+        if (typeof pasangPencarian === "function") pasangPencarian("tombol-search");
+        if (typeof muatTickerBerjalan === "function") muatTickerBerjalan();
+      }
     } catch (e) {
       console.error("Gagal memuat header", e);
     }
@@ -21,11 +27,14 @@ async function muatKomponen() {
 
   if (footerSlot) {
     try {
-      const res = await fetch("partials/footer.html");
-      footerSlot.innerHTML = await res.text();
-      const elTahun = document.getElementById("tahun");
-      if (elTahun) elTahun.textContent = new Date().getFullYear();
-      if (typeof muatPengaturanFooter === "function") muatPengaturanFooter();
+      let res = await fetch("partials/footer.html");
+      if (!res.ok) res = await fetch("footer.html");
+      if (res.ok) {
+        footerSlot.innerHTML = await res.text();
+        const elTahun = document.getElementById("tahun");
+        if (elTahun) elTahun.textContent = new Date().getFullYear();
+        if (typeof muatPengaturanFooter === "function") muatPengaturanFooter();
+      }
     } catch (e) {
       console.error("Gagal memuat footer", e);
     }
@@ -35,70 +44,119 @@ async function muatKomponen() {
 function tandaiMenuAktif() {
   const halaman = document.body.dataset.page;
   if (!halaman) return;
-  const link = document.querySelector(`[data-page="${halaman}"]`);
-  if (link) link.setAttribute("aria-current", "page");
+
+  // 1. Desktop Nav Items
+  const linkDesktop = document.querySelector(`.main-nav-container a[data-page="${halaman}"]`);
+  if (linkDesktop) {
+    linkDesktop.setAttribute("aria-current", "page");
+    linkDesktop.classList.remove("text-secondary");
+    linkDesktop.classList.add("text-primary-container", "font-bold", "border-b-2", "border-primary-container");
+  }
+
+  // Jika halaman adalah submenu Tentang (profil/struktur/program-kerja)
+  if (["tentang", "struktur", "program-kerja"].includes(halaman)) {
+    const btnTentang = document.getElementById("btn-dropdown-tentang");
+    if (btnTentang) {
+      btnTentang.classList.remove("text-secondary");
+      btnTentang.classList.add("text-primary-container", "font-bold");
+    }
+  }
+
+  // 2. Mobile Drawer Nav Items
+  const linkMobile = document.querySelector(`#mobile-nav-panel a[data-page="${halaman}"]`);
+  if (linkMobile) {
+    linkMobile.setAttribute("aria-current", "page");
+    linkMobile.classList.add("font-semibold", "text-primary-container", "bg-surface-container");
+  }
+
+  // 3. Mobile Bottom Nav Items
+  const linkBottom = document.querySelector(`.bottom-nav-item[data-page="${halaman}"]`);
+  if (linkBottom) {
+    linkBottom.setAttribute("aria-current", "page");
+    linkBottom.classList.remove("text-secondary");
+    linkBottom.classList.add("text-primary-container", "font-semibold");
+    const icon = linkBottom.querySelector(".material-symbols-outlined");
+    if (icon) icon.classList.add("icon-fill");
+  }
 }
 
 function pasangHamburger() {
   const tombol = document.getElementById("tombol-menu");
-  const nav = document.getElementById("nav-wrap");
-  if (!tombol || !nav) return;
+  const panel = document.getElementById("mobile-nav-panel");
+  const icon = document.getElementById("mobile-menu-icon");
+  if (!tombol || !panel) return;
+
+  function toggle() {
+    const isHidden = panel.classList.toggle("hidden");
+    tombol.setAttribute("aria-expanded", !isHidden);
+    if (icon) icon.textContent = isHidden ? "menu" : "close";
+  }
 
   function tutup() {
-    nav.classList.remove("terbuka");
+    panel.classList.add("hidden");
     tombol.setAttribute("aria-expanded", "false");
+    if (icon) icon.textContent = "menu";
   }
 
   tombol.addEventListener("click", (e) => {
     e.stopPropagation();
-    const buka = nav.classList.toggle("terbuka");
-    tombol.setAttribute("aria-expanded", buka ? "true" : "false");
+    toggle();
   });
 
-  // Klik di luar panel menutupnya
+  // Klik di luar menutup panel mobile
   document.addEventListener("click", (e) => {
-    if (!nav.contains(e.target) && e.target !== tombol) tutup();
+    if (!panel.contains(e.target) && !tombol.contains(e.target)) {
+      tutup();
+    }
   });
 
-  // Tombol Escape menutupnya
+  // Tombol Escape menutup panel
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") tutup();
+    if (e.key === "Escape" && !panel.classList.contains("hidden")) {
+      tutup();
+      tombol.focus();
+    }
   });
 }
 
 function pasangDropdown() {
-  const tombol = document.querySelector(".dropdown-toggle");
-  const item = document.querySelector(".has-dropdown");
-  if (!tombol || !item) return;
+  const tombol = document.getElementById("btn-dropdown-tentang");
+  const dropdown = document.getElementById("nav-dropdown-tentang");
+  if (!tombol || !dropdown) return;
+
+  const wrapper = dropdown.querySelector(".dropdown-menu-wrapper");
+
+  function buka() {
+    if (wrapper) wrapper.classList.remove("hidden");
+    tombol.setAttribute("aria-expanded", "true");
+  }
 
   function tutup(kembalikanFokus) {
-    item.classList.remove("terbuka");
+    if (wrapper) wrapper.classList.add("hidden");
     tombol.setAttribute("aria-expanded", "false");
     if (kembalikanFokus) tombol.focus();
   }
 
   tombol.addEventListener("click", (e) => {
     e.stopPropagation();
-    const buka = item.classList.toggle("terbuka");
-    tombol.setAttribute("aria-expanded", buka ? "true" : "false");
+    const expanded = tombol.getAttribute("aria-expanded") === "true";
+    if (expanded) tutup(false);
+    else buka();
   });
 
-  // Klik di luar dropdown menutupnya (tanpa perlu kembalikan fokus)
-  document.addEventListener("click", () => tutup(false));
+  // Klik di luar menutup dropdown
+  document.addEventListener("click", (e) => {
+    if (!dropdown.contains(e.target)) tutup(false);
+  });
 
-  // Tombol Escape menutupnya DAN mengembalikan fokus ke tombol pemicu
-  item.addEventListener("keydown", (e) => {
+  // Escape key closes dropdown
+  dropdown.addEventListener("keydown", (e) => {
     if (e.key === "Escape") tutup(true);
   });
 
-  // Klik menu lain di navbar (selain dropdown) juga menutupnya
-  document.querySelectorAll(".main-nav > ul > li:not(.has-dropdown) > a").forEach(link => {
-    link.addEventListener("click", () => tutup(false));
-  });
-
-  // Tutup otomatis kalau fokus keluar sepenuhnya dari area dropdown (mis. Tab ke elemen lain)
-  item.addEventListener("focusout", (e) => {
-    if (!item.contains(e.relatedTarget)) tutup(false);
+  // Focusout logic
+  dropdown.addEventListener("focusout", (e) => {
+    if (!dropdown.contains(e.relatedTarget)) tutup(false);
   });
 }
 
