@@ -3,69 +3,694 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kegiatan — HIMPALUBI</title>
-<meta name="description" content="Kegiatan dan agenda yang diselenggarakan HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa.">
+<title>Kegiatan &amp; Agenda — HIMPALUBI UNIPAR Jember</title>
+<meta name="description" content="Kalender agenda akademik, seminar nasional, workshop media edukatif, pengabdian masyarakat, dan kegiatan mahasiswa HIMPALUBI UNIPAR Jember.">
 <link rel="canonical" href="https://mim1654.github.io/himpalubi/kegiatan.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Kegiatan — HIMPALUBI">
-<meta property="og:description" content="Kegiatan dan agenda yang diselenggarakan HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa.">
+<meta property="og:title" content="Kegiatan &amp; Agenda — HIMPALUBI UNIPAR Jember">
+<meta property="og:description" content="Eksplorasi rangkaian seminar nasional, advokasi pendidikan inklusif, pelatihan kompetensi disabilitas, bakti sosial, dan kepemimpinan mahasiswa HIMPALUBI.">
 <meta property="og:image" content="https://mim1654.github.io/himpalubi/img/logo.png">
 <meta property="og:url" content="https://mim1654.github.io/himpalubi/kegiatan.html">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Kegiatan — HIMPALUBI">
-<meta name="twitter:description" content="Kegiatan dan agenda yang diselenggarakan HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Kegiatan &amp; Agenda — HIMPALUBI UNIPAR Jember">
+<meta name="twitter:description" content="Eksplorasi rangkaian agenda dan program kerja HIMPALUBI Universitas PGRI Argopuro Jember.">
 <meta name="twitter:image" content="https://mim1654.github.io/himpalubi/img/logo.png">
 <link rel="icon" type="image/png" href="img/favicon.png">
+
+<!-- JSON-LD Structured Data -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
-  "name": "Kegiatan — HIMPALUBI",
-  "description": "Kegiatan dan agenda yang diselenggarakan HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa.",
+  "name": "Kegiatan & Agenda — HIMPALUBI UNIPAR Jember",
+  "description": "Kalender agenda akademik, seminar nasional, workshop media edukatif, pengabdian masyarakat, dan kegiatan mahasiswa HIMPALUBI UNIPAR Jember.",
   "url": "https://mim1654.github.io/himpalubi/kegiatan.html",
   "publisher": {
     "@type": "Organization",
-    "name": "HIMPALUBI",
+    "name": "HIMPALUBI UNIPAR Jember",
     "url": "https://mim1654.github.io/himpalubi/",
     "logo": "https://mim1654.github.io/himpalubi/img/logo.png"
   }
 }
 </script>
 
+<!-- Google Fonts: Inter -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Google Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#9E001F",
+          "primary-container": "#C8102E",
+          "on-primary": "#FFFFFF",
+          "primary-fixed": "#FFDAD8",
+          "primary-fixed-dim": "#FFB3B1",
+          "on-primary-fixed": "#410007",
+          "on-primary-fixed-variant": "#92001C",
+          "on-primary-container": "#FFDAD8",
+          "inverse-primary": "#FFB3B1",
+          "surface-tint": "#BF0229",
+          "background": "#F8F9FF",
+          "surface": "#F8F9FF",
+          "surface-bright": "#F8F9FF",
+          "surface-dim": "#D1DBEC",
+          "surface-container-lowest": "#FFFFFF",
+          "surface-container-low": "#EEF4FF",
+          "surface-container": "#E5EEFF",
+          "surface-container-high": "#DFE9FA",
+          "surface-container-highest": "#D9E3F4",
+          "surface-variant": "#D9E3F4",
+          "on-surface": "#121C28",
+          "on-background": "#121C28",
+          "on-surface-variant": "#5C403F",
+          "inverse-surface": "#27313E",
+          "inverse-on-surface": "#EAF1FF",
+          "outline": "#906F6E",
+          "outline-variant": "#E5BDBB",
+          "secondary": "#5C5E66",
+          "on-secondary": "#FFFFFF",
+          "secondary-container": "#E0E2EC",
+          "on-secondary-container": "#62646D",
+          "secondary-fixed-dim": "#C4C6D0",
+          "tertiary": "#4B4D4F",
+          "on-tertiary": "#FFFFFF",
+          "error": "#BA1A1A",
+          "on-error": "#FFFFFF",
+          "error-container": "#FFDAD6",
+          "on-error-container": "#93000A"
+        },
+        borderRadius: {
+          DEFAULT: "0.25rem",
+          lg: "0.5rem",
+          xl: "0.75rem",
+          "2xl": "1rem",
+          full: "9999px"
+        },
+        spacing: {
+          "space-xs": "0.25rem", "space-sm": "0.5rem", "space-md": "1rem",
+          "space-lg": "1.5rem", "space-xl": "2.5rem", "margin-sm": "1rem",
+          "margin": "2rem", "gutter-sm": "1rem", "gutter": "1.5rem"
+        },
+        fontFamily: {
+          sans: ["Inter", "system-ui", "sans-serif"]
+        },
+        fontSize: {
+          "display": ["48px", { lineHeight: "56px", letterSpacing: "-0.025em", fontWeight: "800" }],
+          "display-mobile": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "800" }],
+          "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
+          "headline-lg-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.015em", fontWeight: "700" }],
+          "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "700" }],
+          "headline-sm": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+          "title-md": ["16px", { lineHeight: "24px", letterSpacing: "-0.005em", fontWeight: "600" }],
+          "body-lg": ["16px", { lineHeight: "26px", fontWeight: "400" }],
+          "body-md": ["14px", { lineHeight: "22px", fontWeight: "400" }],
+          "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.04em", fontWeight: "600" }],
+          "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.02em", fontWeight: "500" }]
+        }
+      }
+    }
+  };
+</script>
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body data-page="kegiatan">
+<body data-page="kegiatan" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
 
+<!-- Global Header Slot -->
 <div id="site-header-slot"></div>
 
-<main id="konten">
-  <section class="hero" style="padding:3rem 0; background:var(--sage-100); color:var(--ink-900); text-align:left;">
-    <div class="container" style="max-width:1080px;">
-      <h1 style="color:var(--ink-900);">Kegiatan</h1>
-      <p class="lead" style="color:var(--ink-600); margin:0;">Kegiatan dan agenda yang diselenggarakan HIMPALUBI.</p>
+<main id="konten" class="w-full bg-surface">
+
+  <!-- Title & Filter Bar Section -->
+  <section class="w-full bg-surface-container-lowest border-b border-surface-container shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-8 pb-10">
+      
+      <!-- Breadcrumb -->
+      <nav aria-label="Breadcrumb" class="flex items-center gap-2 mb-4 text-xs font-semibold text-secondary">
+        <a class="hover:text-primary-container transition-colors flex items-center gap-1" href="index.html">
+          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">home</span>
+          <span>Beranda</span>
+        </a>
+        <span class="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_right</span>
+        <span class="text-primary-container font-semibold">Kegiatan &amp; Agenda Himpunan</span>
+      </nav>
+
+      <!-- Section Title & Lead -->
+      <div class="max-w-3xl mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs uppercase font-bold tracking-wider mb-3">
+          <span class="material-symbols-outlined text-[15px]" aria-hidden="true">event_available</span>
+          <span>Kalender Agenda Akademik &amp; Kemahasiswaan</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-on-surface tracking-tight mb-3">
+          Agenda, Program Kerja &amp; Kegiatan Mahasiswa
+        </h1>
+        <p class="text-base sm:text-lg text-secondary leading-relaxed">
+          Eksplorasi rangkaian seminar nasional, advokasi pendidikan inklusif, pelatihan kompetensi disabilitas, bakti sosial, dan pengembangan kapasitas mahasiswa HIMPALUBI UNIPAR Jember.
+        </p>
+      </div>
+
+      <!-- Search & Filters Container -->
+      <div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low shadow-sm flex flex-col gap-4">
+        
+        <!-- Search and Dropdowns Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+          <div class="md:col-span-6 relative">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[20px]" aria-hidden="true">search</span>
+            <input class="w-full pl-11 pr-4 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary-container/20 shadow-sm placeholder:text-secondary/70 transition-all" id="eventSearchInput" placeholder="Cari agenda atau nama kegiatan..." type="text">
+          </div>
+          <div class="md:col-span-3">
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[18px]" aria-hidden="true">tune</span>
+              <select id="statusFilterSelect" class="w-full pl-9 pr-8 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface text-sm focus:outline-none shadow-sm appearance-none cursor-pointer">
+                <option value="all">Semua Status</option>
+                <option value="open">Pendaftaran Dibuka</option>
+                <option value="upcoming">Akan Datang</option>
+                <option value="completed">Telah Selesai</option>
+              </select>
+              <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary text-[18px] pointer-events-none" aria-hidden="true">expand_more</span>
+            </div>
+          </div>
+          <div class="md:col-span-3">
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[18px]" aria-hidden="true">calendar_month</span>
+              <select id="periodFilterSelect" class="w-full pl-9 pr-8 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface text-sm focus:outline-none shadow-sm appearance-none cursor-pointer">
+                <option value="all">Semua Periode 2025</option>
+                <option value="q2">Mei - Juni 2025</option>
+                <option value="q3">Juli - September 2025</option>
+                <option value="q4">Oktober - Desember 2025</option>
+              </select>
+              <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary text-[18px] pointer-events-none" aria-hidden="true">expand_more</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Category Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none" id="categoryPillContainer">
+          <button class="category-filter-btn shrink-0 px-4 py-1.5 rounded-full bg-primary-container text-on-primary text-xs font-semibold transition-all shadow-sm" data-category="all" type="button">
+            Semua Kategori
+          </button>
+          <button class="category-filter-btn shrink-0 px-4 py-1.5 rounded-full bg-surface-container-lowest hover:bg-secondary-container text-secondary text-xs font-semibold transition-all shadow-sm" data-category="inklusi" type="button">
+            Pendidikan Inklusif &amp; PLB
+          </button>
+          <button class="category-filter-btn shrink-0 px-4 py-1.5 rounded-full bg-surface-container-lowest hover:bg-secondary-container text-secondary text-xs font-semibold transition-all shadow-sm" data-category="seminar" type="button">
+            Seminar &amp; Workshop
+          </button>
+          <button class="category-filter-btn shrink-0 px-4 py-1.5 rounded-full bg-surface-container-lowest hover:bg-secondary-container text-secondary text-xs font-semibold transition-all shadow-sm" data-category="pengabdian" type="button">
+            Pengabdian Masyarakat
+          </button>
+          <button class="category-filter-btn shrink-0 px-4 py-1.5 rounded-full bg-surface-container-lowest hover:bg-secondary-container text-secondary text-xs font-semibold transition-all shadow-sm" data-category="kaderisasi" type="button">
+            Kaderisasi &amp; LKMM
+          </button>
+          <button class="category-filter-btn shrink-0 px-4 py-1.5 rounded-full bg-surface-container-lowest hover:bg-secondary-container text-secondary text-xs font-semibold transition-all shadow-sm" data-category="kompetisi" type="button">
+            Kompetisi Mahasiswa
+          </button>
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <section>
-    <div class="container">
-      <ul class="news-list" id="daftar-kegiatan" aria-live="polite">
-        <li>Memuat kegiatan...</li>
-      </ul>
+  <!-- Featured Event Section (High Impact Card) -->
+  <section id="featured-event-section" class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12" style="display:none;">
+  </section>
+
+  <!-- Upcoming Events Grid (with Dynamic Supabase Hook) -->
+  <section class="w-full bg-surface-container-low py-12 border-y border-surface-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-lowest text-secondary text-xs uppercase font-semibold tracking-wider mb-2">
+            <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">list_alt</span>
+            <span>Daftar Kegiatan Terstruktur</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-bold text-on-surface">
+            Agenda Kegiatan Mendatang
+          </h2>
+          <p class="text-sm text-secondary mt-1">
+            Pilihlah kegiatan peningkatan kompetensi, pengabdian, dan kepemimpinan yang sesuai dengan peminatan Anda.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-secondary" id="eventCounterNotice">Menampilkan: <strong class="text-on-surface">0 Program Terjadwal</strong></span>
+        </div>
+      </div>
+
+      <!-- Kegiatan Grid (Hydrated by Supabase with Empty State) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="daftar-kegiatan-grid" aria-live="polite">
+        <div class="col-span-full w-full py-12 px-6 sm:px-8 rounded-2xl bg-surface-container-lowest border border-surface-container text-center flex flex-col items-center justify-center shadow-sm my-2">
+          <div class="w-14 h-14 rounded-2xl bg-primary-fixed/60 text-primary-container flex items-center justify-center mb-3.5 shadow-sm">
+            <span class="material-symbols-outlined text-[28px]" aria-hidden="true">event_busy</span>
+          </div>
+          <h3 class="text-base sm:text-lg font-bold text-on-surface mb-1.5 tracking-tight">Belum ada kegiatan yang diunggah</h3>
+          <p class="text-xs sm:text-sm text-secondary max-w-md mx-auto leading-relaxed mb-4">Saat ini belum ada publikasi agenda kegiatan atau program kerja di database. Pengurus akan segera memperbarui jadwal kegiatan mendatang.</p>
+          <a href="kontak.html" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-primary-container hover:bg-primary text-on-primary text-xs font-semibold transition-all shadow-sm min-h-[40px]">
+            <span>Hubungi Pengurus</span>
+            <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+          </a>
+        </div>
+      </div>
     </div>
   </section>
+
+  <!-- Proker Calendar Overview & Quarterly Timeline -->
+  <section class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-16">
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs uppercase font-bold tracking-wider mb-2">
+          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">assessment</span>
+          <span>Akuntabilitas &amp; Target Capaian</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-on-surface">
+          Timeline &amp; Kalender Program Kerja 2025
+        </h2>
+        <p class="text-sm text-secondary mt-1">
+          Distribusi 38 program kerja tahunan HIMPALUBI UNIPAR Jember sepanjang empat kuartal kepengurusan.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Counter Cards -->
+      <div class="flex items-center gap-3">
+        <div class="px-4 py-2.5 rounded-xl bg-surface-container-low text-center shadow-sm border border-surface-container">
+          <div class="text-xl font-extrabold text-primary-container">14</div>
+          <div class="text-xs text-secondary">Terlaksana</div>
+        </div>
+        <div class="px-4 py-2.5 rounded-xl bg-surface-container-low text-center shadow-sm border border-surface-container">
+          <div class="text-xl font-extrabold text-on-surface">8</div>
+          <div class="text-xs text-secondary">Proses Berjalan</div>
+        </div>
+        <div class="px-4 py-2.5 rounded-xl bg-surface-container-low text-center shadow-sm border border-surface-container">
+          <div class="text-xl font-extrabold text-secondary">16</div>
+          <div class="text-xs text-secondary">Terjadwal Q3-Q4</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quarterly Visual Timeline Table -->
+    <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container overflow-hidden">
+      <div class="p-4 sm:p-6 bg-surface-container-low flex flex-wrap items-center justify-between gap-4 border-b border-surface-container">
+        <div class="flex items-center gap-4">
+          <span class="text-base font-bold text-on-surface">Distribusi Realisasi Rencana Program Kerja</span>
+          <span class="text-xs px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-semibold">Tahun Akademik 2024/2025</span>
+        </div>
+        <div class="flex items-center gap-4 text-xs font-medium text-secondary">
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-inverse-surface" aria-hidden="true"></span> Terlaksana</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-primary-container" aria-hidden="true"></span> Sedang Berjalan</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-surface-container-highest" aria-hidden="true"></span> Terjadwal</span>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-on-surface text-sm">
+          <thead>
+            <tr class="bg-surface-container-high/40 text-secondary uppercase text-xs font-semibold">
+              <th class="py-3.5 px-6">Nama Program / Departemen</th>
+              <th class="py-3.5 px-4 text-center">Q1 (Jan - Mar)</th>
+              <th class="py-3.5 px-4 text-center">Q2 (Apr - Jun)</th>
+              <th class="py-3.5 px-4 text-center">Q3 (Jul - Sep)</th>
+              <th class="py-3.5 px-4 text-center">Q4 (Okt - Des)</th>
+              <th class="py-3.5 px-6 text-right">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-container">
+            <tr class="hover:bg-surface-container-low transition-colors">
+              <td class="py-4 px-6 font-semibold">
+                <div>Musyawarah Besar &amp; Pelantikan Pengurus</div>
+                <div class="text-xs text-secondary font-normal">Departemen Organisasi &amp; Kaderisasi</div>
+              </td>
+              <td class="py-4 px-4 text-center">
+                <span class="inline-block w-8 h-2.5 rounded-full bg-inverse-surface" title="Terlaksana di Q1"></span>
+              </td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-6 text-right">
+                <span class="px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-semibold">100% Selesai</span>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-surface-container-low transition-colors">
+              <td class="py-4 px-6 font-semibold">
+                <div>National Seminar &amp; Workshop Teknologi Asistif</div>
+                <div class="text-xs text-secondary font-normal">Departemen Riset &amp; Pendidikan Inklusi</div>
+              </td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center">
+                <span class="inline-block w-8 h-2.5 rounded-full bg-primary-container" title="Sedang berjalan di Q2"></span>
+              </td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-6 text-right">
+                <span class="px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs font-semibold">Finalisasi (85%)</span>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-surface-container-low transition-colors">
+              <td class="py-4 px-6 font-semibold">
+                <div>HIMA Mengabdi: Literasi Braille &amp; Isyarat</div>
+                <div class="text-xs text-secondary font-normal">Departemen Sosial &amp; Advokasi Hak Disabilitas</div>
+              </td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center">
+                <span class="inline-block w-8 h-2.5 rounded-full bg-primary-container" title="Sedang berjalan di Q2"></span>
+              </td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-6 text-right">
+                <span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface text-xs font-semibold">Open Volunteer</span>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-surface-container-low transition-colors">
+              <td class="py-4 px-6 font-semibold">
+                <div>LKMM-TD &amp; Upgrading Kepengurusan</div>
+                <div class="text-xs text-secondary font-normal">Departemen Kaderisasi Mahasiswa</div>
+              </td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center">
+                <span class="inline-block w-8 h-2.5 rounded-full bg-surface-container-highest" title="Terjadwal di Q3"></span>
+              </td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-6 text-right">
+                <span class="px-2.5 py-1 rounded-full bg-surface-container text-secondary text-xs">Terjadwal Juli</span>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-surface-container-low transition-colors">
+              <td class="py-4 px-6 font-semibold">
+                <div>Gebyar Inklusi &amp; Expo Seni Disabilitas</div>
+                <div class="text-xs text-secondary font-normal">Departemen Minat, Bakat &amp; Seni Budaya</div>
+              </td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center">
+                <span class="inline-block w-8 h-2.5 rounded-full bg-surface-container-highest" title="Terjadwal di Q3"></span>
+              </td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-6 text-right">
+                <span class="px-2.5 py-1 rounded-full bg-surface-container text-secondary text-xs">Penyusunan TOR</span>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-surface-container-low transition-colors">
+              <td class="py-4 px-6 font-semibold">
+                <div>Peringatan Hari Disabilitas Internasional (HDI) 2025</div>
+                <div class="text-xs text-secondary font-normal">Seluruh Divisi Himpunan &amp; BEM UNIPAR</div>
+              </td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center"><span class="text-secondary/30">-</span></td>
+              <td class="py-4 px-4 text-center">
+                <span class="inline-block w-8 h-2.5 rounded-full bg-surface-container-highest" title="Terjadwal di Q4"></span>
+              </td>
+              <td class="py-4 px-6 text-right">
+                <span class="px-2.5 py-1 rounded-full bg-surface-container text-secondary text-xs">Terjadwal Des</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Past Event Highlights & Public Accountability -->
+  <section class="w-full bg-surface-container-low py-16 border-t border-surface-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-lowest text-secondary text-xs uppercase font-semibold tracking-wider mb-2">
+            <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">history_edu</span>
+            <span>Transparansi &amp; Laporan Pertanggungjawaban</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-bold text-on-surface">
+            Dokumentasi Kegiatan Telah Terlaksana
+          </h2>
+          <p class="text-sm text-secondary mt-1">
+            Rekam jejak implementasi kegiatan beserta capaian publikasi dan berkas LPJ yang dapat diakses sivitas akademika.
+          </p>
+        </div>
+        <a class="inline-flex items-center gap-2 text-primary-container hover:underline text-xs font-bold" href="galeri.html">
+          <span>Buka Arsip Galeri Lengkap</span>
+          <span class="material-symbols-outlined text-[18px]" aria-hidden="true">open_in_new</span>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Past Item 1 -->
+        <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container p-6 flex flex-col justify-between">
+          <div>
+            <div class="h-40 rounded-xl overflow-hidden mb-4 relative bg-surface-container">
+              <img class="w-full h-full object-cover" alt="Pelatihan BISINDO Batch I" src="img/kegiatan-1.jpg" onerror="this.onerror=null; this.src='img/hero-image.png';">
+              <div class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded bg-inverse-surface/90 text-surface-bright text-xs">
+                Maret 2025
+              </div>
+            </div>
+            <div class="flex items-center gap-3 text-secondary text-xs mb-2">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">groups</span> 142 Peserta</span>
+              <span>&bull;</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-primary-container">verified</span> Kepuasan 4.9/5</span>
+            </div>
+            <h3 class="text-base font-bold text-on-surface mb-2">
+              Pelatihan Dasar Bahasa Isyarat Indonesia (BISINDO) Batch I
+            </h3>
+            <p class="text-xs text-secondary mb-4 line-clamp-2 leading-relaxed">
+              Program pelatihan 3 hari bersama instruktur Tuli berpengalaman untuk mahasiswa lintas fakultas se-UNIPAR.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-surface-container flex items-center justify-between">
+            <span class="text-xs text-secondary font-medium">LPJ Resmi Terbit</span>
+            <a class="inline-flex items-center gap-1 text-primary-container hover:text-primary text-xs font-bold" href="kontak.html">
+              <span class="material-symbols-outlined text-[16px]">description</span>
+              <span>Unduh LPJ</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Past Item 2 -->
+        <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container p-6 flex flex-col justify-between">
+          <div>
+            <div class="h-40 rounded-xl overflow-hidden mb-4 relative bg-surface-container">
+              <img class="w-full h-full object-cover" alt="Bakti Sosial Taman Sensorik SLB" src="img/kegiatan-2.jpg" onerror="this.onerror=null; this.src='img/hero-image.png';">
+              <div class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded bg-inverse-surface/90 text-surface-bright text-xs">
+                Februari 2025
+              </div>
+            </div>
+            <div class="flex items-center gap-3 text-secondary text-xs mb-2">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">groups</span> 65 Relawan</span>
+              <span>&bull;</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-primary-container">domain</span> 3 Mitra SLB</span>
+            </div>
+            <h3 class="text-base font-bold text-on-surface mb-2">
+              Bakti Sosial &amp; Revitalisasi Taman Sensorik SLB Negeri Jember
+            </h3>
+            <p class="text-xs text-secondary mb-4 line-clamp-2 leading-relaxed">
+              Gotong royong pembangunan sarana sensory pathway luar ruang guna mendukung terapi fisik murid berkebutuhan khusus.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-surface-container flex items-center justify-between">
+            <span class="text-xs text-secondary font-medium">LPJ Resmi Terbit</span>
+            <a class="inline-flex items-center gap-1 text-primary-container hover:text-primary text-xs font-bold" href="kontak.html">
+              <span class="material-symbols-outlined text-[16px]">description</span>
+              <span>Unduh LPJ</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Past Item 3 -->
+        <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container p-6 flex flex-col justify-between">
+          <div>
+            <div class="h-40 rounded-xl overflow-hidden mb-4 relative bg-surface-container">
+              <img class="w-full h-full object-cover" alt="Simposium Riset Mahasiswa PLB" src="img/kegiatan-3.jpg" onerror="this.onerror=null; this.src='img/hero-image.png';">
+              <div class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded bg-inverse-surface/90 text-surface-bright text-xs">
+                Januari 2025
+              </div>
+            </div>
+            <div class="flex items-center gap-3 text-secondary text-xs mb-2">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">groups</span> 210 Peserta</span>
+              <span>&bull;</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-primary-container">menu_book</span> 18 Paper</span>
+            </div>
+            <h3 class="text-base font-bold text-on-surface mb-2">
+              Simposium Riset Mahasiswa: Inklusi Pendidikan Pasca Pandemi
+            </h3>
+            <p class="text-xs text-secondary mb-4 line-clamp-2 leading-relaxed">
+              Kolokium diseminasi hasil studi lapangan mahasiswa semester akhir terkait kesiapan guru pendamping khusus.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-surface-container flex items-center justify-between">
+            <span class="text-xs text-secondary font-medium">LPJ &amp; Prosiding</span>
+            <a class="inline-flex items-center gap-1 text-primary-container hover:text-primary text-xs font-bold" href="kontak.html">
+              <span class="material-symbols-outlined text-[16px]">description</span>
+              <span>Unduh Dokumen</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ & Accessibility Support Callout -->
+  <section class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-16">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- FAQ Accordion (Col 7) -->
+      <div class="lg:col-span-7">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs uppercase font-bold tracking-wider mb-2">
+          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">help</span>
+          <span>Pusat Bantuan Informasi</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-on-surface mb-4">
+          Tanya Jawab Seputar Pendaftaran Kegiatan
+        </h2>
+        <p class="text-sm text-secondary mb-6 leading-relaxed">
+          Ketahui alur registrasi, validasi e-sertifikat kegiatan, dan keterlibatan kepanitiaan bersama HIMPALUBI UNIPAR Jember.
+        </p>
+
+        <div class="space-y-3" id="faqAccordion">
+          <!-- FAQ 1 -->
+          <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container overflow-hidden">
+            <button class="faq-btn w-full px-5 py-4 text-left flex items-center justify-between gap-4 text-sm sm:text-base font-semibold text-on-surface hover:text-primary-container transition-colors min-h-[48px]" type="button" aria-expanded="false">
+              <span>Bagaimana alur pendaftaran kegiatan dan konfirmasi tiket?</span>
+              <span class="material-symbols-outlined faq-icon transition-transform duration-200 text-secondary" aria-hidden="true">expand_more</span>
+            </button>
+            <div class="faq-content hidden px-5 pb-5 text-xs sm:text-sm text-secondary leading-relaxed border-t border-surface-container pt-3">
+              Pendaftaran dilakukan secara daring melalui formulir resmi di website ini. Setelah submit data diri dan bukti pendukung (KTM untuk mahasiswa UNIPAR), konfirmasi dan tautan grup koordinasi akan dikirimkan ke email terdaftar maksimal 1x24 jam.
+            </div>
+          </div>
+
+          <!-- FAQ 2 -->
+          <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container overflow-hidden">
+            <button class="faq-btn w-full px-5 py-4 text-left flex items-center justify-between gap-4 text-sm sm:text-base font-semibold text-on-surface hover:text-primary-container transition-colors min-h-[48px]" type="button" aria-expanded="false">
+              <span>Kapan e-sertifikat kegiatan dapat diunduh?</span>
+              <span class="material-symbols-outlined faq-icon transition-transform duration-200 text-secondary" aria-hidden="true">expand_more</span>
+            </button>
+            <div class="faq-content hidden px-5 pb-5 text-xs sm:text-sm text-secondary leading-relaxed border-t border-surface-container pt-3">
+              E-sertifikat ber-SKP resmi diterbitkan maksimal 3 hari kerja setelah kegiatan selesai, bersyarat peserta telah mengisi kuesioner evaluasi dan presensi kehadiran penuh (minimal 85% untuk workshop bersesi).
+            </div>
+          </div>
+
+          <!-- FAQ 3 -->
+          <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container overflow-hidden">
+            <button class="faq-btn w-full px-5 py-4 text-left flex items-center justify-between gap-4 text-sm sm:text-base font-semibold text-on-surface hover:text-primary-container transition-colors min-h-[48px]" type="button" aria-expanded="false">
+              <span>Apakah mahasiswa dari luar program studi PLB boleh berpartisipasi?</span>
+              <span class="material-symbols-outlined faq-icon transition-transform duration-200 text-secondary" aria-hidden="true">expand_more</span>
+            </button>
+            <div class="faq-content hidden px-5 pb-5 text-xs sm:text-sm text-secondary leading-relaxed border-t border-surface-container pt-3">
+              Sebagian besar agenda seminar nasional, workshop media edukatif, dan pelatihan bahasa isyarat terbuka untuk seluruh sivitas akademika UNIPAR maupun perguruan tinggi umum. Agenda internal (seperti LKMM-TD) diprioritaskan bagi mahasiswa aktif PLB UNIPAR.
+            </div>
+          </div>
+
+          <!-- FAQ 4 -->
+          <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container overflow-hidden">
+            <button class="faq-btn w-full px-5 py-4 text-left flex items-center justify-between gap-4 text-sm sm:text-base font-semibold text-on-surface hover:text-primary-container transition-colors min-h-[48px]" type="button" aria-expanded="false">
+              <span>Bagaimana prosedur menjadi relawan kepanitiaan?</span>
+              <span class="material-symbols-outlined faq-icon transition-transform duration-200 text-secondary" aria-hidden="true">expand_more</span>
+            </button>
+            <div class="faq-content hidden px-5 pb-5 text-xs sm:text-sm text-secondary leading-relaxed border-t border-surface-container pt-3">
+              Perekrutan relawan (open recruitment volunteer) diumumkan 3 minggu sebelum acara melalui portal himpunan dan Instagram resmi. Mahasiswa aktif dapat mendaftar melalui menu pendaftaran di website.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accessibility Callout Box (Col 5) -->
+      <div class="lg:col-span-5">
+        <div class="p-8 rounded-2xl bg-inverse-surface text-surface-bright shadow-xl flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full bg-primary-container/20 blur-2xl pointer-events-none" aria-hidden="true"></div>
+          
+          <div class="relative z-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container text-on-primary text-xs uppercase font-bold tracking-wide mb-4">
+              <span class="material-symbols-outlined text-[16px]" aria-hidden="true">accessibility_new</span>
+              <span>Layanan Fasilitas Inklusi</span>
+            </div>
+
+            <h3 class="text-xl sm:text-2xl font-bold text-on-primary mb-3">
+              Memerlukan Akomodasi Khusus atau Juru Bahasa Isyarat (JBI)?
+            </h3>
+
+            <p class="text-xs sm:text-sm text-secondary-fixed-dim leading-relaxed mb-6">
+              HIMPALUBI menjamin setiap kegiatan ramah dan aksesibel bagi kawan difabel (Tuli, Netra, Daksa, Neurodivergen). Kami menyediakan pendamping relawan, modul cetak braille, deskripsi audio, dan JBI tanpa dipungut biaya.
+            </p>
+
+            <div class="space-y-3 mb-8">
+              <div class="flex items-center gap-3 text-secondary-fixed-dim text-xs sm:text-sm">
+                <span class="material-symbols-outlined text-primary-fixed text-[20px] shrink-0" aria-hidden="true">check_circle</span>
+                <span>Juru Bahasa Isyarat (BISINDO) di panggung &amp; Zoom</span>
+              </div>
+              <div class="flex items-center gap-3 text-secondary-fixed-dim text-xs sm:text-sm">
+                <span class="material-symbols-outlined text-primary-fixed text-[20px] shrink-0" aria-hidden="true">check_circle</span>
+                <span>Akses jalur ramp kursi roda &amp; tempat duduk prioritas</span>
+              </div>
+              <div class="flex items-center gap-3 text-secondary-fixed-dim text-xs sm:text-sm">
+                <span class="material-symbols-outlined text-primary-fixed text-[20px] shrink-0" aria-hidden="true">check_circle</span>
+                <span>Modul materi ramah pembaca layar (screen reader)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative z-10 pt-4 border-t border-surface-container-lowest/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="text-left w-full sm:w-auto">
+              <span class="text-xs text-secondary-fixed-dim block">Narahubung Advokasi Inklusi:</span>
+              <span class="text-sm font-bold text-on-primary">+62 823-3456-7890</span>
+            </div>
+            <a class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary-container hover:bg-primary text-on-primary text-xs font-bold transition-colors shadow-md min-h-[44px]" href="kontak.html">
+              <span class="material-symbols-outlined text-[18px]" aria-hidden="true">chat</span>
+              <span>Hubungi Advokasi</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
 </main>
 
+<!-- Global Footer Slot -->
 <div id="site-footer-slot"></div>
 
+<!-- Core Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabaseClient.js"></script>
 <script src="js/public.js"></script>
 <script src="js/components.js"></script>
+
 <script>
-  muatBerita("daftar-kegiatan", null, "Kegiatan");
+  document.addEventListener("DOMContentLoaded", () => {
+    // 1. FAQ Accordion Logic
+    const faqButtons = document.querySelectorAll(".faq-btn");
+    faqButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const content = btn.nextElementSibling;
+        const icon = btn.querySelector(".faq-icon");
+        const isExpanded = !content.classList.contains("hidden");
+
+        document.querySelectorAll(".faq-content").forEach((c) => c.classList.add("hidden"));
+        document.querySelectorAll(".faq-icon").forEach((i) => i.classList.remove("rotate-180"));
+        document.querySelectorAll(".faq-btn").forEach((b) => b.setAttribute("aria-expanded", "false"));
+
+        if (!isExpanded) {
+          content.classList.remove("hidden");
+          if (icon) icon.classList.add("rotate-180");
+          btn.setAttribute("aria-expanded", "true");
+        }
+      });
+    });
+
+    // 2. Muat Agenda Kegiatan dari Supabase dengan Empty State
+    muatHalamanKegiatan("daftar-kegiatan-grid", "featured-event-section", "eventCounterNotice");
+  });
 </script>
 </body>
 </html>

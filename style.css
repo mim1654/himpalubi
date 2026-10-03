@@ -6,30 +6,59 @@
    ========================================================= */
 
 :root {
-  /* Merah dari logo HIMPALUBI sebagai warna utama, hitam sebagai penyeimbang */
-  --teal-900: #17181c;   /* hitam pekat — nav teks, hero gelap */
-  --teal-700: #2a2c31;   /* abu gelap — elemen sekunder di atas gelap */
-  --teal-500: #4a4d54;
-  --gold-500: #c8102e;   /* merah HIMPALUBI — aksen utama, tombol, badge */
-  --gold-100: #fbe4e8;   /* merah muda — latar highlight lembut */
-  --sage-100: #f1f1f2;   /* abu terang — latar sekunder */
-  --sage-050: #f7f7f8;   /* putih hangat — latar utama */
-  --ink-900: #17181c;
-  --ink-600: #5b5e64;
-  --line: #e3e4e6;
-  --white: #ffffff;
-  --danger: #9c2f2f;
-  --ok: #2d6b46;
-  --wait: #93701f;
+  /* DESIGN.MD Single Source of Truth Tokens */
+  --primary: #9E001F;
+  --primary-container: #C8102E;
+  --on-primary: #FFFFFF;
+  --on-surface: #121C28;
+  --on-background: #121C28;
+  --secondary: #5C5E66;
+  --surface: #F8F9FF;
+  --background: #F8F9FF;
+  --surface-container-lowest: #FFFFFF;
+  --surface-container-low: #EEF4FF;
+  --surface-container: #E5EEFF;
+  --surface-container-high: #DFE9FA;
+  --inverse-surface: #27313E;
+  --inverse-on-surface: #EAF1FF;
+  
+  /* Legacy alias mappings for existing components */
+  --teal-900: #121C28;
+  --teal-700: #27313E;
+  --teal-500: #5C5E66;
+  --gold-500: #9E001F;
+  --gold-100: #FFDAD8;
+  --sage-100: #EEF4FF;
+  --sage-050: #F8F9FF;
+  --ink-900: #121C28;
+  --ink-600: #5C5E66;
+  --line: #E5BDBB;
+  --white: #FFFFFF;
+  --danger: #BA1A1A;
+  --ok: #2D6B46;
+  --wait: #93701F;
 
-  --font-display: "Poppins", -apple-system, Segoe UI, sans-serif;
-  --font-body: "Inter", -apple-system, Segoe UI, sans-serif;
-  --font-accent: "Playfair Display", Georgia, serif;
-  --font-reading: "Lora", Georgia, serif;
+  --font-display: "Inter", system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-accent: "Inter", system-ui, sans-serif;
+  --font-reading: "Inter", system-ui, sans-serif;
 
-  --radius: 10px;
-  --focus-ring: 3px solid var(--gold-500);
+  --radius: 8px;
+  --focus-ring: 2px solid var(--primary-container);
 }
+
+/* DESIGN.MD Typography Token Utilities */
+.text-display { font-size: 48px; line-height: 56px; letter-spacing: -0.025em; font-weight: 800; }
+.text-display-mobile { font-size: 36px; line-height: 44px; letter-spacing: -0.02em; font-weight: 800; }
+.text-headline-lg { font-size: 32px; line-height: 40px; letter-spacing: -0.02em; font-weight: 700; }
+.text-headline-lg-mobile { font-size: 26px; line-height: 34px; letter-spacing: -0.015em; font-weight: 700; }
+.text-headline-md { font-size: 24px; line-height: 32px; letter-spacing: -0.015em; font-weight: 700; }
+.text-headline-sm { font-size: 20px; line-height: 28px; letter-spacing: -0.01em; font-weight: 600; }
+.text-title-md { font-size: 16px; line-height: 24px; letter-spacing: -0.005em; font-weight: 600; }
+.text-body-lg { font-size: 16px; line-height: 26px; font-weight: 400; }
+.text-body-md { font-size: 14px; line-height: 22px; font-weight: 400; }
+.text-label-md { font-size: 12px; line-height: 16px; letter-spacing: 0.04em; font-weight: 600; }
+.text-label-sm { font-size: 11px; line-height: 14px; letter-spacing: 0.02em; font-weight: 500; }
 
 * { box-sizing: border-box; }
 
@@ -91,11 +120,41 @@ a:hover { color: var(--teal-900); }
   padding: 0 1.5rem;
 }
 
-/* ---------- Header & nav ---------- */
+/* ---------- Header & nav (Fixed Glassmorphism) ---------- */
+#site-header-slot {
+  display: contents;
+}
+
 .site-header {
-  background: var(--white);
-  border-bottom: 1px solid var(--line);
-  padding: 1rem 0;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  min-height: 4rem !important;
+  z-index: 50 !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid rgba(229, 238, 255, 0.8) !important;
+  box-shadow: 0 4px 20px -2px rgba(18, 28, 40, 0.04) !important;
+  transition: all 0.3s ease;
+}
+
+.navbar-spacer {
+  height: 4rem !important;
+  width: 100% !important;
+  display: block !important;
+  flex-shrink: 0 !important;
+}
+
+@media (min-width: 640px) {
+  .site-header {
+    min-height: 5rem !important;
+  }
+  .navbar-spacer {
+    height: 5rem !important;
+  }
 }
 .site-header .container {
   display: flex;
@@ -211,31 +270,19 @@ a:hover { color: var(--teal-900); }
 }
 .icon-btn:hover { border-color: var(--ink-900); }
 
-/* ---------- Tulisan Berjalan (Ticker) ---------- */
+/* ---------- Tulisan Pengumuman (Stay / Statis) ---------- */
 .ticker-bar {
-  background: var(--gold-500);
-  color: var(--white);
-  overflow: hidden;
-  white-space: nowrap;
-  padding: 0.5rem 0;
+  background: var(--surface-container-high, #DFE9FA);
+  color: var(--on-surface, #121C28);
 }
 .ticker-track {
-  display: inline-block;
-  padding-left: 100%;
-  animation: ticker-scroll 32s linear infinite;
-  font-size: 0.88rem;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--secondary, #5C5E66);
 }
-.ticker-bar:hover .ticker-track { animation-play-state: paused; }
-.ticker-track .pemisah { margin: 0 1.5rem; opacity: 0.7; }
-@keyframes ticker-scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ticker-track { animation: none; padding-left: 1.5rem; }
-  .ticker-bar { overflow-x: auto; }
-}
+.ticker-track .pemisah { margin: 0 0.5rem; color: var(--primary-container, #C8102E); }
 
 /* ---------- Dropdown "Tentang" (flyout di desktop, inline saat panel mobile) ---------- */
 .has-dropdown { position: relative; }
@@ -1096,28 +1143,52 @@ input:focus, textarea:focus, select:focus {
 .stat-mini-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
+  gap: 1rem;
   margin-top: 2rem;
   padding-top: 2rem;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
 }
-.stat-mini { text-align: center; }
+.stat-mini {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.25rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.stat-mini:hover {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
 .stat-mini .angka {
   display: block;
-  font-family: var(--font-accent);
-  font-weight: 700;
-  font-size: 2rem;
-  color: var(--gold-500);
-  line-height: 1.1;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1.75rem;
+  color: #FFDAD8;
+  line-height: 1.2;
 }
 .stat-mini .label {
   display: block;
-  font-size: 0.82rem;
-  color: var(--ink-600);
-  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 0.35rem;
 }
 @media (max-width: 720px) {
   .stat-mini-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-mini { padding: 1rem 0.75rem; }
+  .stat-mini .angka { font-size: 1.35rem; }
 }
 
 /* ---------- Visi & Misi ---------- */
@@ -1228,26 +1299,41 @@ input:focus, textarea:focus, select:focus {
 
 /* ---------- Empty State ---------- */
 .empty-state {
+  grid-column: 1 / -1;
+  width: 100%;
   text-align: center;
   padding: 3rem 1.5rem;
-  color: var(--ink-600);
+  background: var(--surface-container-lowest, #FFFFFF);
+  border: 1px solid var(--surface-container, #E5EEFF);
+  border-radius: 1rem;
+  color: var(--secondary, #5C5E66);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .empty-state svg {
-  width: 44px;
-  height: 44px;
-  color: var(--line);
+  width: 48px;
+  height: 48px;
+  max-width: 48px;
+  max-height: 48px;
+  color: var(--primary-container, #C8102E);
   margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 .empty-state h4 {
-  font-family: var(--font-display);
-  color: var(--ink-900);
-  margin: 0 0 0.4rem;
-  font-size: 1.05rem;
+  font-family: var(--font-display, "Inter", sans-serif);
+  color: var(--on-surface, #121C28);
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 .empty-state p {
   margin: 0;
   font-size: 0.9rem;
-  color: var(--ink-600);
+  color: var(--secondary, #5C5E66);
+  max-width: 480px;
+  line-height: 1.6;
 }
 
 .stat-grid {

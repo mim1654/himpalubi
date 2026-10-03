@@ -1,128 +1,654 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HIMPALUBI — Himpunan Mahasiswa Pendidikan Luar Biasa</title>
-<meta name="description" content="Website resmi HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa Universitas PGRI Argopuro Jember. Info berita, kegiatan, struktur organisasi, dan pendaftaran anggota.">
-<link rel="canonical" href="https://mim1654.github.io/himpalubi/index.html">
-<meta property="og:type" content="website">
-<meta property="og:title" content="HIMPALUBI — Himpunan Mahasiswa Pendidikan Luar Biasa">
-<meta property="og:description" content="Website resmi HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa Universitas PGRI Argopuro Jember. Info berita, kegiatan, struktur organisasi, dan pendaftaran anggota.">
-<meta property="og:image" content="https://mim1654.github.io/himpalubi/img/logo.png">
-<meta property="og:url" content="https://mim1654.github.io/himpalubi/index.html">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="HIMPALUBI — Himpunan Mahasiswa Pendidikan Luar Biasa">
-<meta name="twitter:description" content="Website resmi HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa Universitas PGRI Argopuro Jember. Info berita, kegiatan, struktur organisasi, dan pendaftaran anggota.">
-<meta name="twitter:image" content="https://mim1654.github.io/himpalubi/img/logo.png">
-<link rel="icon" type="image/png" href="img/favicon.png">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "@id": "https://mim1654.github.io/himpalubi/#organization",
-  "name": "HIMPALUBI",
-  "alternateName": "Himpunan Mahasiswa Pendidikan Luar Biasa",
-  "url": "https://mim1654.github.io/himpalubi/",
-  "logo": "https://mim1654.github.io/himpalubi/img/logo.png",
-  "parentOrganization": {
-    "@type": "CollegeOrUniversity",
-    "name": "Universitas PGRI Argopuro Jember"
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HIMPALUBI UNIPAR — Himpunan Mahasiswa Pendidikan Luar Biasa</title>
+  <meta name="description" content="Portal resmi HIMPALUBI UNIPAR Jember. Wadah kolaborasi, advokasi inklusif, agenda kegiatan, berita terkini, struktur organisasi, dan pendaftaran mahasiswa Pendidikan Luar Biasa.">
+  <link rel="canonical" href="https://mim1654.github.io/himpalubi/index.html">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="HIMPALUBI UNIPAR — Himpunan Mahasiswa Pendidikan Luar Biasa">
+  <meta property="og:description" content="Portal resmi HIMPALUBI Universitas PGRI Argopuro Jember. Info berita, kegiatan kemahasiswaan, kepengurusan, dan pendaftaran anggota baru.">
+  <meta property="og:image" content="https://mim1654.github.io/himpalubi/img/logo.png">
+  <meta property="og:url" content="https://mim1654.github.io/himpalubi/index.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HIMPALUBI UNIPAR — Himpunan Mahasiswa Pendidikan Luar Biasa">
+  <meta name="twitter:description" content="Portal resmi HIMPALUBI Universitas PGRI Argopuro Jember.">
+  <meta name="twitter:image" content="https://mim1654.github.io/himpalubi/img/logo.png">
+  
+  <link rel="icon" type="image/png" href="img/favicon.png">
+
+  <!-- Schema.org Organization Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://mim1654.github.io/himpalubi/#organization",
+    "name": "HIMPALUBI UNIPAR",
+    "alternateName": "Himpunan Mahasiswa Pendidikan Luar Biasa Universitas PGRI Argopuro Jember",
+    "url": "https://mim1654.github.io/himpalubi/",
+    "logo": "https://mim1654.github.io/himpalubi/img/logo.png",
+    "parentOrganization": {
+      "@type": "CollegeOrUniversity",
+      "name": "Universitas PGRI Argopuro Jember"
+    }
   }
-}
-</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+  </script>
+
+  <!-- Typography: Inter & Material Symbols Outlined -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+  <!-- Tailwind CSS Engine -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#9E001F",
+            "primary-container": "#C8102E",
+            "on-primary": "#FFFFFF",
+            "primary-fixed": "#FFDAD8",
+            "primary-fixed-dim": "#FFB3B1",
+            "on-primary-fixed": "#410007",
+            "on-primary-fixed-variant": "#92001C",
+            "on-primary-container": "#FFDAD8",
+            "inverse-primary": "#FFB3B1",
+            "surface-tint": "#BF0229",
+            "background": "#F8F9FF",
+            "surface": "#F8F9FF",
+            "surface-bright": "#F8F9FF",
+            "surface-dim": "#D1DBEC",
+            "surface-container-lowest": "#FFFFFF",
+            "surface-container-low": "#EEF4FF",
+            "surface-container": "#E5EEFF",
+            "surface-container-high": "#DFE9FA",
+            "surface-container-highest": "#D9E3F4",
+            "surface-variant": "#D9E3F4",
+            "on-surface": "#121C28",
+            "on-background": "#121C28",
+            "on-surface-variant": "#5C403F",
+            "inverse-surface": "#27313E",
+            "inverse-on-surface": "#EAF1FF",
+            "outline": "#906F6E",
+            "outline-variant": "#E5BDBB",
+            "secondary": "#5C5E66",
+            "on-secondary": "#FFFFFF",
+            "secondary-container": "#E0E2EC",
+            "on-secondary-container": "#62646D",
+            "secondary-fixed": "#E0E2EC",
+            "secondary-fixed-dim": "#C4C6D0",
+            "on-secondary-fixed": "#191C22",
+            "on-secondary-fixed-variant": "#44474E",
+            "tertiary": "#4B4D4F",
+            "on-tertiary": "#FFFFFF",
+            "tertiary-container": "#636567",
+            "on-tertiary-container": "#E2E2E4",
+            "tertiary-fixed": "#E2E2E4",
+            "tertiary-fixed-dim": "#C6C6C8",
+            "on-tertiary-fixed": "#1A1C1D",
+            "on-tertiary-fixed-variant": "#454749",
+            "error": "#BA1A1A",
+            "on-error": "#FFFFFF",
+            "error-container": "#FFDAD6",
+            "on-error-container": "#93000A"
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            "2xl": "1rem",
+            full: "9999px"
+          },
+          spacing: {
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem",
+            "margin-sm": "1rem",
+            "margin": "2rem",
+            "gutter-sm": "1rem",
+            "gutter": "1.5rem"
+          },
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"]
+          },
+          fontSize: {
+            "display": ["48px", { lineHeight: "56px", letterSpacing: "-0.025em", fontWeight: "800" }],
+            "display-mobile": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "800" }],
+            "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "headline-lg-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.015em", fontWeight: "700" }],
+            "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "700" }],
+            "headline-sm": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "title-md": ["16px", { lineHeight: "24px", letterSpacing: "-0.005em", fontWeight: "600" }],
+            "body-lg": ["16px", { lineHeight: "26px", fontWeight: "400" }],
+            "body-md": ["14px", { lineHeight: "22px", fontWeight: "400" }],
+            "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.04em", fontWeight: "600" }],
+            "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.02em", fontWeight: "500" }]
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Focus styles for keyboard accessibility */
+    a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+      outline: 2px solid #C8102E;
+      outline-offset: 2px;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .icon-fill {
+      font-variation-settings: 'FILL' 1, 'wght: 500', 'GRAD' 0, 'opsz' 24;
+    }
+    /* Skeletons */
+    .skeleton {
+      background: linear-gradient(90deg, #E5EEFF 25%, #DFE9FA 50%, #E5EEFF 75%);
+      background-size: 200% 100%;
+      animation: skeleton-pulse 1.5s infinite;
+      border-radius: 8px;
+    }
+    @keyframes skeleton-pulse {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body data-page="beranda">
-<a href="#konten" class="skip-link">Langsung ke konten</a>
+<body class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col" data-page="beranda">
 
-<div id="site-header-slot"></div>
+  <!-- Skip to Content for Accessibility -->
+  <a href="#konten" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-5 focus:py-2.5 focus:bg-primary focus:text-on-primary focus:font-semibold focus:rounded-full focus:shadow-xl">
+    Langsung ke konten utama
+  </a>
 
-<main id="konten">
-  <section class="hero">
-    <div class="container">
-      <picture>
-        <source srcset="img/logo.webp" type="image/webp">
-        <img src="img/logo.png" alt="Logo HIMPALUBI" class="hero-emblem" width="140" height="140">
-      </picture>
-      <p class="eyebrow">HIMPALUBI UNIPAR JEMBER</p>
-      <h1 id="hero-tagline">Bergerak Bersama, Peduli untuk Semua</h1>
-      <p class="lead">Himpunan Mahasiswa Pendidikan Luar Biasa — Universitas PGRI Argopuro Jember.</p>
-      <a href="kegiatan.html" class="btn">Lihat Kegiatan</a>
-    </div>
-  </section>
+  <!-- Header Slot (Dimuat otomatis dari partials/header.html) -->
+  <div id="site-header-slot"></div>
 
-  <section>
-    <div class="container">
-      <div class="section-head">
-        <h2>Tentang HIMPALUBI</h2>
-        <a href="tentang.html">Selengkapnya</a>
+  <!-- Main Content Container -->
+  <main id="konten" class="flex-1 w-full bg-surface pb-16 md:pb-0">
+
+    <!-- Hero Section -->
+    <section class="w-full bg-inverse-surface text-on-primary relative overflow-hidden py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-12">
+      <!-- Architectural Background Ambient Accent -->
+      <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary-container opacity-20 blur-[120px] pointer-events-none rounded-full" aria-hidden="true"></div>
+      
+      <div class="max-w-5xl mx-auto flex flex-col items-center text-center relative z-10">
+        
+        <!-- Emblem Frame -->
+        <div class="mb-6 p-1 rounded-full bg-surface-container-lowest/10 backdrop-blur-md shadow-2xl relative group">
+          <picture>
+            <source srcset="img/logo.webp" type="image/webp">
+            <img src="img/logo.png" alt="Logo Lambang HIMPALUBI" class="w-24 h-24 sm:w-28 sm:h-28 object-contain rounded-full shadow-lg transition-transform duration-300 group-hover:scale-105" width="112" height="112">
+          </picture>
+        </div>
+
+        <!-- Identity Pill -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-lowest/10 backdrop-blur-md mb-5 border border-surface-container-lowest/15">
+          <span class="w-2 h-2 rounded-full bg-primary-fixed-dim" aria-hidden="true"></span>
+          <span class="text-label-md uppercase tracking-wider text-surface-container-low font-semibold">HIMPALUBI UNIPAR JEMBER</span>
+        </div>
+
+        <!-- Dynamic/Fallback Headline -->
+        <h1 id="hero-tagline" class="font-sans text-display-mobile sm:text-display font-extrabold text-on-primary tracking-tight max-w-4xl mb-5 leading-tight">
+          Bergerak Bersama, Peduli untuk Semua
+        </h1>
+
+        <!-- Subheadline -->
+        <p class="text-body-lg text-secondary-fixed-dim max-w-2xl mb-8 leading-relaxed">
+          Wadah kolaborasi, advokasi inklusif, inovasi akademis, dan kepemimpinan Himpunan Mahasiswa Pendidikan Luar Biasa Universitas PGRI Argopuro Jember.
+        </p>
+
+        <!-- CTA Action Buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <a class="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-label-md font-semibold bg-primary-container text-on-primary hover:bg-primary transition-all duration-200 shadow-lg hover:shadow-xl min-h-[44px]" href="pendaftaran.html">
+            Daftar Anggota Baru
+          </a>
+          <a class="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-label-md font-semibold bg-surface-container-lowest text-inverse-surface hover:bg-surface-container-low transition-all duration-200 shadow-md min-h-[44px]" href="#kegiatan">
+            Lihat Kegiatan
+          </a>
+        </div>
+
+        <!-- Quick Highlights Counter Strip -->
+        <div id="statistik-beranda" class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-10 sm:mt-14 pt-6 w-full max-w-3xl border-t border-surface-container-lowest/10" aria-live="polite">
+          <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm text-center">
+            <span class="angka text-xs sm:text-base font-bold text-primary-fixed-dim leading-snug">Sejak 2008</span>
+            <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Berdiri</span>
+          </div>
+          <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm text-center">
+            <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-primary leading-tight">1.200+</span>
+            <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Mahasiswa Anggota</span>
+          </div>
+          <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm text-center">
+            <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-primary-fixed leading-tight">15</span>
+            <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Divisi</span>
+          </div>
+          <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm text-center">
+            <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-primary leading-tight">38</span>
+            <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Program Kerja</span>
+          </div>
+        </div>
+
       </div>
-      <p id="tentang-ringkas-teks" aria-live="polite">Memuat...</p>
-      <div class="stat-mini-grid" id="statistik-beranda"></div>
-    </div>
-  </section>
+    </section>
 
-  <section>
-    <div class="container">
-      <div class="section-head">
-        <h2>Kegiatan Terbaru</h2>
-        <a href="kegiatan.html">Lihat semua kegiatan</a>
-      </div>
-      <div class="card-grid-3" id="kegiatan-terbaru-grid" aria-live="polite">
-        <p>Memuat kegiatan...</p>
-      </div>
-    </div>
-  </section>
+    <!-- Seksi Tentang Kami -->
+    <section class="w-full bg-surface-container-lowest py-16 sm:py-20 px-4 sm:px-6 lg:px-12" id="profil">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+        
+        <!-- Left Column: Content -->
+        <div class="lg:col-span-6 flex flex-col items-start">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold text-label-md mb-4 uppercase tracking-wider">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary-container" aria-hidden="true"></span>
+            TENTANG KAMI
+          </div>
+          
+          <h2 class="text-headline-lg-mobile sm:text-headline-lg font-bold text-on-surface mb-5 tracking-tight">
+            Membangun Generasi Pendidik Khusus yang Unggul &amp; Inklusif
+          </h2>
+          
+          <p id="tentang-ringkas-teks" class="text-body-lg text-secondary mb-6 leading-relaxed" aria-live="polite">
+            HIMPALUBI (Himpunan Mahasiswa Pendidikan Luar Biasa) Universitas PGRI Argopuro Jember merupakan wadah kelembagaan mahasiswa yang berfokus pada advokasi, pengabdian disabilitas, dan pengembangan kompetensi akademis pendidikan khusus. Kami hadir sebagai katalisator potensi mahasiswa dalam memajukan pendidikan inklusif dan kepemimpinan berintegritas.
+          </p>
 
-  <section>
-    <div class="container">
-      <div class="section-head">
-        <h2>Berita Terbaru</h2>
-        <a href="berita.html">Lihat semua berita</a>
-      </div>
-      <div class="card-grid-3" id="berita-terbaru-grid" aria-live="polite">
-        <p>Memuat berita...</p>
-      </div>
-    </div>
-  </section>
+          <p class="text-body-md text-secondary mb-8 leading-relaxed">
+            Berpijak pada asas kepedulian dan profesionalisme, dewan kepengurusan HIMPALUBI berkomitmen menciptakan ruang kolaborasi di mana setiap ide diartikulasikan menjadi karya konkret bagi masyarakat.
+          </p>
 
-  <section>
-    <div class="container">
-      <div class="section-head">
-        <h2>Kata Mereka</h2>
+          <a class="inline-flex items-center gap-2 text-title-md text-primary-container font-semibold hover:text-primary transition-all group min-h-[44px]" href="tentang.html">
+            <span>Pelajari Profil Selengkapnya</span>
+            <span class="material-symbols-outlined text-[18px] transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">arrow_forward</span>
+          </a>
+        </div>
+
+        <!-- Right Column: Visual Showcase -->
+        <div class="lg:col-span-6 relative">
+          <div class="relative rounded-2xl overflow-hidden shadow-md bg-surface-container border border-surface-container-high">
+            <div class="w-full h-80 sm:h-96 bg-gradient-to-br from-primary-container/20 via-surface-container to-surface-container-high flex flex-col items-center justify-center p-8 text-center">
+              <picture>
+                <source srcset="img/logo.webp" type="image/webp">
+                <img src="img/logo.png" alt="Lambang HIMPALUBI UNIPAR" class="w-24 h-24 object-contain mb-4 drop-shadow-md">
+              </picture>
+              <h3 class="text-headline-sm font-bold text-on-surface">Pendidikan Luar Biasa UNIPAR</h3>
+              <p class="text-body-md text-secondary mt-1">Mengabdi untuk Kesetaraan &amp; Hak Pendidikan Disabilitas</p>
+            </div>
+            
+            <!-- Floating Credential Badge -->
+            <div class="absolute bottom-4 left-4 right-4 p-3.5 sm:p-4 rounded-xl bg-surface-container-lowest/95 backdrop-blur-md shadow-md border border-surface-container flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container shrink-0">
+                  <span class="material-symbols-outlined text-[22px]" aria-hidden="true">workspace_premium</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-title-md font-bold text-on-surface">Akreditasi Unggul</span>
+                  <span class="text-label-sm text-secondary">Prodi Pendidikan Luar Biasa UNIPAR</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface text-label-sm font-semibold">2025/2026</span>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <div class="testimoni-grid" id="testimoni-beranda" aria-live="polite"></div>
-    </div>
-  </section>
+    </section>
 
-  <section>
-    <div class="container" style="max-width:640px; text-align:center;">
-      <div class="section-head" style="justify-content:center;">
-        <h2>Hubungi Kami</h2>
+    <!-- Seksi Kegiatan Terbaru -->
+    <section class="w-full bg-surface-container-low py-16 sm:py-20 px-4 sm:px-6 lg:px-12" id="kegiatan">
+      <div class="max-w-7xl mx-auto">
+        
+        <!-- Section Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold text-label-md mb-3 uppercase tracking-wider">
+              AGENDA TERJADWAL
+            </div>
+            <h2 class="text-headline-lg-mobile sm:text-headline-lg font-bold text-on-surface tracking-tight">
+              Kegiatan &amp; Program Kerja
+            </h2>
+            <p class="text-body-md text-secondary mt-1.5">
+              Agenda kegiatan akademik, seminar kepemimpinan nasional, dan aksi pengabdian masyarakat.
+            </p>
+          </div>
+          <a class="inline-flex items-center gap-1.5 text-label-md font-semibold text-primary-container hover:text-primary transition-colors min-h-[44px]" href="kegiatan.html">
+            <span>Lihat Seluruh Kegiatan</span>
+            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">calendar_month</span>
+          </a>
+        </div>
+
+        <!-- 3-Column Kegiatan Grid (Hydrated by Supabase with Empty State) -->
+        <div id="kegiatan-terbaru-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" aria-live="polite">
+          <div class="col-span-full w-full py-12 px-6 sm:px-8 rounded-2xl bg-surface-container-lowest border border-surface-container text-center flex flex-col items-center justify-center shadow-sm my-2">
+            <div class="w-14 h-14 rounded-2xl bg-primary-fixed/60 text-primary-container flex items-center justify-center mb-3.5 shadow-sm">
+              <span class="material-symbols-outlined text-[28px]" aria-hidden="true">event_busy</span>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-on-surface mb-1.5 tracking-tight">Belum ada kegiatan yang diunggah</h3>
+            <p class="text-xs sm:text-sm text-secondary max-w-md mx-auto leading-relaxed mb-4">Saat ini belum ada publikasi agenda kegiatan atau program kerja di database. Pengurus akan segera memperbarui jadwal kegiatan mendatang.</p>
+            <a href="kegiatan.html" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-primary-container hover:bg-primary text-on-primary text-xs font-semibold transition-all shadow-sm min-h-[40px]">
+              <span>Lihat Seluruh Kegiatan</span>
+              <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+            </a>
+          </div>
+        </div>
       </div>
-      <div id="kontak-ringkas-beranda" aria-live="polite"></div>
-      <p style="margin-top:1rem;"><a href="kontak.html" class="btn secondary">Lihat Info Kontak Lengkap</a></p>
-    </div>
-  </section>
-</main>
+    </section>
 
-<div id="site-footer-slot"></div>
+    <!-- Seksi Berita & Warta Resmi -->
+    <section class="w-full bg-surface-container-lowest py-16 sm:py-20 px-4 sm:px-6 lg:px-12" id="berita">
+      <div class="max-w-7xl mx-auto">
+        
+        <!-- Section Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold text-label-md mb-3 uppercase tracking-wider">
+              WARTA RESMI
+            </div>
+            <h2 class="text-headline-lg-mobile sm:text-headline-lg font-bold text-on-surface tracking-tight">
+              Berita &amp; Publikasi HIMPALUBI
+            </h2>
+            <p class="text-body-md text-secondary mt-1.5">
+              Pusat informasi kebijakan himpunan, prestasi mahasiswa, dan pengumuman akademik.
+            </p>
+          </div>
+          <a class="inline-flex items-center gap-1 text-label-md font-semibold text-primary-container hover:text-primary transition-colors min-h-[44px]" href="berita.html">
+            <span>Arsip Berita Lengkap</span>
+            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_right_alt</span>
+          </a>
+        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/supabaseClient.js"></script>
-<script src="js/public.js"></script>
-<script src="js/components.js"></script>
-<script>
-  muatTaglineHero("hero-tagline");
-  muatTentangRingkas("tentang-ringkas-teks");
-  muatStatistikBeranda("statistik-beranda");
-  muatKegiatanTerbaru("kegiatan-terbaru-grid");
-  muatBeritaKartu("berita-terbaru-grid", 3);
-  muatTestimoniBeranda("testimoni-beranda");
-  muatKontakRingkasBeranda("kontak-ringkas-beranda");
-</script>
+        <!-- Berita Grid (Hydrated by Supabase with Fallback) -->
+        <div id="berita-terbaru-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" aria-live="polite">
+          
+          <article class="bg-surface-container-low rounded-xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
+            <div class="flex items-center gap-2 text-label-sm text-secondary mb-2.5">
+              <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold">Organisasi</span>
+              <span>12 April 2025</span>
+            </div>
+            <h3 class="text-title-md font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
+              Pelantikan Dewan Pengurus HIMPALUBI UNIPAR Periode 2025/2026
+            </h3>
+            <p class="text-body-md text-secondary line-clamp-3 mb-4 flex-1">
+              Serah terima jabatan ketua umum dan jajaran dewan pengurus diselenggarakan dengan khidmat di hadapan pimpinan program studi dan senat mahasiswa.
+            </p>
+            <a href="berita.html" class="inline-flex items-center gap-1.5 text-label-md font-semibold text-primary-container hover:text-primary mt-auto">
+              <span>Baca Selengkapnya</span>
+              <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+            </a>
+          </article>
+
+          <article class="bg-surface-container-low rounded-xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
+            <div class="flex items-center gap-2 text-label-sm text-secondary mb-2.5">
+              <span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-secondary font-medium">Prestasi</span>
+              <span>08 April 2025</span>
+            </div>
+            <h3 class="text-title-md font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
+              Mahasiswa PLB UNIPAR Raih Juara Inovasi Media Pembelajaran Inklusif
+            </h3>
+            <p class="text-body-md text-secondary line-clamp-3 mb-4 flex-1">
+              Delegasi mahasiswa berhasil mengembangkan aplikasi ramah tunarungu dalam kompetisi karya inovasi pembelajaran tingkat regional.
+            </p>
+            <a href="berita.html" class="inline-flex items-center gap-1.5 text-label-md font-semibold text-primary-container hover:text-primary mt-auto">
+              <span>Baca Selengkapnya</span>
+              <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+            </a>
+          </article>
+
+          <article class="bg-surface-container-low rounded-xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
+            <div class="flex items-center gap-2 text-label-sm text-secondary mb-2.5">
+              <span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-secondary font-medium">Rekrutmen</span>
+              <span>29 Maret 2025</span>
+            </div>
+            <h3 class="text-title-md font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
+              Pembukaan Pendaftaran Anggota Baru HIMPALUBI UNIPAR 2025
+            </h3>
+            <p class="text-body-md text-secondary line-clamp-3 mb-4 flex-1">
+              Bagi mahasiswa aktif PLB yang berkeinginan bergabung mengembangkan kepemimpinan dan jejaring kemahasiswaan, pendaftaran telah dibuka secara daring.
+            </p>
+            <a href="pendaftaran.html" class="inline-flex items-center gap-1.5 text-label-md font-semibold text-primary-container hover:text-primary mt-auto">
+              <span>Daftar Sekarang</span>
+              <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+            </a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Seksi Struktur Pengurus HIMPALUBI -->
+    <section class="w-full bg-surface-container-low py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-12" id="struktur-organisasi">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold text-label-md mb-3 uppercase tracking-wider">
+            KEPENGURUSAN 2025/2026
+          </div>
+          <h2 class="text-headline-lg-mobile sm:text-headline-lg font-bold text-on-surface tracking-tight mb-2.5">
+            Struktur Pengurus HIMPALUBI
+          </h2>
+          <p class="text-body-md text-secondary leading-relaxed">
+            Fungsionaris yang berdedikasi membawa aspirasi serta integritas mahasiswa Pendidikan Luar Biasa UNIPAR.
+          </p>
+        </div>
+
+        <!-- Dynamic Grid Pengurus Inti -->
+        <div id="pengurus-beranda-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5" aria-live="polite">
+          <!-- Dinamis dari database atau status belum ada data -->
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href="struktur.html" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-surface-container-lowest text-on-surface hover:bg-primary-container hover:text-on-primary border border-surface-container text-label-md font-semibold transition-colors shadow-sm min-h-[44px]">
+            <span>Lihat Seluruh Struktur Pengurus &amp; Divisi</span>
+            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Seksi Galeri Momen Kegiatan -->
+    <section class="w-full bg-surface-container-lowest py-16 sm:py-20 px-4 sm:px-6 lg:px-12" id="galeri">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold text-label-md mb-3 uppercase tracking-wider">
+              DOKUMENTASI PROGRAM
+            </div>
+            <h2 class="text-headline-lg-mobile sm:text-headline-lg font-bold text-on-surface tracking-tight">
+              Galeri Momen Kegiatan
+            </h2>
+            <p class="text-body-md text-secondary mt-1.5">
+              Rekam jejak pergerakan, kebersamaan, dan prestasi mahasiswa Pendidikan Luar Biasa.
+            </p>
+          </div>
+          <a class="inline-flex items-center gap-1 text-label-md font-semibold text-primary-container hover:text-primary transition-colors min-h-[44px]" href="galeri.html">
+            <span>Buka Galeri Lengkap</span>
+            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+          </a>
+        </div>
+
+        <!-- 4-Column Photo Grid (Hydrated by Supabase with Empty State) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="galeri-beranda-grid" aria-live="polite">
+          <div class="col-span-full w-full py-12 px-6 sm:px-8 rounded-2xl bg-surface-container-lowest border border-surface-container text-center flex flex-col items-center justify-center shadow-sm my-2">
+            <div class="w-14 h-14 rounded-2xl bg-primary-fixed/60 text-primary-container flex items-center justify-center mb-3.5 shadow-sm">
+              <span class="material-symbols-outlined text-[28px]" aria-hidden="true">photo_library</span>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-on-surface mb-1.5 tracking-tight">Belum ada dokumentasi galeri yang diunggah</h3>
+            <p class="text-xs sm:text-sm text-secondary max-w-md mx-auto leading-relaxed mb-4">Foto dokumentasi kegiatan dan program kerja akan tampil di sini begitu dipublikasikan oleh pengurus.</p>
+            <a href="kegiatan.html" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-primary-container hover:bg-primary text-on-primary text-xs font-semibold transition-all shadow-sm min-h-[40px]">
+              <span>Lihat Seluruh Kegiatan</span>
+              <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seksi Saluran Aspirasi & Kontak -->
+    <section class="w-full bg-surface-container-low py-16 sm:py-20 px-4 sm:px-6 lg:px-12" id="kontak">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold text-label-md mb-3 uppercase tracking-wider">
+            SALURAN ASPIRASI &amp; KERJASAMA
+          </div>
+          <h2 class="text-headline-lg-mobile sm:text-headline-lg font-bold text-on-surface tracking-tight mb-2.5">
+            Hubungi HIMPALUBI UNIPAR
+          </h2>
+          <p class="text-body-md text-secondary leading-relaxed">
+            Sampaikan pertanyaan, usulan program, aspirasi mahasiswa, atau permohonan kolaborasi bersama himpunan.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          
+          <!-- Formulir Aspirasi (7 cols) -->
+          <div class="lg:col-span-7 bg-surface-container-lowest p-6 sm:p-8 rounded-2xl shadow-sm border border-surface-container">
+            <h3 class="text-headline-sm font-bold text-on-surface mb-1.5">
+              Formulir Aspirasi &amp; Pesan Mahasiswa
+            </h3>
+            <p class="text-body-md text-secondary mb-6">
+              Setiap pesan yang masuk akan diteruskan ke divisi terkait untuk ditindaklanjuti.
+            </p>
+
+            <form class="space-y-4" id="form-aspirasi-beranda" onsubmit="event.preventDefault(); alert('Terima kasih! Pesan aspirasi Anda telah terkirim kepada pengurus HIMPALUBI UNIPAR.'); this.reset();">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-label-md font-semibold text-on-surface" for="aspirasi-nama">Nama Lengkap</label>
+                  <input class="w-full px-4 py-2.5 rounded-lg bg-surface-container-low text-on-surface text-body-md border border-surface-container focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container" id="aspirasi-nama" placeholder="Nama Anda" required type="text">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-label-md font-semibold text-on-surface" for="aspirasi-email">Alamat Email</label>
+                  <input class="w-full px-4 py-2.5 rounded-lg bg-surface-container-low text-on-surface text-body-md border border-surface-container focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container" id="aspirasi-email" placeholder="nama@email.com" required type="email">
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-1.5">
+                <label class="text-label-md font-semibold text-on-surface" for="aspirasi-kategori">Perihal / Kategori</label>
+                <select class="w-full px-4 py-2.5 rounded-lg bg-surface-container-low text-on-surface text-body-md border border-surface-container focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container" id="aspirasi-kategori">
+                  <option value="advokasi">Advokasi &amp; Fasilitas Perkuliahan</option>
+                  <option value="kegiatan">Pertanyaan Seputar Program Kerja</option>
+                  <option value="kolaborasi">Kolaborasi &amp; Kemitraan Kegiatan</option>
+                  <option value="umum">Saran &amp; Masukan Umum</option>
+                </select>
+              </div>
+
+              <div class="flex flex-col gap-1.5">
+                <label class="text-label-md font-semibold text-on-surface" for="aspirasi-pesan">Pesan / Aspirasi</label>
+                <textarea class="w-full px-4 py-2.5 rounded-lg bg-surface-container-low text-on-surface text-body-md border border-surface-container focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container" id="aspirasi-pesan" placeholder="Tuliskan aspirasi atau pertanyaan Anda..." required rows="4"></textarea>
+              </div>
+
+              <div class="pt-2">
+                <button class="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full bg-primary-container text-on-primary hover:bg-primary font-semibold text-label-md transition-all shadow-sm w-full sm:w-auto min-h-[44px]" type="submit">
+                  <span>Kirim Pesan Aspirasi</span>
+                  <span class="material-symbols-outlined text-[18px]" aria-hidden="true">send</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Info Sekretariat & Kontak Ringkas (5 cols) -->
+          <div class="lg:col-span-5 flex flex-col justify-between gap-6">
+            
+            <div class="bg-surface-container-lowest p-6 sm:p-8 rounded-2xl shadow-sm border border-surface-container flex flex-col gap-5">
+              <h3 class="text-headline-sm font-bold text-on-surface">
+                Sekretariat Himpunan
+              </h3>
+
+              <div class="flex items-start gap-3.5">
+                <div class="w-10 h-10 rounded-full bg-primary-fixed text-primary-container shrink-0 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px]" aria-hidden="true">location_on</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-title-md font-semibold text-on-surface">Alamat</span>
+                  <span class="text-body-md text-secondary mt-0.5 leading-relaxed">
+                    Gedung PKM Kampus 1 Universitas PGRI Argopuro Jember, Jl. Jawa No. 10, Jember, Jawa Timur
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3.5">
+                <div class="w-10 h-10 rounded-full bg-surface-container text-on-surface shrink-0 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px]" aria-hidden="true">mail</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-title-md font-semibold text-on-surface">Surel Resmi</span>
+                  <a class="text-body-md text-primary-container hover:underline mt-0.5" href="mailto:himpalubi@unipar.ac.id">himpalubi@unipar.ac.id</a>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3.5">
+                <div class="w-10 h-10 rounded-full bg-surface-container text-on-surface shrink-0 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px]" aria-hidden="true">schedule</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-title-md font-semibold text-on-surface">Jam Layanan Piket</span>
+                  <span class="text-body-md text-secondary mt-0.5">Senin - Jumat: 09.00 - 17.00 WIB</span>
+                </div>
+              </div>
+
+              <div id="kontak-ringkas-beranda" class="text-body-md text-secondary" aria-live="polite"></div>
+            </div>
+
+            <div class="bg-inverse-surface text-on-primary p-6 sm:p-8 rounded-2xl shadow-sm flex flex-col justify-between">
+              <div>
+                <span class="text-label-sm uppercase tracking-widest text-primary-fixed block mb-1 font-semibold">JARINGAN DIGITAL</span>
+                <h4 class="text-title-md font-bold text-on-primary mb-2">Ikuti Publikasi Resmi Himpunan</h4>
+                <p class="text-body-md text-secondary-fixed-dim leading-relaxed mb-5">
+                  Dapatkan pembaruan langsung terkait kegiatan kemahasiswaan dan advokasi inklusif.
+                </p>
+              </div>
+              <div class="grid grid-cols-2 gap-2.5">
+                <a class="flex items-center gap-2 px-3.5 py-2 rounded-full bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-label-md text-on-primary transition-colors min-h-[44px]" href="https://instagram.com" target="_blank" rel="noopener">
+                  <span class="material-symbols-outlined text-[18px] text-primary-fixed" aria-hidden="true">photo_camera</span>
+                  <span>Instagram</span>
+                </a>
+                <a class="flex items-center gap-2 px-3.5 py-2 rounded-full bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-label-md text-on-primary transition-colors min-h-[44px]" href="https://youtube.com" target="_blank" rel="noopener">
+                  <span class="material-symbols-outlined text-[18px] text-primary-fixed" aria-hidden="true">smart_display</span>
+                  <span>YouTube</span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer Slot (Dimuat otomatis dari partials/footer.html) -->
+  <div id="site-footer-slot"></div>
+
+  <!-- Backend Integration Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/public.js"></script>
+  <script src="js/components.js"></script>
+
+  <!-- Page Dynamic Data Hydration -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (typeof muatTaglineHero === "function") muatTaglineHero("hero-tagline");
+      if (typeof muatTentangRingkas === "function") muatTentangRingkas("tentang-ringkas-teks");
+      if (typeof muatStatistikBeranda === "function") muatStatistikBeranda("statistik-beranda");
+      if (typeof muatPengurusBeranda === "function") muatPengurusBeranda("pengurus-beranda-grid", 5);
+      if (typeof muatKegiatanTerbaru === "function") muatKegiatanTerbaru("kegiatan-terbaru-grid");
+      if (typeof muatBeritaKartu === "function") muatBeritaKartu("berita-terbaru-grid", 3);
+      if (typeof muatGaleriBeranda === "function") muatGaleriBeranda("galeri-beranda-grid", 4);
+      if (typeof muatKontakRingkasBeranda === "function") muatKontakRingkasBeranda("kontak-ringkas-beranda");
+    });
+  </script>
 </body>
 </html>
