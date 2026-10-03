@@ -160,4 +160,8 @@ function pasangDropdown() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", muatKomponen);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", muatKomponen);
+} else {
+  muatKomponen();
+}

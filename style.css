@@ -270,19 +270,44 @@ a:hover { color: var(--teal-900); }
 }
 .icon-btn:hover { border-color: var(--ink-900); }
 
-/* ---------- Tulisan Pengumuman (Stay / Statis) ---------- */
+/* ---------- Tulisan Pengumuman (Marquee Berjalan Halus) ---------- */
 .ticker-bar {
   background: var(--surface-container-high, #DFE9FA);
   color: var(--on-surface, #121C28);
 }
+.ticker-viewport {
+  mask-image: linear-gradient(to right, transparent 0%, black 14px, black calc(100% - 14px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 14px, black calc(100% - 14px), transparent 100%);
+}
 .ticker-track {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   font-size: 0.82rem;
   font-weight: 500;
   color: var(--secondary, #5C5E66);
+  white-space: nowrap;
+  animation: ticker-marquee 30s linear infinite;
+}
+.ticker-track:hover,
+.ticker-viewport:hover .ticker-track {
+  animation-play-state: paused;
 }
 .ticker-track .pemisah { margin: 0 0.5rem; color: var(--primary-container, #C8102E); }
+
+@keyframes ticker-marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+  }
+}
 
 /* ---------- Dropdown "Tentang" (flyout di desktop, inline saat panel mobile) ---------- */
 .has-dropdown { position: relative; }
@@ -755,12 +780,12 @@ input:focus, textarea:focus, select:focus {
   position: sticky;
   top: 0;
   height: 100vh;
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
-.admin-sidebar .brand { display: flex; margin-bottom: 2rem; }
-.admin-sidebar nav { flex: 1; }
+.admin-sidebar .brand { display: flex; margin-bottom: 2rem; flex-shrink: 0; }
+.admin-sidebar nav { flex: 1; overflow-y: auto; }
 .admin-sidebar .nav-group-label {
   font-size: 0.72rem;
   text-transform: uppercase;
