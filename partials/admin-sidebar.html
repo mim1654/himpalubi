@@ -1,0 +1,132 @@
+<!-- Admin Sidebar (Modular Partial) -->
+<aside 
+  id="admin-sidebar" 
+  class="admin-sidebar fixed lg:sticky top-0 left-0 z-50 lg:z-30 h-screen w-72 max-w-[85vw] bg-surface-container-lowest border-r border-surface-container flex flex-col p-4 sm:p-5 -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-out shadow-lg lg:shadow-none overflow-hidden select-none">
+  
+  <!-- 1. FIXED BRAND HEADER (Logo tidak pernah ter-scroll) -->
+  <div class="flex items-center justify-between pb-4 mb-2 border-b border-surface-container flex-shrink-0">
+    <a href="#ringkasan" data-section="ringkasan" class="flex items-center gap-3 group">
+      <picture>
+        <source srcset="../img/logo.webp" type="image/webp">
+        <img src="../img/logo.png" alt="Logo HIMPALUBI" width="40" height="40" class="w-10 h-10 rounded-full object-cover shadow-sm border border-surface-container group-hover:scale-105 transition-transform">
+      </picture>
+      <div class="flex flex-col">
+        <span class="text-base font-extrabold text-on-surface tracking-tight leading-none">HIMPALUBI</span>
+        <span class="text-[11px] text-primary font-semibold tracking-wide uppercase mt-1">UNIPAR Jember</span>
+      </div>
+    </a>
+
+    <!-- Mobile Close Button inside Drawer -->
+    <button 
+      type="button" 
+      id="tombol-tutup-sidebar" 
+      class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-secondary hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer" 
+      aria-label="Tutup menu navigasi">
+      <span class="material-symbols-outlined text-[20px]">close</span>
+    </button>
+  </div>
+
+  <!-- 2. SCROLLABLE NAVIGATION MENU (Hanya area menu yang scrollable) -->
+  <nav aria-label="Navigasi admin" class="flex-1 overflow-y-auto space-y-5 py-2 -mr-2 pr-2 custom-scrollbar">
+    
+    <!-- Grup 1: Utama -->
+    <div>
+      <p class="text-[11px] font-semibold text-secondary/80 uppercase tracking-wider px-3 mb-1.5">Utama</p>
+      <ul class="space-y-1">
+        <li>
+          <a href="#ringkasan" data-section="ringkasan" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors" aria-current="page">
+            <span class="material-symbols-outlined nav-icon text-[20px] text-secondary">dashboard</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Grup 2: Konten -->
+    <div>
+      <p class="text-[11px] font-semibold text-secondary/80 uppercase tracking-wider px-3 mb-1.5">Konten</p>
+      <ul class="space-y-1">
+        <li>
+          <a href="#kelola-konten" data-section="kelola-konten" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined nav-icon text-[20px] text-secondary">article</span>
+            <span>Kelola Konten</span>
+          </a>
+        </li>
+        <li>
+          <a href="#kelola-galeri" data-section="kelola-galeri" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined nav-icon text-[20px] text-secondary">photo_library</span>
+            <span>Galeri</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Grup 3: Keanggotaan -->
+    <div>
+      <p class="text-[11px] font-semibold text-secondary/80 uppercase tracking-wider px-3 mb-1.5">Keanggotaan</p>
+      <ul class="space-y-1">
+        <li>
+          <a href="#kelola-anggota" data-section="kelola-anggota" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined nav-icon text-[20px] text-secondary">groups</span>
+            <span>Anggota</span>
+          </a>
+        </li>
+        <li>
+          <a href="#kelola-struktur" data-section="kelola-struktur" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined nav-icon text-[20px] text-secondary">account_tree</span>
+            <span>Struktur Pengurus</span>
+          </a>
+        </li>
+        <li>
+          <a href="#kelola-pendaftaran" data-section="kelola-pendaftaran" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined nav-icon text-[20px] text-secondary">how_to_reg</span>
+            <span>Pendaftaran</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Grup 4: Organisasi -->
+    <div>
+      <p class="text-[11px] font-semibold text-secondary/80 uppercase tracking-wider px-3 mb-1.5">Organisasi</p>
+      <ul class="space-y-1">
+        <li>
+          <a href="#kelola-faq" data-section="kelola-faq" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined nav-icon text-[20px] text-secondary">quiz</span>
+            <span>FAQ</span>
+          </a>
+        </li>
+        <li>
+          <a href="#kelola-testimoni" data-section="kelola-testimoni" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined nav-icon text-[20px] text-secondary">format_quote</span>
+            <span>Testimoni</span>
+          </a>
+        </li>
+        <li>
+          <a href="#kelola-pengaturan" data-section="kelola-pengaturan" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined nav-icon text-[20px] text-secondary">settings</span>
+            <span>Pengaturan</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Dynamic Slot untuk Menu Admin Utama -->
+    <div id="grup-admin-slot"></div>
+
+    <!-- Grup 5: Tautan Eksternal -->
+    <div>
+      <p class="text-[11px] font-semibold text-secondary/80 uppercase tracking-wider px-3 mb-1.5">Tautan</p>
+      <ul class="space-y-1">
+        <li>
+          <a href="../index.html" target="_blank" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-primary hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined text-[20px] text-secondary">open_in_new</span>
+            <span>Lihat Website</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+  </nav>
+
+</aside>

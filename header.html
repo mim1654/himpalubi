@@ -85,18 +85,22 @@
 <!-- Spacer div to keep page layout aligned with fixed navbar -->
 <div class="navbar-spacer h-16 sm:h-20 w-full" aria-hidden="true"></div>
 
-<!-- Ticker Bar (Ditempatkan di bawah Navbar, stay diam / tidak bergerak, akan hilang / tergulir ke atas saat halaman di-scroll) -->
-<div class="ticker-bar bg-surface-container-high py-2 px-3 sm:px-6 lg:px-12 border-b border-surface-container relative z-40 transition-all" id="ticker-bar">
+<!-- Ticker Bar (Ditempatkan di bawah Navbar, teks berjalan mulus dan hilang sebelum tulisan Warta) -->
+<div class="ticker-bar bg-surface-container-high py-2 px-3 sm:px-6 lg:px-12 border-b border-surface-container relative z-40 transition-all overflow-hidden" id="ticker-bar">
   <div class="max-w-7xl mx-auto flex items-center justify-between gap-2.5 text-label-sm text-on-surface">
     <div class="flex items-center gap-2 overflow-hidden flex-1 min-w-0">
-      <span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-bold uppercase text-[10px] shrink-0">Warta</span>
-      <div class="ticker-track text-secondary text-xs truncate flex items-center gap-2 min-w-0" id="ticker-track">
-        <span class="truncate">Selamat datang di Portal Resmi HIMPALUBI UNIPAR Jember</span>
-        <span class="pemisah text-primary-container font-bold shrink-0">&bull;</span>
-        <span class="truncate hidden sm:inline">Pendaftaran Calon Anggota Baru Gelombang 2026/2027 telah dibuka</span>
+      <div class="flex items-center shrink-0 z-10 pr-2 bg-surface-container-high">
+        <span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-bold uppercase text-[10px] tracking-wider shrink-0 shadow-xs">Warta</span>
+      </div>
+      <div class="ticker-viewport relative flex-1 overflow-hidden min-w-0 flex items-center select-none">
+        <div class="ticker-track text-secondary text-xs inline-flex items-center whitespace-nowrap will-change-transform" id="ticker-track">
+          <span class="px-2">Selamat datang di Portal Resmi HIMPALUBI UNIPAR Jember</span>
+          <span class="pemisah text-primary-container font-bold shrink-0">&bull;</span>
+          <span class="px-2">Pendaftaran Calon Anggota Baru Gelombang 2026/2027 telah dibuka</span>
+        </div>
       </div>
     </div>
-    <button type="button" class="text-secondary hover:text-on-surface shrink-0 p-1 flex items-center focus:outline-none" onclick="document.getElementById('ticker-bar').hidden=true" aria-label="Tutup bar pengumuman">
+    <button type="button" class="text-secondary hover:text-on-surface shrink-0 p-1 flex items-center focus:outline-none z-10 pl-2 bg-surface-container-high" onclick="document.getElementById('ticker-bar').hidden=true" aria-label="Tutup bar pengumuman">
       <span class="material-symbols-outlined text-[16px]" aria-hidden="true">close</span>
     </button>
   </div>

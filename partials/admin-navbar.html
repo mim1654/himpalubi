@@ -1,0 +1,95 @@
+<!-- Admin Top Navbar (Modular Partial) -->
+<header id="admin-top-navbar" class="sticky top-0 z-40 h-16 bg-surface-container-lowest/95 backdrop-blur-md border-b border-surface-container px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 shadow-xs transition-all">
+  
+  <!-- Left Side: Mobile Hamburger & Active Breadcrumb -->
+  <div class="flex items-center gap-3 min-w-0">
+    <!-- Mobile Hamburger Toggle -->
+    <button 
+      type="button" 
+      id="tombol-buka-sidebar" 
+      class="lg:hidden w-11 h-11 flex items-center justify-center rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 flex-shrink-0 cursor-pointer" 
+      aria-label="Buka menu navigasi admin">
+      <span class="material-symbols-outlined text-[24px]">menu</span>
+    </button>
+
+    <!-- Breadcrumb Indicator -->
+    <div class="flex items-center gap-2 min-w-0">
+      <div class="hidden sm:flex items-center gap-2 text-xs font-semibold text-secondary">
+        <a href="#ringkasan" data-section="ringkasan" class="hover:text-primary transition-colors flex items-center gap-1">
+          <span class="material-symbols-outlined text-[16px]">admin_panel_settings</span>
+          <span>Admin</span>
+        </a>
+        <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+      </div>
+      <span id="admin-navbar-title" class="text-sm sm:text-base font-bold text-on-surface tracking-tight truncate">
+        Dashboard Ringkasan
+      </span>
+    </div>
+  </div>
+
+  <!-- Right Side: User Profile with Interactive Dropdown -->
+  <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+    
+    <!-- Profile Dropdown Container -->
+    <div class="relative" id="container-profil-navbar">
+      
+      <!-- Trigger Button Profil Navbar -->
+      <button 
+        type="button" 
+        id="btn-profil-navbar" 
+        class="flex items-center gap-2.5 p-1.5 sm:px-3 sm:py-1.5 rounded-full hover:bg-surface-container-low border border-transparent hover:border-surface-container transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+        aria-expanded="false" 
+        aria-haspopup="true"
+        aria-label="Menu profil administrator">
+        <div id="admin-navbar-avatar" class="w-9 h-9 rounded-full bg-primary-fixed text-primary font-bold flex items-center justify-center text-xs flex-shrink-0 shadow-xs ring-2 ring-primary/10">
+          A
+        </div>
+        <div class="hidden lg:flex flex-col text-left">
+          <span id="admin-navbar-email" class="text-xs font-semibold text-on-surface max-w-[140px] truncate leading-tight">Admin</span>
+          <span class="text-[10px] text-secondary leading-tight">Administrator</span>
+        </div>
+        <span class="material-symbols-outlined text-[18px] text-secondary transition-transform duration-200 hidden sm:inline" id="profil-navbar-caret">expand_more</span>
+      </button>
+
+      <!-- Dropdown Menu Navbar (Muncul ke bawah) -->
+      <div 
+        id="menu-profil-navbar" 
+        class="hidden absolute right-0 top-full mt-2 w-56 bg-surface-container-lowest rounded-2xl shadow-xl border border-surface-container p-1.5 z-50 transition-all"
+        role="menu">
+        <div class="px-3 py-2 border-b border-surface-container mb-1">
+          <span class="text-[10px] font-medium text-secondary block uppercase tracking-wider">Masuk sebagai</span>
+          <span id="admin-dropdown-email" class="text-xs font-bold text-on-surface block truncate">Memuat...</span>
+        </div>
+        <button 
+          type="button" 
+          id="btn-buka-modal-profil-navbar" 
+          data-action="buka-modal-profil" 
+          class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-on-surface hover:bg-surface-container-low hover:text-primary transition-colors text-left cursor-pointer"
+          role="menuitem">
+          <span class="material-symbols-outlined text-[18px] text-primary">key</span>
+          <span>Edit Profil &amp; Ganti Sandi</span>
+        </button>
+        <a 
+          href="../index.html" 
+          target="_blank" 
+          class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors cursor-pointer"
+          role="menuitem">
+          <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          <span>Lihat Website</span>
+        </a>
+        <div class="my-1 border-t border-surface-container"></div>
+        <button 
+          type="button" 
+          id="tombol-navbar-logout" 
+          class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-error hover:bg-error/10 transition-colors text-left cursor-pointer"
+          role="menuitem">
+          <span class="material-symbols-outlined text-[18px]">logout</span>
+          <span>Keluar dari Akun</span>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</header>

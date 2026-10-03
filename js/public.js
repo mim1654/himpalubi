@@ -58,7 +58,7 @@ async function muatBerita(elId, batas, kategori) {
         <p class="excerpt">${escapeHtml(ringkas(item.isi, 180))}</p>
         <a href="detail.html?id=${item.id}&kategori=${kategori}" class="more">Baca Selengkapnya &rarr;</a>
       </div>
-      ${item.foto_url ? `<img src="${item.foto_url}" alt="Foto ${escapeHtml(item.judul)}" loading="lazy">` : ""}
+      ${item.foto_url ? `<img src="${item.foto_url}" alt="Foto ${escapeHtml(item.judul)}" loading="lazy" onerror="this.style.display='none'">` : ""}
     </li>
   `).join("");
 }
@@ -126,8 +126,16 @@ async function muatKegiatanTerbaru(elId) {
   if (data && data.length > 0) {
     el.innerHTML = data.map(item => `
       <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
-        <div class="relative h-48 bg-surface-container overflow-hidden">
-          <img src="${item.foto_url || 'img/kegiatan-1.jpg'}" alt="Foto ${escapeHtml(item.judul)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.onerror=null; this.src='img/kegiatan-1.jpg';">
+        <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
+          ${item.foto_url ? `
+            <img src="${item.foto_url}" alt="Foto ${escapeHtml(item.judul)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+          ` : ''}
+          <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
+            <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
+              <span class="material-symbols-outlined text-[24px]">event</span>
+            </div>
+            <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">HIMPALUBI UNIPAR</span>
+          </div>
           <div class="absolute top-3.5 left-3.5 bg-primary-container text-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
             ${formatTanggal(item.tanggal)}
           </div>
@@ -230,8 +238,16 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
 
       <div class="bg-surface-container-lowest rounded-2xl shadow-xl border border-surface-container overflow-hidden grid grid-cols-1 lg:grid-cols-12">
         <!-- Media Column -->
-        <div class="lg:col-span-5 relative min-h-[280px] sm:min-h-[340px] lg:min-h-full bg-surface-container">
-          <img class="w-full h-full object-cover" alt="${escapeHtml(fItem.judul)}" src="${fItem.foto_url || 'img/kegiatan-1.jpg'}" onerror="this.onerror=null; this.src='img/hero-image.png';">
+        <div class="lg:col-span-5 relative min-h-[280px] sm:min-h-[340px] lg:min-h-full bg-surface-container flex items-center justify-center overflow-hidden">
+          ${fItem.foto_url ? `
+            <img class="w-full h-full object-cover" alt="${escapeHtml(fItem.judul)}" src="${fItem.foto_url}" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+          ` : ''}
+          <div class="${fItem.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-6 text-center select-none">
+            <div class="w-14 h-14 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-3 shadow-sm">
+              <span class="material-symbols-outlined text-[28px]">event</span>
+            </div>
+            <span class="text-xs font-bold text-on-surface/80 tracking-wider uppercase">HIMPALUBI UNIPAR</span>
+          </div>
           <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent lg:hidden" aria-hidden="true"></div>
           <div class="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container text-on-primary text-xs font-bold tracking-wide uppercase shadow-md">
             <span class="w-2 h-2 rounded-full bg-on-primary animate-ping" aria-hidden="true"></span>
@@ -305,8 +321,16 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
   grid.innerHTML = data.map((item) => `
     <article class="event-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-surface-container overflow-hidden flex flex-col justify-between group" data-category="all" data-status="open" data-period="all">
       <div>
-        <div class="relative h-48 w-full overflow-hidden bg-surface-container">
-          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${escapeHtml(item.judul)}" src="${item.foto_url || 'img/kegiatan-1.jpg'}" onerror="this.onerror=null; this.src='img/kegiatan-1.jpg';">
+        <div class="relative h-48 w-full overflow-hidden bg-surface-container flex items-center justify-center">
+          ${item.foto_url ? `
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${escapeHtml(item.judul)}" src="${item.foto_url}" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+          ` : ''}
+          <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
+            <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
+              <span class="material-symbols-outlined text-[24px]">event</span>
+            </div>
+            <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">HIMPALUBI UNIPAR</span>
+          </div>
           <div class="absolute top-3 left-3">
             <span class="px-2.5 py-1 rounded-full bg-primary-container text-on-primary text-xs font-semibold shadow-sm">
               Kegiatan Resmi
@@ -438,21 +462,41 @@ async function muatBeritaKartu(elId, batas) {
 
   if (data && data.length > 0) {
     el.innerHTML = data.map(item => `
-      <article class="bg-surface-container-low rounded-2xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
-        <div class="flex items-center gap-2 text-xs text-secondary mb-2.5">
-          <span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold">Warta</span>
-          <span>${formatTanggal(item.tanggal)}</span>
+      <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
+        <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
+          ${item.foto_url ? `
+            <img src="${item.foto_url}" alt="Foto ${escapeHtml(item.judul)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+          ` : ''}
+          <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
+            <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
+              <span class="material-symbols-outlined text-[24px]">newspaper</span>
+            </div>
+            <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">HIMPALUBI UNIPAR</span>
+          </div>
+          <div class="absolute top-3.5 left-3.5 bg-primary-container text-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+            ${formatTanggal(item.tanggal)}
+          </div>
+          <div class="absolute top-3.5 right-3.5 bg-inverse-surface/85 text-surface-bright px-2.5 py-0.5 rounded-full text-[11px] font-medium">
+            Warta Berita
+          </div>
         </div>
-        <h3 class="text-base font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
-          <a href="detail.html?id=${item.id}&kategori=Berita" class="hover:underline">${escapeHtml(item.judul)}</a>
-        </h3>
-        <p class="text-xs text-secondary line-clamp-3 mb-4 flex-1 leading-relaxed">
-          ${escapeHtml(ringkas(item.isi, 120))}
-        </p>
-        <a href="detail.html?id=${item.id}&kategori=Berita" class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-container hover:text-primary mt-auto">
-          <span>Baca Selengkapnya</span>
-          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
-        </a>
+        <div class="p-5 flex flex-col flex-1">
+          <h3 class="text-base font-bold text-on-surface mb-2 group-hover:text-primary-container transition-colors line-clamp-2">
+            <a href="detail.html?id=${item.id}&kategori=Berita" class="hover:underline">${escapeHtml(item.judul)}</a>
+          </h3>
+          <p class="text-xs text-secondary mb-5 flex-1 line-clamp-3 leading-relaxed">
+            ${escapeHtml(ringkas(item.isi, 120))}
+          </p>
+          <div class="flex items-center justify-between pt-3 border-t border-surface-container mt-auto">
+            <span class="flex items-center gap-1 text-secondary text-xs">
+              <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">feed</span>
+              ${formatTanggal(item.tanggal)}
+            </span>
+            <a href="detail.html?id=${item.id}&kategori=Berita" class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary text-xs font-semibold transition-colors">
+              Baca
+            </a>
+          </div>
+        </div>
       </article>
     `).join("");
     return;
@@ -460,55 +504,106 @@ async function muatBeritaKartu(elId, batas) {
 
   // Tampilan berita kurasi bawaan jika database kosong
   el.innerHTML = `
-    <article class="bg-surface-container-low rounded-2xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
-      <div class="flex items-center gap-2 text-xs text-secondary mb-2.5">
-        <span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold">Organisasi</span>
-        <span>12 April 2025</span>
+    <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
+      <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
+        <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
+          <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
+            <span class="material-symbols-outlined text-[24px]">corporate_fare</span>
+          </div>
+          <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">HIMPALUBI UNIPAR</span>
+        </div>
+        <div class="absolute top-3.5 left-3.5 bg-primary-container text-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+          12 April 2025
+        </div>
+        <div class="absolute top-3.5 right-3.5 bg-inverse-surface/85 text-surface-bright px-2.5 py-0.5 rounded-full text-[11px] font-medium">
+          Organisasi
+        </div>
       </div>
-      <h3 class="text-base font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
-        <a href="berita.html" class="hover:underline">Pelantikan Dewan Pengurus HIMPALUBI UNIPAR Periode 2025/2026</a>
-      </h3>
-      <p class="text-xs text-secondary line-clamp-3 mb-4 flex-1 leading-relaxed">
-        Serah terima jabatan ketua umum dan jajaran dewan pengurus diselenggarakan dengan khidmat di hadapan pimpinan prodi dan senat mahasiswa.
-      </p>
-      <a href="berita.html" class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-container hover:text-primary mt-auto">
-        <span>Baca Selengkapnya</span>
-        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
-      </a>
+      <div class="p-5 flex flex-col flex-1">
+        <h3 class="text-base font-bold text-on-surface mb-2 group-hover:text-primary-container transition-colors line-clamp-2">
+          <a href="berita.html" class="hover:underline">Pelantikan Dewan Pengurus HIMPALUBI UNIPAR Periode 2025/2026</a>
+        </h3>
+        <p class="text-xs text-secondary mb-5 flex-1 line-clamp-3 leading-relaxed">
+          Serah terima jabatan ketua umum dan jajaran dewan pengurus diselenggarakan dengan khidmat di hadapan pimpinan prodi dan senat mahasiswa.
+        </p>
+        <div class="flex items-center justify-between pt-3 border-t border-surface-container mt-auto">
+          <span class="flex items-center gap-1 text-secondary text-xs">
+            <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">feed</span>
+            12 April 2025
+          </span>
+          <a href="berita.html" class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary text-xs font-semibold transition-colors">
+            Baca
+          </a>
+        </div>
+      </div>
     </article>
 
-    <article class="bg-surface-container-low rounded-2xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
-      <div class="flex items-center gap-2 text-xs text-secondary mb-2.5">
-        <span class="px-2.5 py-0.5 rounded-full bg-surface-container-highest text-secondary font-medium">Prestasi</span>
-        <span>08 April 2025</span>
+    <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
+      <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
+        <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
+          <div class="w-12 h-12 rounded-2xl bg-surface-container-high text-primary flex items-center justify-center mb-2 shadow-xs">
+            <span class="material-symbols-outlined text-[24px]">emoji_events</span>
+          </div>
+          <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">Prestasi Mahasiswa</span>
+        </div>
+        <div class="absolute top-3.5 left-3.5 bg-primary-container text-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+          08 April 2025
+        </div>
+        <div class="absolute top-3.5 right-3.5 bg-inverse-surface/85 text-surface-bright px-2.5 py-0.5 rounded-full text-[11px] font-medium">
+          Prestasi
+        </div>
       </div>
-      <h3 class="text-base font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
-        <a href="berita.html" class="hover:underline">Mahasiswa PLB UNIPAR Raih Juara Inovasi Media Pembelajaran Inklusif</a>
-      </h3>
-      <p class="text-xs text-secondary line-clamp-3 mb-4 flex-1 leading-relaxed">
-        Delegasi mahasiswa berhasil mengembangkan aplikasi ramah tunarungu dalam kompetisi karya inovasi pembelajaran tingkat regional.
-      </p>
-      <a href="berita.html" class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-container hover:text-primary mt-auto">
-        <span>Baca Selengkapnya</span>
-        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
-      </a>
+      <div class="p-5 flex flex-col flex-1">
+        <h3 class="text-base font-bold text-on-surface mb-2 group-hover:text-primary-container transition-colors line-clamp-2">
+          <a href="berita.html" class="hover:underline">Mahasiswa PLB UNIPAR Raih Juara Inovasi Media Pembelajaran Inklusif</a>
+        </h3>
+        <p class="text-xs text-secondary mb-5 flex-1 line-clamp-3 leading-relaxed">
+          Delegasi mahasiswa berhasil mengembangkan aplikasi ramah tunarungu dalam kompetisi karya inovasi pembelajaran tingkat regional.
+        </p>
+        <div class="flex items-center justify-between pt-3 border-t border-surface-container mt-auto">
+          <span class="flex items-center gap-1 text-secondary text-xs">
+            <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">feed</span>
+            08 April 2025
+          </span>
+          <a href="berita.html" class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary text-xs font-semibold transition-colors">
+            Baca
+          </a>
+        </div>
+      </div>
     </article>
 
-    <article class="bg-surface-container-low rounded-2xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
-      <div class="flex items-center gap-2 text-xs text-secondary mb-2.5">
-        <span class="px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-semibold">Akademik</span>
-        <span>25 Maret 2025</span>
+    <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
+      <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
+        <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
+          <div class="w-12 h-12 rounded-2xl bg-surface-container-high text-primary flex items-center justify-center mb-2 shadow-xs">
+            <span class="material-symbols-outlined text-[24px]">school</span>
+          </div>
+          <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">Akademik PLB</span>
+        </div>
+        <div class="absolute top-3.5 left-3.5 bg-primary-container text-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+          25 Maret 2025
+        </div>
+        <div class="absolute top-3.5 right-3.5 bg-inverse-surface/85 text-surface-bright px-2.5 py-0.5 rounded-full text-[11px] font-medium">
+          Akademik
+        </div>
       </div>
-      <h3 class="text-base font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
-        <a href="berita.html" class="hover:underline">Sosialisasi Kurikulum OBE dan Program Magang Inklusi Semester Genap</a>
-      </h3>
-      <p class="text-xs text-secondary line-clamp-3 mb-4 flex-1 leading-relaxed">
-        Pengenalan skema magang kemitraan di sekolah luar biasa dan pusat terapi anak berkebutuhan khusus wilayah Jember dan sekitarnya.
-      </p>
-      <a href="berita.html" class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-container hover:text-primary mt-auto">
-        <span>Baca Selengkapnya</span>
-        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
-      </a>
+      <div class="p-5 flex flex-col flex-1">
+        <h3 class="text-base font-bold text-on-surface mb-2 group-hover:text-primary-container transition-colors line-clamp-2">
+          <a href="berita.html" class="hover:underline">Sosialisasi Kurikulum OBE dan Program Magang Inklusi Semester Genap</a>
+        </h3>
+        <p class="text-xs text-secondary mb-5 flex-1 line-clamp-3 leading-relaxed">
+          Pengenalan skema magang kemitraan di sekolah luar biasa dan pusat terapi anak berkebutuhan khusus wilayah Jember dan sekitarnya.
+        </p>
+        <div class="flex items-center justify-between pt-3 border-t border-surface-container mt-auto">
+          <span class="flex items-center gap-1 text-secondary text-xs">
+            <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">feed</span>
+            25 Maret 2025
+          </span>
+          <a href="berita.html" class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary text-xs font-semibold transition-colors">
+            Baca
+          </a>
+        </div>
+      </div>
     </article>
   `;
 }
@@ -818,8 +913,16 @@ async function muatGaleriHalaman(elId) {
   }
 
   el.innerHTML = data.map(g => `
-    <div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-surface-container h-64 border border-surface-container cursor-pointer">
-      <img src="${g.foto_url}" alt="${escapeHtml(g.judul || 'Foto Galeri')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
+    <div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-surface-container h-64 border border-surface-container cursor-pointer flex items-center justify-center">
+      ${g.foto_url ? `
+        <img src="${g.foto_url}" alt="${escapeHtml(g.judul || 'Foto Galeri')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+      ` : ''}
+      <div class="${g.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
+        <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
+          <span class="material-symbols-outlined text-[24px]">photo_camera</span>
+        </div>
+        <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">Galeri HIMPALUBI</span>
+      </div>
       <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/20 to-transparent flex flex-col justify-end p-4 text-on-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         <h3 class="text-sm font-bold text-on-primary leading-snug line-clamp-2">${escapeHtml(g.judul || '')}</h3>
         ${g.keterangan ? `<p class="text-xs text-secondary-fixed-dim mt-0.5 line-clamp-1">${escapeHtml(g.keterangan)}</p>` : ''}
@@ -860,8 +963,16 @@ async function muatGaleriBeranda(elId = "galeri-beranda-grid", batas = 4) {
   }
 
   el.innerHTML = data.map((item) => `
-    <div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-surface-container h-64 border border-surface-container cursor-pointer">
-      <img src="${item.foto_url || 'img/kegiatan-1.jpg'}" alt="${escapeHtml(item.judul || 'Dokumentasi Kegiatan')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.onerror=null; this.src='img/kegiatan-1.jpg';">
+    <div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-surface-container h-64 border border-surface-container cursor-pointer flex items-center justify-center">
+      ${item.foto_url ? `
+        <img src="${item.foto_url}" alt="${escapeHtml(item.judul || 'Dokumentasi Kegiatan')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+      ` : ''}
+      <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
+        <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
+          <span class="material-symbols-outlined text-[24px]">photo_camera</span>
+        </div>
+        <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">Galeri HIMPALUBI</span>
+      </div>
       <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/30 to-transparent flex flex-col justify-end p-4 text-on-primary">
         <span class="text-[11px] uppercase tracking-wider font-bold text-primary-fixed mb-0.5 block">${item.tanggal ? formatTanggal(item.tanggal) : 'Dokumentasi'}</span>
         <h3 class="text-sm sm:text-base font-bold text-on-primary leading-snug line-clamp-2 group-hover:text-primary-fixed-dim transition-colors">${escapeHtml(item.judul || 'Dokumentasi Kegiatan')}</h3>
@@ -957,48 +1068,68 @@ async function muatStatistikBeranda(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
 
-  const [pengaturanRes, anggotaRes, programRes, pengurusRes] = await Promise.all([
-    supabaseClient.from("pengaturan").select("tahun_berdiri").eq("id", 1).single(),
-    supabaseClient.from("anggota").select("id", { count: "exact", head: true }).eq("kategori", "Anggota").eq("status", "Aktif"),
-    supabaseClient.from("program_kerja").select("id", { count: "exact", head: true }),
-    supabaseClient.from("anggota").select("divisi").eq("kategori", "Pengurus").eq("status", "Aktif"),
-  ]);
+  try {
+    const [pengaturanRes, anggotaRes, programRes, pengurusRes] = await Promise.all([
+      supabaseClient.from("pengaturan").select("tahun_berdiri").eq("id", 1).maybeSingle(),
+      supabaseClient.from("anggota").select("id", { count: "exact", head: true }).eq("kategori", "Anggota").eq("status", "Aktif"),
+      supabaseClient.from("program_kerja").select("id", { count: "exact", head: true }),
+      supabaseClient.from("anggota").select("divisi").eq("kategori", "Pengurus").eq("status", "Aktif"),
+    ]);
 
-  const divisiUnik = new Set((pengurusRes.data || []).map(r => r.divisi).filter(Boolean));
-  let labelTahun = "Sejak 2008";
-  if (tahun) {
-    labelTahun = tahun.toLowerCase().startsWith("sejak") ? escapeHtml(tahun) : "Sejak " + escapeHtml(tahun);
+    const tahun = pengaturanRes.data?.tahun_berdiri;
+    let labelTahun = "Sejak 2008";
+    if (tahun) {
+      labelTahun = String(tahun).toLowerCase().startsWith("sejak") ? escapeHtml(tahun) : "Sejak " + escapeHtml(tahun);
+    }
+
+    let jumlahDivisi = 0;
+    if (pengurusRes.data && pengurusRes.data.length > 0) {
+      const divisiUnik = new Set(pengurusRes.data.map(r => r.divisi).filter(Boolean));
+      jumlahDivisi = divisiUnik.size;
+    }
+    if (jumlahDivisi === 0) {
+      const { data: progDiv } = await supabaseClient.from("program_kerja").select("divisi");
+      if (progDiv && progDiv.length > 0) {
+        const setDiv = new Set(progDiv.map(p => p.divisi).filter(Boolean));
+        jumlahDivisi = setDiv.size;
+      }
+    }
+
+    const totalAnggota = anggotaRes.count !== null && anggotaRes.count !== undefined ? anggotaRes.count : 0;
+    const totalProgram = programRes.count !== null && programRes.count !== undefined ? programRes.count : 0;
+
+    el.innerHTML = `
+      <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm hover:bg-surface-container-lowest/15 transition-all duration-200 text-center group">
+        <span class="angka text-xs sm:text-base font-bold text-primary-fixed-dim leading-snug group-hover:scale-105 transition-transform break-words">
+          ${labelTahun}
+        </span>
+        <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Berdiri</span>
+      </div>
+
+      <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm hover:bg-surface-container-lowest/15 transition-all duration-200 text-center group">
+        <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-primary leading-tight group-hover:scale-105 transition-transform">
+          ${totalAnggota}
+        </span>
+        <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Anggota Aktif</span>
+      </div>
+
+      <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm hover:bg-surface-container-lowest/15 transition-all duration-200 text-center group">
+        <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-primary-fixed leading-tight group-hover:scale-105 transition-transform">
+          ${jumlahDivisi}
+        </span>
+        <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Divisi</span>
+      </div>
+
+      <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm hover:bg-surface-container-lowest/15 transition-all duration-200 text-center group">
+        <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-primary leading-tight group-hover:scale-105 transition-transform">
+          ${totalProgram}
+        </span>
+        <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Program Kerja</span>
+      </div>
+    `;
+  } catch (err) {
+    console.warn("Gagal memuat statistik beranda dari database:", err);
   }
-
-  el.innerHTML = `
-    <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm hover:bg-surface-container-lowest/15 transition-all duration-200 text-center group">
-      <span class="angka text-xs sm:text-base font-bold text-primary-fixed-dim leading-snug group-hover:scale-105 transition-transform break-words">
-        ${labelTahun}
-      </span>
-      <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Berdiri</span>
-    </div>
-
-    <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm hover:bg-surface-container-lowest/15 transition-all duration-200 text-center group">
-      <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-primary leading-tight group-hover:scale-105 transition-transform">
-        ${anggotaRes.count ?? 0}
-      </span>
-      <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Anggota Aktif</span>
-    </div>
-
-    <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm hover:bg-surface-container-lowest/15 transition-all duration-200 text-center group">
-      <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-primary-fixed leading-tight group-hover:scale-105 transition-transform">
-        ${divisiUnik.size || 0}
-      </span>
-      <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Divisi</span>
-    </div>
-
-    <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm hover:bg-surface-container-lowest/15 transition-all duration-200 text-center group">
-      <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-primary leading-tight group-hover:scale-105 transition-transform">
-        ${programRes.count ?? 0}
-      </span>
-      <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Program Kerja</span>
-    </div>
-  `;
 }
 
 // ================= HALAMAN TENTANG: Sejarah & Tujuan =================
@@ -1094,7 +1225,7 @@ async function muatTestimoniBeranda(elId) {
   `).join("");
 }
 
-// ================= TICKER / WARTA: Pengumuman Statis (Stay) =================
+// ================= TICKER / WARTA: Pengumuman Berjalan =================
 async function muatTickerBerjalan() {
   const bar = document.getElementById("ticker-bar");
   const track = document.getElementById("ticker-track");
@@ -1102,14 +1233,15 @@ async function muatTickerBerjalan() {
 
   const fallbackPotongan = [
     "Selamat datang di Portal Resmi HIMPALUBI UNIPAR Jember",
-    "Pendaftaran Calon Anggota Baru Gelombang 2026/2027 telah dibuka"
+    "Pendaftaran Calon Anggota Baru Gelombang 2026/2027 telah dibuka",
+    "Mari wujudkan lingkungan kampus yang ramah, inklusif, dan berdaya bersama"
   ];
 
   try {
     const [pengaturanRes, beritaRes, kegiatanRes] = await Promise.all([
       supabaseClient.from("pengaturan").select("teks_berjalan").eq("id", 1).maybeSingle(),
-      supabaseClient.from("berita").select("judul").eq("kategori", "Berita").order("tanggal", { ascending: false }).limit(2),
-      supabaseClient.from("berita").select("judul").eq("kategori", "Kegiatan").order("tanggal", { ascending: false }).limit(2),
+      supabaseClient.from("berita").select("judul").eq("kategori", "Berita").order("tanggal", { ascending: false }).limit(3),
+      supabaseClient.from("berita").select("judul").eq("kategori", "Kegiatan").order("tanggal", { ascending: false }).limit(3),
     ]);
 
     const potongan = [];
@@ -1118,12 +1250,12 @@ async function muatTickerBerjalan() {
     (kegiatanRes?.data || []).forEach(k => potongan.push(`Kegiatan: ${k.judul}`));
 
     const listTeks = potongan.length ? potongan : fallbackPotongan;
-    const isiTeks = listTeks.map(t => `<span class="truncate">${escapeHtml(t)}</span>`).join(' <span class="pemisah text-primary-container font-bold shrink-0">&bull;</span> ');
-    track.innerHTML = isiTeks;
+    const blok = listTeks.map(t => `<span class="px-3">${escapeHtml(t)}</span>`).join('<span class="pemisah text-primary-container font-bold shrink-0">&bull;</span>');
+    track.innerHTML = `${blok} <span class="pemisah text-primary-container font-bold shrink-0">&bull;</span> ${blok}`;
     bar.hidden = false;
   } catch (e) {
-    const isiTeks = fallbackPotongan.map(t => `<span class="truncate">${escapeHtml(t)}</span>`).join(' <span class="pemisah text-primary-container font-bold shrink-0">&bull;</span> ');
-    track.innerHTML = isiTeks;
+    const blok = fallbackPotongan.map(t => `<span class="px-3">${escapeHtml(t)}</span>`).join('<span class="pemisah text-primary-container font-bold shrink-0">&bull;</span>');
+    track.innerHTML = `${blok} <span class="pemisah text-primary-container font-bold shrink-0">&bull;</span> ${blok}`;
     bar.hidden = false;
   }
 }

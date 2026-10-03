@@ -220,22 +220,22 @@
           </a>
         </div>
 
-        <!-- Quick Highlights Counter Strip -->
+        <!-- Quick Highlights Counter Strip (Sinkron Otomatis dari Database) -->
         <div id="statistik-beranda" class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-10 sm:mt-14 pt-6 w-full max-w-3xl border-t border-surface-container-lowest/10" aria-live="polite">
           <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm text-center">
             <span class="angka text-xs sm:text-base font-bold text-primary-fixed-dim leading-snug">Sejak 2008</span>
             <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Berdiri</span>
           </div>
           <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm text-center">
-            <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-primary leading-tight">1.200+</span>
-            <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Mahasiswa Anggota</span>
+            <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-primary leading-tight"><span class="inline-block animate-pulse opacity-60">-</span></span>
+            <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Anggota Aktif</span>
           </div>
           <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm text-center">
-            <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-primary-fixed leading-tight">15</span>
+            <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-primary-fixed leading-tight"><span class="inline-block animate-pulse opacity-60">-</span></span>
             <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Divisi</span>
           </div>
           <div class="stat-mini flex flex-col items-center justify-center min-h-[85px] sm:min-h-[100px] p-2.5 sm:p-4 rounded-2xl bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/15 shadow-sm text-center">
-            <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-primary leading-tight">38</span>
+            <span class="angka text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-primary leading-tight"><span class="inline-block animate-pulse opacity-60">-</span></span>
             <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Program Kerja</span>
           </div>
         </div>
@@ -369,55 +369,106 @@
         <!-- Berita Grid (Hydrated by Supabase with Fallback) -->
         <div id="berita-terbaru-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" aria-live="polite">
           
-          <article class="bg-surface-container-low rounded-xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
-            <div class="flex items-center gap-2 text-label-sm text-secondary mb-2.5">
-              <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold">Organisasi</span>
-              <span>12 April 2025</span>
+          <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
+            <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
+              <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
+                <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
+                  <span class="material-symbols-outlined text-[24px]">corporate_fare</span>
+                </div>
+                <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">HIMPALUBI UNIPAR</span>
+              </div>
+              <div class="absolute top-3.5 left-3.5 bg-primary-container text-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                12 April 2025
+              </div>
+              <div class="absolute top-3.5 right-3.5 bg-inverse-surface/85 text-surface-bright px-2.5 py-0.5 rounded-full text-[11px] font-medium">
+                Organisasi
+              </div>
             </div>
-            <h3 class="text-title-md font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
-              Pelantikan Dewan Pengurus HIMPALUBI UNIPAR Periode 2025/2026
-            </h3>
-            <p class="text-body-md text-secondary line-clamp-3 mb-4 flex-1">
-              Serah terima jabatan ketua umum dan jajaran dewan pengurus diselenggarakan dengan khidmat di hadapan pimpinan program studi dan senat mahasiswa.
-            </p>
-            <a href="berita.html" class="inline-flex items-center gap-1.5 text-label-md font-semibold text-primary-container hover:text-primary mt-auto">
-              <span>Baca Selengkapnya</span>
-              <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
-            </a>
+            <div class="p-5 flex flex-col flex-1">
+              <h3 class="text-base font-bold text-on-surface mb-2 group-hover:text-primary-container transition-colors line-clamp-2">
+                <a href="berita.html" class="hover:underline">Pelantikan Dewan Pengurus HIMPALUBI UNIPAR Periode 2025/2026</a>
+              </h3>
+              <p class="text-xs text-secondary mb-5 flex-1 line-clamp-3 leading-relaxed">
+                Serah terima jabatan ketua umum dan jajaran dewan pengurus diselenggarakan dengan khidmat di hadapan pimpinan program studi dan senat mahasiswa.
+              </p>
+              <div class="flex items-center justify-between pt-3 border-t border-surface-container mt-auto">
+                <span class="flex items-center gap-1 text-secondary text-xs">
+                  <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">feed</span>
+                  12 April 2025
+                </span>
+                <a href="berita.html" class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary text-xs font-semibold transition-colors">
+                  Baca
+                </a>
+              </div>
+            </div>
           </article>
 
-          <article class="bg-surface-container-low rounded-xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
-            <div class="flex items-center gap-2 text-label-sm text-secondary mb-2.5">
-              <span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-secondary font-medium">Prestasi</span>
-              <span>08 April 2025</span>
+          <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
+            <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
+              <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
+                <div class="w-12 h-12 rounded-2xl bg-surface-container-high text-primary flex items-center justify-center mb-2 shadow-xs">
+                  <span class="material-symbols-outlined text-[24px]">emoji_events</span>
+                </div>
+                <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">Prestasi Mahasiswa</span>
+              </div>
+              <div class="absolute top-3.5 left-3.5 bg-primary-container text-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                08 April 2025
+              </div>
+              <div class="absolute top-3.5 right-3.5 bg-inverse-surface/85 text-surface-bright px-2.5 py-0.5 rounded-full text-[11px] font-medium">
+                Prestasi
+              </div>
             </div>
-            <h3 class="text-title-md font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
-              Mahasiswa PLB UNIPAR Raih Juara Inovasi Media Pembelajaran Inklusif
-            </h3>
-            <p class="text-body-md text-secondary line-clamp-3 mb-4 flex-1">
-              Delegasi mahasiswa berhasil mengembangkan aplikasi ramah tunarungu dalam kompetisi karya inovasi pembelajaran tingkat regional.
-            </p>
-            <a href="berita.html" class="inline-flex items-center gap-1.5 text-label-md font-semibold text-primary-container hover:text-primary mt-auto">
-              <span>Baca Selengkapnya</span>
-              <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
-            </a>
+            <div class="p-5 flex flex-col flex-1">
+              <h3 class="text-base font-bold text-on-surface mb-2 group-hover:text-primary-container transition-colors line-clamp-2">
+                <a href="berita.html" class="hover:underline">Mahasiswa PLB UNIPAR Raih Juara Inovasi Media Pembelajaran Inklusif</a>
+              </h3>
+              <p class="text-xs text-secondary mb-5 flex-1 line-clamp-3 leading-relaxed">
+                Delegasi mahasiswa berhasil mengembangkan aplikasi ramah tunarungu dalam kompetisi karya inovasi pembelajaran tingkat regional.
+              </p>
+              <div class="flex items-center justify-between pt-3 border-t border-surface-container mt-auto">
+                <span class="flex items-center gap-1 text-secondary text-xs">
+                  <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">feed</span>
+                  08 April 2025
+                </span>
+                <a href="berita.html" class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary text-xs font-semibold transition-colors">
+                  Baca
+                </a>
+              </div>
+            </div>
           </article>
 
-          <article class="bg-surface-container-low rounded-xl p-5 shadow-sm border border-surface-container flex flex-col group hover:bg-surface-container transition-colors">
-            <div class="flex items-center gap-2 text-label-sm text-secondary mb-2.5">
-              <span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-secondary font-medium">Rekrutmen</span>
-              <span>29 Maret 2025</span>
+          <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
+            <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
+              <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
+                <div class="w-12 h-12 rounded-2xl bg-surface-container-high text-primary flex items-center justify-center mb-2 shadow-xs">
+                  <span class="material-symbols-outlined text-[24px]">school</span>
+                </div>
+                <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">Akademik PLB</span>
+              </div>
+              <div class="absolute top-3.5 left-3.5 bg-primary-container text-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                25 Maret 2025
+              </div>
+              <div class="absolute top-3.5 right-3.5 bg-inverse-surface/85 text-surface-bright px-2.5 py-0.5 rounded-full text-[11px] font-medium">
+                Akademik
+              </div>
             </div>
-            <h3 class="text-title-md font-bold text-on-surface group-hover:text-primary-container transition-colors mb-2 line-clamp-2">
-              Pembukaan Pendaftaran Anggota Baru HIMPALUBI UNIPAR 2025
-            </h3>
-            <p class="text-body-md text-secondary line-clamp-3 mb-4 flex-1">
-              Bagi mahasiswa aktif PLB yang berkeinginan bergabung mengembangkan kepemimpinan dan jejaring kemahasiswaan, pendaftaran telah dibuka secara daring.
-            </p>
-            <a href="pendaftaran.html" class="inline-flex items-center gap-1.5 text-label-md font-semibold text-primary-container hover:text-primary mt-auto">
-              <span>Daftar Sekarang</span>
-              <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
-            </a>
+            <div class="p-5 flex flex-col flex-1">
+              <h3 class="text-base font-bold text-on-surface mb-2 group-hover:text-primary-container transition-colors line-clamp-2">
+                <a href="berita.html" class="hover:underline">Sosialisasi Kurikulum OBE dan Program Magang Inklusi Semester Genap</a>
+              </h3>
+              <p class="text-xs text-secondary mb-5 flex-1 line-clamp-3 leading-relaxed">
+                Pengenalan skema magang kemitraan di sekolah luar biasa dan pusat terapi anak berkebutuhan khusus wilayah Jember dan sekitarnya.
+              </p>
+              <div class="flex items-center justify-between pt-3 border-t border-surface-container mt-auto">
+                <span class="flex items-center gap-1 text-secondary text-xs">
+                  <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">feed</span>
+                  25 Maret 2025
+                </span>
+                <a href="berita.html" class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary text-xs font-semibold transition-colors">
+                  Baca
+                </a>
+              </div>
+            </div>
           </article>
 
         </div>
@@ -634,7 +685,7 @@
   <!-- Backend Integration Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabaseClient.js"></script>
-  <script src="js/public.js"></script>
+  <script src="js/public.js?v=2.1"></script>
   <script src="js/components.js"></script>
 
   <!-- Page Dynamic Data Hydration -->
