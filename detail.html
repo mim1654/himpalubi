@@ -3,26 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Detail — HIMPALUBI</title>
-<meta name="description" content="Detail berita dan kegiatan HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa.">
+<title>Detail Publikasi — HIMPALUBI UNIPAR</title>
+<meta name="description" content="Detail rilis warta berita, publikasi advokasi inklusif, dan agenda kegiatan resmi HIMPALUBI FKIP Universitas PGRI Argopuro Jember.">
 <link rel="canonical" href="https://mim1654.github.io/himpalubi/detail.html">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Detail — HIMPALUBI">
-<meta property="og:description" content="Detail berita dan kegiatan HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Detail Publikasi — HIMPALUBI UNIPAR">
+<meta property="og:description" content="Detail rilis warta berita, publikasi advokasi inklusif, dan agenda kegiatan resmi HIMPALUBI FKIP Universitas PGRI Argopuro Jember.">
 <meta property="og:image" content="https://mim1654.github.io/himpalubi/img/logo.png">
 <meta property="og:url" content="https://mim1654.github.io/himpalubi/detail.html">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Detail — HIMPALUBI">
-<meta name="twitter:description" content="Detail berita dan kegiatan HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Detail Publikasi — HIMPALUBI UNIPAR">
+<meta name="twitter:description" content="Detail rilis warta berita, publikasi advokasi inklusif, dan agenda kegiatan resmi HIMPALUBI FKIP Universitas PGRI Argopuro Jember.">
 <meta name="twitter:image" content="https://mim1654.github.io/himpalubi/img/logo.png">
 <link rel="icon" type="image/png" href="img/favicon.png">
+
+<!-- Schema.org Structured Data -->
 <script type="application/ld+json" id="ld-json-detail">
-{"@context":"https://schema.org","@type":"Article"}
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "publisher": {
+    "@type": "Organization",
+    "name": "HIMPALUBI UNIPAR",
+    "url": "https://mim1654.github.io/himpalubi/",
+    "logo": "https://mim1654.github.io/himpalubi/img/logo.png"
+  }
+}
 </script>
+
+<!-- Fonts & Icons -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+<!-- Tailwind CDN & Unified Design System Tokens -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script id="tailwind-config">
   tailwind.config = {
@@ -30,32 +45,66 @@
     theme: {
       extend: {
         colors: {
-          "primary": "#9E001F", "primary-container": "#C8102E",
-          "on-primary": "#FFFFFF", "primary-fixed": "#FFDAD8",
-          "primary-fixed-dim": "#FFB3B1", "on-primary-fixed": "#410007",
-          "on-primary-fixed-variant": "#92001C", "on-primary-container": "#FFDAD8",
-          "inverse-primary": "#FFB3B1", "surface-tint": "#BF0229",
-          "background": "#F8F9FF", "surface": "#F8F9FF", "surface-bright": "#F8F9FF",
-          "surface-dim": "#D1DBEC", "surface-container-lowest": "#FFFFFF",
-          "surface-container-low": "#EEF4FF", "surface-container": "#E5EEFF",
-          "surface-container-high": "#DFE9FA", "surface-container-highest": "#D9E3F4",
-          "surface-variant": "#D9E3F4", "on-surface": "#121C28",
-          "on-background": "#121C28", "on-surface-variant": "#5C403F",
-          "inverse-surface": "#27313E", "inverse-on-surface": "#EAF1FF",
-          "outline": "#906F6E", "outline-variant": "#E5BDBB",
-          "secondary": "#5C5E66", "on-secondary": "#FFFFFF",
-          "secondary-container": "#E0E2EC", "on-secondary-container": "#62646D",
-          "tertiary": "#4B4D4F", "on-tertiary": "#FFFFFF",
-          "error": "#BA1A1A", "on-error": "#FFFFFF",
-          "error-container": "#FFDAD6", "on-error-container": "#93000A"
+          "primary": "#9E001F",
+          "primary-container": "#C8102E",
+          "on-primary": "#FFFFFF",
+          "primary-fixed": "#FFDAD8",
+          "primary-fixed-dim": "#FFB3B1",
+          "on-primary-fixed": "#410007",
+          "on-primary-fixed-variant": "#92001C",
+          "on-primary-container": "#FFDAD8",
+          "inverse-primary": "#FFB3B1",
+          "surface-tint": "#BF0229",
+          "background": "#F8F9FF",
+          "surface": "#F8F9FF",
+          "surface-bright": "#F8F9FF",
+          "surface-dim": "#D1DBEC",
+          "surface-container-lowest": "#FFFFFF",
+          "surface-container-low": "#EEF4FF",
+          "surface-container": "#E5EEFF",
+          "surface-container-high": "#DFE9FA",
+          "surface-container-highest": "#D9E3F4",
+          "surface-variant": "#D9E3F4",
+          "on-surface": "#121C28",
+          "on-background": "#121C28",
+          "on-surface-variant": "#5C403F",
+          "inverse-surface": "#27313E",
+          "inverse-on-surface": "#EAF1FF",
+          "outline": "#906F6E",
+          "outline-variant": "#E5BDBB",
+          "secondary": "#5C5E66",
+          "on-secondary": "#FFFFFF",
+          "secondary-container": "#E0E2EC",
+          "on-secondary-container": "#62646D",
+          "secondary-fixed": "#E0E2EC",
+          "secondary-fixed-dim": "#C4C6D0",
+          "on-secondary-fixed": "#191C22",
+          "on-secondary-fixed-variant": "#44474E",
+          "tertiary": "#4B4D4F",
+          "on-tertiary": "#FFFFFF",
+          "tertiary-container": "#636567",
+          "on-tertiary-container": "#E2E2E4",
+          "error": "#BA1A1A",
+          "on-error": "#FFFFFF",
+          "error-container": "#FFDAD6",
+          "on-error-container": "#93000A"
         },
-        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", "2xl": "1rem", full: "9999px" },
+        borderRadius: {
+          DEFAULT: "0.25rem",
+          lg: "0.5rem",
+          xl: "0.75rem",
+          "2xl": "1rem",
+          "3xl": "1.5rem",
+          full: "9999px"
+        },
         spacing: {
           "space-xs": "0.25rem", "space-sm": "0.5rem", "space-md": "1rem",
           "space-lg": "1.5rem", "space-xl": "2.5rem", "margin-sm": "1rem",
           "margin": "2rem", "gutter-sm": "1rem", "gutter": "1.5rem"
         },
-        fontFamily: { sans: ["Inter", "system-ui", "sans-serif"] },
+        fontFamily: {
+          sans: ["Inter", "system-ui", "sans-serif"]
+        },
         fontSize: {
           "display": ["48px", { lineHeight: "56px", letterSpacing: "-0.025em", fontWeight: "800" }],
           "display-mobile": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "800" }],
@@ -75,30 +124,111 @@
 </script>
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body data-page="berita" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col">
+<body data-page="berita" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col transition-all">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
 
+<!-- Global Navigation Header Slot -->
 <div id="site-header-slot"></div>
 
-<main id="konten">
-  <section>
-    <div class="container" style="max-width:760px; padding-top:2.5rem;">
-      <p><a href="#" id="tautan-kembali">&larr; Kembali</a></p>
-      <div id="detail-konten" aria-live="polite">
-        <p>Memuat...</p>
+<main id="konten" class="w-full bg-surface flex-1">
+  
+  <!-- Detail Article Container -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+    
+    <!-- Top Navigation & Breadcrumb -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6 sm:mb-8">
+      <a href="berita.html" id="tautan-kembali" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-lowest border border-surface-container text-on-surface hover:text-primary-container hover:border-primary/40 text-xs sm:text-sm font-semibold shadow-xs transition-all duration-200 group">
+        <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform" aria-hidden="true">arrow_back</span>
+        <span id="label-kembali">Kembali ke Warta</span>
+      </a>
+
+      <nav aria-label="Jejak Navigasi" class="flex items-center gap-2 text-xs font-medium text-secondary">
+        <a href="index.html" class="hover:text-primary transition-colors flex items-center gap-1">
+          <span class="material-symbols-outlined text-[14px]">home</span>
+          <span class="hidden xs:inline">Beranda</span>
+        </a>
+        <span class="opacity-40" aria-hidden="true">/</span>
+        <a href="berita.html" id="breadcrumb-parent" class="hover:text-primary transition-colors">Warta &amp; Berita</a>
+        <span class="opacity-40 hidden sm:inline" aria-hidden="true">/</span>
+        <span class="text-on-surface font-semibold truncate max-w-[200px] hidden sm:inline" id="breadcrumb-current">Baca Artikel</span>
+      </nav>
+    </div>
+
+    <!-- Main Dynamic Article Container -->
+    <div id="detail-konten" aria-live="polite" class="w-full">
+      <!-- Loading skeleton placeholder will be injected by JavaScript -->
+      <div class="bg-surface-container-lowest rounded-3xl p-6 sm:p-10 lg:p-12 shadow-sm border border-surface-container animate-pulse flex flex-col gap-6">
+        <div class="w-28 h-6 bg-surface-container rounded-full"></div>
+        <div class="w-3/4 h-10 bg-surface-container rounded-xl"></div>
+        <div class="w-1/2 h-4 bg-surface-container rounded"></div>
+        <div class="w-full h-72 sm:h-96 bg-surface-container rounded-2xl"></div>
+        <div class="space-y-3 pt-4">
+          <div class="w-full h-4 bg-surface-container rounded"></div>
+          <div class="w-full h-4 bg-surface-container rounded"></div>
+          <div class="w-5/6 h-4 bg-surface-container rounded"></div>
+        </div>
       </div>
     </div>
+
+    <!-- Related Articles / Rekomendasi Section -->
+    <section id="rekomendasi-section" class="mt-12 sm:mt-16 pt-10 border-t border-surface-container hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold text-primary tracking-wider uppercase">Publikasi Terkait</span>
+          <h2 class="text-xl sm:text-2xl font-bold text-on-surface mt-1" id="rekomendasi-title">Warta Terkait Lainnya</h2>
+        </div>
+        <a href="berita.html" id="rekomendasi-all-btn" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-primary hover:text-primary-container transition-colors self-start sm:self-auto">
+          <span>Lihat Semua Arsip</span>
+          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+      <div id="rekomendasi-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Injected dynamically -->
+      </div>
+    </section>
+
   </section>
+
 </main>
 
+<!-- Global Toast Notification for Feedback -->
+<div id="toast-notifikasi" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 bg-inverse-surface text-inverse-on-surface px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 text-sm font-medium">
+  <span class="material-symbols-outlined text-inverse-primary text-[20px]" id="toast-icon">check_circle</span>
+  <span id="toast-message">Tautan artikel berhasil disalin!</span>
+</div>
+
+<!-- Global Footer Slot -->
 <div id="site-footer-slot"></div>
 
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabaseClient.js"></script>
 <script src="js/public.js"></script>
 <script src="js/components.js"></script>
 <script>
-  muatDetailKonten("detail-konten", "tautan-kembali");
+  document.addEventListener("DOMContentLoaded", () => {
+    muatKomponen();
+    muatDetailKonten("detail-konten", "tautan-kembali");
+  });
+
+  // Global helper untuk memunculkan toast
+  function tampilkanToast(pesan, ikon = "check_circle") {
+    const toast = document.getElementById("toast-notifikasi");
+    const toastMsg = document.getElementById("toast-message");
+    const toastIcon = document.getElementById("toast-icon");
+    if (!toast || !toastMsg) return;
+
+    toastMsg.textContent = pesan;
+    if (toastIcon) toastIcon.textContent = ikon;
+
+    toast.classList.remove("translate-y-20", "opacity-0", "pointer-events-none");
+    toast.classList.add("translate-y-0", "opacity-100");
+
+    setTimeout(() => {
+      toast.classList.add("translate-y-20", "opacity-0", "pointer-events-none");
+      toast.classList.remove("translate-y-0", "opacity-100");
+    }, 3500);
+  }
 </script>
 </body>
 </html>
