@@ -3,39 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Berita — HIMPALUBI</title>
-<meta name="description" content="Berita dan kabar terbaru seputar HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa.">
+<title>Warta &amp; Berita — HIMPALUBI UNIPAR</title>
+<meta name="description" content="Pusat informasi resmi, kabar advokasi inklusif, karya tulis ilmiah mahasiswa, rekam jejak prestasi, dan warta terkini HIMPALUBI UNIPAR Jember.">
 <link rel="canonical" href="https://mim1654.github.io/himpalubi/berita.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Berita — HIMPALUBI">
-<meta property="og:description" content="Berita dan kabar terbaru seputar HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa.">
+<meta property="og:title" content="Warta &amp; Berita — HIMPALUBI UNIPAR">
+<meta property="og:description" content="Pusat informasi resmi, kabar advokasi inklusif, karya tulis ilmiah mahasiswa, rekam jejak prestasi, dan warta terkini HIMPALUBI UNIPAR Jember.">
 <meta property="og:image" content="https://mim1654.github.io/himpalubi/img/logo.png">
 <meta property="og:url" content="https://mim1654.github.io/himpalubi/berita.html">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Berita — HIMPALUBI">
-<meta name="twitter:description" content="Berita dan kabar terbaru seputar HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Warta &amp; Berita — HIMPALUBI UNIPAR">
+<meta name="twitter:description" content="Pusat informasi resmi, kabar advokasi inklusif, karya tulis ilmiah mahasiswa, rekam jejak prestasi, dan warta terkini HIMPALUBI UNIPAR Jember.">
 <meta name="twitter:image" content="https://mim1654.github.io/himpalubi/img/logo.png">
 <link rel="icon" type="image/png" href="img/favicon.png">
+
+<!-- Schema.org Structured Data -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
-  "name": "Berita — HIMPALUBI",
-  "description": "Berita dan kabar terbaru seputar HIMPALUBI, Himpunan Mahasiswa Pendidikan Luar Biasa.",
+  "name": "Warta & Berita — HIMPALUBI UNIPAR",
+  "description": "Pusat informasi resmi, kabar advokasi inklusif, karya tulis ilmiah mahasiswa, rekam jejak prestasi, dan warta terkini HIMPALUBI UNIPAR Jember.",
   "url": "https://mim1654.github.io/himpalubi/berita.html",
   "publisher": {
     "@type": "Organization",
-    "name": "HIMPALUBI",
+    "name": "HIMPALUBI UNIPAR",
     "url": "https://mim1654.github.io/himpalubi/",
     "logo": "https://mim1654.github.io/himpalubi/img/logo.png"
   }
 }
 </script>
 
+<!-- Fonts & Icons -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+<!-- Tailwind CDN & Unified Design System -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script id="tailwind-config">
   tailwind.config = {
@@ -43,32 +48,70 @@
     theme: {
       extend: {
         colors: {
-          "primary": "#9E001F", "primary-container": "#C8102E",
-          "on-primary": "#FFFFFF", "primary-fixed": "#FFDAD8",
-          "primary-fixed-dim": "#FFB3B1", "on-primary-fixed": "#410007",
-          "on-primary-fixed-variant": "#92001C", "on-primary-container": "#FFDAD8",
-          "inverse-primary": "#FFB3B1", "surface-tint": "#BF0229",
-          "background": "#F8F9FF", "surface": "#F8F9FF", "surface-bright": "#F8F9FF",
-          "surface-dim": "#D1DBEC", "surface-container-lowest": "#FFFFFF",
-          "surface-container-low": "#EEF4FF", "surface-container": "#E5EEFF",
-          "surface-container-high": "#DFE9FA", "surface-container-highest": "#D9E3F4",
-          "surface-variant": "#D9E3F4", "on-surface": "#121C28",
-          "on-background": "#121C28", "on-surface-variant": "#5C403F",
-          "inverse-surface": "#27313E", "inverse-on-surface": "#EAF1FF",
-          "outline": "#906F6E", "outline-variant": "#E5BDBB",
-          "secondary": "#5C5E66", "on-secondary": "#FFFFFF",
-          "secondary-container": "#E0E2EC", "on-secondary-container": "#62646D",
-          "tertiary": "#4B4D4F", "on-tertiary": "#FFFFFF",
-          "error": "#BA1A1A", "on-error": "#FFFFFF",
-          "error-container": "#FFDAD6", "on-error-container": "#93000A"
+          "primary": "#9E001F",
+          "primary-container": "#C8102E",
+          "on-primary": "#FFFFFF",
+          "primary-fixed": "#FFDAD8",
+          "primary-fixed-dim": "#FFB3B1",
+          "on-primary-fixed": "#410007",
+          "on-primary-fixed-variant": "#92001C",
+          "on-primary-container": "#FFDAD8",
+          "inverse-primary": "#FFB3B1",
+          "surface-tint": "#BF0229",
+          "background": "#F8F9FF",
+          "surface": "#F8F9FF",
+          "surface-bright": "#F8F9FF",
+          "surface-dim": "#D1DBEC",
+          "surface-container-lowest": "#FFFFFF",
+          "surface-container-low": "#EEF4FF",
+          "surface-container": "#E5EEFF",
+          "surface-container-high": "#DFE9FA",
+          "surface-container-highest": "#D9E3F4",
+          "surface-variant": "#D9E3F4",
+          "on-surface": "#121C28",
+          "on-background": "#121C28",
+          "on-surface-variant": "#5C403F",
+          "inverse-surface": "#27313E",
+          "inverse-on-surface": "#EAF1FF",
+          "outline": "#906F6E",
+          "outline-variant": "#E5BDBB",
+          "secondary": "#5C5E66",
+          "on-secondary": "#FFFFFF",
+          "secondary-container": "#E0E2EC",
+          "on-secondary-container": "#62646D",
+          "secondary-fixed": "#E0E2EC",
+          "secondary-fixed-dim": "#C4C6D0",
+          "on-secondary-fixed": "#191C22",
+          "on-secondary-fixed-variant": "#44474E",
+          "tertiary": "#4B4D4F",
+          "on-tertiary": "#FFFFFF",
+          "tertiary-container": "#636567",
+          "on-tertiary-container": "#E2E2E4",
+          "tertiary-fixed": "#E2E2E4",
+          "tertiary-fixed-dim": "#C6C6C8",
+          "on-tertiary-fixed": "#1A1C1D",
+          "on-tertiary-fixed-variant": "#454749",
+          "error": "#BA1A1A",
+          "on-error": "#FFFFFF",
+          "error-container": "#FFDAD6",
+          "on-error-container": "#93000A"
         },
-        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", "2xl": "1rem", full: "9999px" },
+        borderRadius: {
+          DEFAULT: "0.25rem",
+          lg: "0.5rem",
+          xl: "0.75rem",
+          "2xl": "1rem",
+          "3xl": "1.5rem",
+          full: "9999px"
+        },
         spacing: {
           "space-xs": "0.25rem", "space-sm": "0.5rem", "space-md": "1rem",
           "space-lg": "1.5rem", "space-xl": "2.5rem", "margin-sm": "1rem",
           "margin": "2rem", "gutter-sm": "1rem", "gutter": "1.5rem"
         },
-        fontFamily: { sans: ["Inter", "system-ui", "sans-serif"] },
+        fontFamily: {
+          sans: ["Inter", "system-ui", "sans-serif"]
+        },
         fontSize: {
           "display": ["48px", { lineHeight: "56px", letterSpacing: "-0.025em", fontWeight: "800" }],
           "display-mobile": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "800" }],
@@ -88,64 +131,213 @@
 </script>
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body data-page="berita" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col">
+<body data-page="berita" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col transition-all">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
 
+<!-- Global Navigation Header Slot -->
 <div id="site-header-slot"></div>
 
 <main id="konten" class="w-full bg-surface">
-  <!-- Title Section -->
-  <section class="w-full bg-surface-container-lowest border-b border-surface-container shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-8 pb-10">
+  
+  <!-- Editorial Header & Breadcrumb -->
+  <section class="w-full px-4 sm:px-6 lg:px-12 pt-8 pb-10">
+    <div class="max-w-7xl mx-auto flex flex-col gap-6">
       
       <!-- Breadcrumb -->
-      <nav aria-label="Breadcrumb" class="flex items-center gap-2 mb-4 text-xs font-semibold text-secondary">
+      <nav aria-label="Jejak Navigasi" class="flex items-center gap-2 text-xs font-semibold text-secondary">
         <a class="hover:text-primary-container transition-colors flex items-center gap-1" href="index.html">
-          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">home</span>
+          <span class="material-symbols-outlined text-[16px]">home</span>
           <span>Beranda</span>
         </a>
-        <span class="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_right</span>
-        <span class="text-primary-container font-semibold">Berita &amp; Warta</span>
+        <span class="material-symbols-outlined text-[14px] text-outline" aria-hidden="true">chevron_right</span>
+        <span class="text-primary-container font-semibold">Warta &amp; Publikasi</span>
       </nav>
 
-      <!-- Section Title & Lead -->
-      <div class="max-w-3xl">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs uppercase font-bold tracking-wider mb-3">
-          <span class="material-symbols-outlined text-[15px]" aria-hidden="true">feed</span>
-          <span>Warta Resmi Organisasi</span>
+      <!-- Title Lockup & Metrics -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+        <div class="lg:col-span-8 flex flex-col gap-3">
+          <div class="inline-flex items-center gap-2 self-start px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed text-xs font-bold uppercase tracking-wider">
+            <span class="material-symbols-outlined text-[14px]" aria-hidden="true">verified</span>
+            <span>Warta Resmi &amp; Jurnal Mahasiswa</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-on-surface tracking-tight leading-tight">
+            Warta &amp; Berita <span class="text-primary-container">HIMPALUBI</span> UNIPAR
+          </h1>
+          <p class="text-sm sm:text-base text-secondary max-w-3xl leading-relaxed">
+            Pusat informasi resmi, kabar advokasi inklusif, karya tulis ilmiah mahasiswa, rekam jejak prestasi, dan warta terkini seputar dinamika Pendidikan Luar Biasa Universitas PGRI Argopuro Jember.
+          </p>
         </div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-on-surface tracking-tight mb-3">
-          Berita &amp; Kabar HIMPALUBI
-        </h1>
-        <p class="text-base sm:text-lg text-secondary leading-relaxed">
-          Kumpulan rilis pers, berita advokasi, pengumuman ormawa, dan informasi penting seputar sivitas akademika Pendidikan Luar Biasa UNIPAR Jember.
-        </p>
+
+        <div class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 lg:items-end justify-end">
+          <div class="p-4 rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container flex items-center gap-4 w-full max-w-sm">
+            <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary-container shrink-0">
+              <span class="material-symbols-outlined text-[28px]" aria-hidden="true">article</span>
+            </div>
+            <div class="flex flex-col min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-lg font-bold text-on-surface" id="totalPubCount">0</span>
+                <span class="text-[11px] px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-semibold">Tahun 2025</span>
+              </div>
+              <span class="text-xs text-secondary truncate">Karya &amp; Publikasi Terdokumentasi</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search & Category Filtering Bar -->
+      <div class="mt-4 p-3 rounded-2xl bg-surface-container-lowest shadow-sm border border-surface-container flex flex-col gap-4">
+        <!-- Search Input -->
+        <div class="relative w-full">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[22px]" aria-hidden="true">search</span>
+          <input class="w-full pl-12 pr-28 py-3.5 rounded-xl bg-surface text-sm text-on-surface placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-primary-container border border-surface-container" id="news-search-input" placeholder="Cari berita advokasi, nomor rilis pers, judul kajian ilmiah, atau nama mahasiswa..." type="search">
+          <button class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg bg-primary-container text-on-primary text-xs font-semibold hover:bg-primary transition-all flex items-center gap-1.5 shadow-sm min-h-[36px]" type="button" id="news-search-btn">
+            <span>Cari</span>
+            <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+          </button>
+        </div>
+
+        <!-- Filter Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none" id="category-pills">
+          <button class="category-pill active px-4 py-2 rounded-full text-xs font-bold bg-primary-container text-on-primary shadow-sm whitespace-nowrap transition-all" data-category="all" type="button">
+            Semua Warta
+          </button>
+          <button class="category-pill px-4 py-2 rounded-full text-xs font-semibold bg-surface text-secondary hover:text-on-surface hover:bg-surface-container transition-all whitespace-nowrap" data-category="advokasi" type="button">
+            Advokasi &amp; Inklusi
+          </button>
+          <button class="category-pill px-4 py-2 rounded-full text-xs font-semibold bg-surface text-secondary hover:text-on-surface hover:bg-surface-container transition-all whitespace-nowrap" data-category="prestasi" type="button">
+            Prestasi Kampus
+          </button>
+          <button class="category-pill px-4 py-2 rounded-full text-xs font-semibold bg-surface text-secondary hover:text-on-surface hover:bg-surface-container transition-all whitespace-nowrap" data-category="kajian" type="button">
+            Kajian Ilmiah PLB
+          </button>
+          <button class="category-pill px-4 py-2 rounded-full text-xs font-semibold bg-surface text-secondary hover:text-on-surface hover:bg-surface-container transition-all whitespace-nowrap" data-category="opini" type="button">
+            Opini Mahasiswa
+          </button>
+          <button class="category-pill px-4 py-2 rounded-full text-xs font-semibold bg-surface text-secondary hover:text-on-surface hover:bg-surface-container transition-all whitespace-nowrap" data-category="departemen" type="button">
+            Kabar Departemen
+          </button>
+        </div>
       </div>
 
     </div>
   </section>
 
-  <!-- News List Section -->
-  <section class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12">
-    <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container p-6 sm:p-8">
-      <ul class="news-list divide-y divide-surface-container" id="daftar-berita" aria-live="polite">
-        <li class="py-8 flex flex-col items-center justify-center text-center">
-          <div class="w-10 h-10 border-4 border-primary-container border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p class="text-sm font-medium text-secondary">Memuat warta berita...</p>
-        </li>
-      </ul>
+  <!-- Headline Featured Story (Dinamis dari Supabase) -->
+  <section class="w-full px-4 sm:px-6 lg:px-12 py-6 hidden" id="featured-news-section">
+    <div class="max-w-7xl mx-auto" id="featured-news-container">
+      <!-- Diisi secara dinamis oleh JavaScript dari database Supabase -->
     </div>
   </section>
+
+  <!-- Main Content Body: 3-Column News Grid & Functional Sidebar -->
+  <section class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left Column: The News Grid -->
+      <div class="lg:col-span-8 flex flex-col gap-8">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="w-2.5 h-6 rounded-full bg-primary-container" aria-hidden="true"></span>
+            <h2 class="text-xl sm:text-2xl font-bold text-on-surface">Warta Terkini &amp; Liputan Khusus</h2>
+          </div>
+          <span class="text-xs text-secondary" id="news-counter-notice">Menampilkan 6 Warta Terbaru</span>
+        </div>
+
+        <!-- 2x3 Grid for Articles -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="news-grid-container" aria-live="polite">
+          <!-- Article items hydrated by Supabase with Stitch design cards -->
+        </div>
+
+        <!-- Pagination Bar -->
+        <div class="p-4 rounded-2xl bg-surface-container-lowest shadow-sm border border-surface-container flex flex-col sm:flex-row items-center justify-between gap-4">
+          <span class="text-xs text-secondary">
+            Halaman <strong class="text-on-surface">1</strong> dari <strong class="text-on-surface">1</strong> (Warta Terdaftar)
+          </span>
+          <div class="flex items-center gap-1.5 text-xs font-semibold">
+            <button class="px-3 py-2 rounded-lg bg-surface text-secondary/40 cursor-not-allowed" disabled="" type="button">
+              Sebelumnya
+            </button>
+            <button class="w-8 h-8 rounded-lg bg-primary-container text-on-primary font-bold" type="button">1</button>
+            <button class="px-3 py-2 rounded-lg bg-surface text-secondary/40 cursor-not-allowed" disabled="" type="button">
+              Berikutnya
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Institutional Sidebar Widgets -->
+      <aside class="lg:col-span-4 flex flex-col gap-6 w-full">
+        
+        <!-- Widget 1: Popular Trending Topics / Tags -->
+        <div class="p-6 rounded-2xl bg-surface-container-lowest shadow-sm border border-surface-container flex flex-col gap-4">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[20px]" aria-hidden="true">tag</span>
+            <h3 class="text-base font-bold text-on-surface">Tagar Populer Terkait</h3>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button class="tag-btn px-3 py-1.5 rounded-full bg-surface text-xs text-secondary hover:bg-primary-container hover:text-on-primary transition-all border border-surface-container" data-tag="inklusif">#PLBInklusif</button>
+            <button class="tag-btn px-3 py-1.5 rounded-full bg-surface text-xs text-secondary hover:bg-primary-container hover:text-on-primary transition-all border border-surface-container" data-tag="unipar">#UNIPARJember</button>
+            <button class="tag-btn px-3 py-1.5 rounded-full bg-surface text-xs text-secondary hover:bg-primary-container hover:text-on-primary transition-all border border-surface-container" data-tag="advokasi">#HIMPALUBIBergerak</button>
+            <button class="tag-btn px-3 py-1.5 rounded-full bg-surface text-xs text-secondary hover:bg-primary-container hover:text-on-primary transition-all border border-surface-container" data-tag="aksesibilitas">#AksesibilitasKampus</button>
+            <button class="tag-btn px-3 py-1.5 rounded-full bg-surface text-xs text-secondary hover:bg-primary-container hover:text-on-primary transition-all border border-surface-container" data-tag="bisindo">#BahasaIsyaratBISINDO</button>
+            <button class="tag-btn px-3 py-1.5 rounded-full bg-surface text-xs text-secondary hover:bg-primary-container hover:text-on-primary transition-all border border-surface-container" data-tag="gpk">#GuruPendampingKhusus</button>
+            <button class="tag-btn px-3 py-1.5 rounded-full bg-surface text-xs text-secondary hover:bg-primary-container hover:text-on-primary transition-all border border-surface-container" data-tag="asistif">#TeknologiAsistif</button>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+  </section>
+
+
+
 </main>
 
+<!-- Global Footer Slot -->
 <div id="site-footer-slot"></div>
 
+<!-- Core Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabaseClient.js"></script>
-<script src="js/public.js?v=2.1"></script>
+<script src="js/public.js"></script>
 <script src="js/components.js"></script>
+
 <script>
-  muatBerita("daftar-berita", null, "Berita");
+  document.addEventListener("DOMContentLoaded", () => {
+    // 1. Inisialisasi Muat Halaman Berita dari Supabase / Default Stitch Data
+    muatHalamanBerita("news-grid-container", "featured-news-section", "news-search-input", "news-counter-notice");
+
+    // 4. Salin Tautan & Share
+    const copyBtn = document.getElementById("copy-link-btn");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(window.location.href);
+        const originalTitle = copyBtn.title;
+        copyBtn.title = "Tautan Disalin!";
+        copyBtn.classList.add("bg-primary-fixed", "text-primary");
+        setTimeout(() => {
+          copyBtn.title = originalTitle;
+          copyBtn.classList.remove("bg-primary-fixed", "text-primary");
+        }, 2000);
+      });
+    }
+
+    const shareBtn = document.getElementById("share-news-btn");
+    if (shareBtn) {
+      shareBtn.addEventListener("click", () => {
+        if (navigator.share) {
+          navigator.share({
+            title: document.title,
+            url: window.location.href
+          }).catch(() => {});
+        } else {
+          navigator.clipboard.writeText(window.location.href);
+          alert("Tautan halaman berita telah disalin ke papan klip.");
+        }
+      });
+    }
+  });
 </script>
 </body>
 </html>

@@ -63,45 +63,411 @@ async function muatBerita(elId, batas, kategori) {
   `).join("");
 }
 
+// ================= HELPER PELACAKAN KLIK / PEMBACA BERITA =================
+function ambilJumlahKlikBerita(articleId, fallback = 0) {
+  if (!articleId) return fallback;
+  try {
+    const key = `himpalubi_views_${articleId}`;
+    const stored = parseInt(localStorage.getItem(key), 10);
+    return isNaN(stored) ? fallback : stored;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+function tambahKlikBerita(articleId) {
+  if (!articleId) return 0;
+  try {
+    // Pengaman sesi browser agar 1 kunjungan/klik hanya terhitung tepat 1 kali
+    const sessionKey = `himpalubi_viewed_session_${articleId}`;
+    if (sessionStorage.getItem(sessionKey)) {
+      return ambilJumlahKlikBerita(articleId, 1);
+    }
+    sessionStorage.setItem(sessionKey, "1");
+
+    const key = `himpalubi_views_${articleId}`;
+    const current = ambilJumlahKlikBerita(articleId, 0);
+    const updated = current + 1;
+    localStorage.setItem(key, updated.toString());
+
+    // Coba simpan penambahan ke Supabase jika kolom views ada
+    if (window.supabaseClient && typeof articleId !== "string") {
+      supabaseClient
+        .from("berita")
+        .select("views")
+        .eq("id", articleId)
+        .single()
+        .then(({ data }) => {
+          if (data && typeof data.views !== "undefined") {
+            supabaseClient
+              .from("berita")
+              .update({ views: (data.views || 0) + 1 })
+              .eq("id", articleId)
+              .then(() => {});
+          }
+        })
+        .catch(() => {});
+    }
+    return updated;
+  } catch (e) {
+    return 1;
+  }
+}
+
 // ================= HALAMAN DETAIL: Berita/Kegiatan =================
 async function muatDetailKonten(elId, backLinkId) {
   const el = document.getElementById(elId);
   if (!el) return;
-  el.innerHTML = `<span class="skeleton skeleton-image" style="height:260px; margin-bottom:1.5rem;"></span>${skeletonParagraf(4)}`;
 
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
   const kategori = params.get("kategori") || "Berita";
+  const isKegiatan = (kategori === "Kegiatan");
 
+  // Perbarui elemen navigasi luar (kembali & breadcrumb)
   const backLink = document.getElementById(backLinkId);
-  if (backLink) backLink.href = kategori === "Kegiatan" ? "kegiatan.html" : "berita.html";
-  document.body.dataset.page = kategori === "Kegiatan" ? "kegiatan" : "berita";
+  const labelKembali = document.getElementById("label-kembali");
+  const breadcrumbParent = document.getElementById("breadcrumb-parent");
+  const breadcrumbCurrent = document.getElementById("breadcrumb-current");
+  const rekomendasiTitle = document.getElementById("rekomendasi-title");
+  const rekomendasiAllBtn = document.getElementById("rekomendasi-all-btn");
+
+  if (backLink) backLink.href = isKegiatan ? "kegiatan.html" : "berita.html";
+  if (labelKembali) labelKembali.textContent = isKegiatan ? "Kembali ke Agenda Kegiatan" : "Kembali ke Warta & Berita";
+  if (breadcrumbParent) {
+    breadcrumbParent.textContent = isKegiatan ? "Agenda Kegiatan" : "Warta & Berita";
+    breadcrumbParent.href = isKegiatan ? "kegiatan.html" : "berita.html";
+  }
+  if (rekomendasiTitle) rekomendasiTitle.textContent = isKegiatan ? "Agenda Kegiatan Terkait" : "Warta & Publikasi Terkait";
+  if (rekomendasiAllBtn) rekomendasiAllBtn.href = isKegiatan ? "kegiatan.html" : "berita.html";
+
+  document.body.dataset.page = isKegiatan ? "kegiatan" : "berita";
 
   if (!id) {
-    el.innerHTML = `<p>Data tidak ditemukan.</p>`;
+    el.innerHTML = `
+      <div class="p-8 sm:p-12 text-center bg-surface-container-lowest rounded-3xl border border-surface-container">
+        <div class="w-16 h-16 rounded-2xl bg-surface-container text-secondary mx-auto flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-[32px]">article_off</span>
+        </div>
+        <h2 class="text-xl font-bold text-on-surface mb-2">Parameter Publikasi Tidak Ditemukan</h2>
+        <p class="text-sm text-secondary mb-6 max-w-md mx-auto">Tautan yang Anda akses tidak memuat identitas publikasi yang valid. Silakan kembali ke katalog warta.</p>
+        <a href="${isKegiatan ? 'kegiatan.html' : 'berita.html'}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-on-primary text-sm font-semibold hover:opacity-95 transition-opacity">
+          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          <span>Kembali ke ${isKegiatan ? 'Kegiatan' : 'Berita'}</span>
+        </a>
+      </div>
+    `;
     return;
   }
 
-  const { data, error } = await supabaseClient.from("berita").select("*").eq("id", id).single();
-  if (error || !data) {
-    el.innerHTML = `<p>Data tidak ditemukan atau sudah dihapus.</p>`;
+  // Rekam penambahan pembaca saat halaman detail diakses
+  tambahKlikBerita(id);
+
+  let data = null;
+  try {
+    const res = await supabaseClient.from("berita").select("*").eq("id", id).single();
+    data = res.data;
+  } catch (err) {
+    console.warn("Info: Gagal mengambil data detail dari Supabase.", err);
+  }
+
+  if (!data) {
+    el.innerHTML = `
+      <div class="p-8 sm:p-12 text-center bg-surface-container-lowest rounded-3xl border border-surface-container">
+        <div class="w-16 h-16 rounded-2xl bg-surface-container text-primary-container mx-auto flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-[32px]">menu_book</span>
+        </div>
+        <h2 class="text-xl font-bold text-on-surface mb-2">Publikasi Tidak Ditemukan</h2>
+        <p class="text-sm text-secondary mb-6 max-w-md mx-auto">Artikel atau dokumentasi kegiatan ini mungkin telah diarsipkan atau dipindahkan oleh pengurus redaksi.</p>
+        <a href="${isKegiatan ? 'kegiatan.html' : 'berita.html'}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-on-primary text-sm font-semibold hover:opacity-95 transition-opacity">
+          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          <span>Kembali ke ${isKegiatan ? 'Kegiatan' : 'Berita'}</span>
+        </a>
+      </div>
+    `;
     return;
   }
 
-  document.title = `${data.judul} — HIMPALUBI`;
+  // Update Judul Halaman & Jejak Navigasi
+  document.title = `${data.judul} — HIMPALUBI UNIPAR`;
+  if (breadcrumbCurrent) breadcrumbCurrent.textContent = data.judul;
   perbaruiMetaDetail(data, kategori);
 
-  const paragraf = (data.isi || "").split(/\n+/).filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join("");
+  // Estimasi Waktu Baca
+  const kata = (data.isi || "").trim().split(/\s+/).filter(Boolean).length;
+  const waktuBaca = Math.max(1, Math.ceil(kata / 180));
+  const totalViews = data.views || ambilJumlahKlikBerita(id, 1);
+  const currentUrl = window.location.href;
+  const shareText = encodeURIComponent(`${data.judul} — Publikasi Resmi HIMPALUBI UNIPAR\n\n`);
+  const shareUrl = encodeURIComponent(currentUrl);
+
+  // Format Paragraf Isi
+  const rawParagraphs = (data.isi || "").split(/\n+/).filter(Boolean);
+  let paragraphsHtml = "";
+  if (rawParagraphs.length === 0) {
+    paragraphsHtml = `<p class="text-secondary italic">Belum ada rincian isi teks untuk publikasi ini.</p>`;
+  } else {
+    paragraphsHtml = rawParagraphs.map((p, idx) => {
+      if (idx === 0) {
+        return `<p class="text-lg sm:text-xl font-medium text-on-surface leading-relaxed mb-6">${escapeHtml(p)}</p>`;
+      }
+      return `<p class="text-base sm:text-lg text-secondary leading-relaxed sm:leading-[1.9]">${escapeHtml(p)}</p>`;
+    }).join("");
+  }
 
   el.innerHTML = `
-    <div class="detail-meta">
-      <span class="kategori-tag">${escapeHtml(kategori)}</span>
-      ${formatTanggal(data.tanggal)}${data.penulis ? ` &middot; ${escapeHtml(data.penulis)}` : ""}
-    </div>
-    <h1>${escapeHtml(data.judul)}</h1>
-    ${data.foto_url ? `<img src="${data.foto_url}" alt="Foto ${escapeHtml(data.judul)}" class="detail-photo" loading="lazy">` : ""}
-    <div class="detail-isi">${paragraf || "<p>Belum ada isi.</p>"}</div>
+    <article class="bg-surface-container-lowest rounded-3xl p-6 sm:p-10 lg:p-12 shadow-sm border border-surface-container flex flex-col">
+      
+      <!-- Article Header & Meta -->
+      <header class="flex flex-col gap-4 border-b border-surface-container pb-6 sm:pb-8">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-primary-fixed text-primary font-bold text-xs uppercase tracking-wider shadow-xs">
+            <span class="material-symbols-outlined text-[14px]">label</span>
+            <span>${escapeHtml(kategori)}</span>
+          </span>
+          <span class="inline-flex items-center gap-1 text-xs font-semibold text-secondary">
+            <span class="material-symbols-outlined text-[15px] text-primary-container">schedule</span>
+            <span>${waktuBaca} Menit Baca</span>
+          </span>
+          <span class="opacity-40 text-secondary" aria-hidden="true">•</span>
+          <span class="inline-flex items-center gap-1 text-xs font-semibold text-secondary">
+            <span class="material-symbols-outlined text-[15px] text-primary-container">visibility</span>
+            <span>${totalViews.toLocaleString("id-ID")} Pembaca</span>
+          </span>
+        </div>
+
+        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-[38px] font-extrabold text-on-surface leading-tight sm:leading-tight tracking-tight">
+          ${escapeHtml(data.judul)}
+        </h1>
+
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm shadow-xs shrink-0 overflow-hidden">
+              <img src="img/logo.png" alt="HIMPALUBI" class="w-full h-full object-cover" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+              <span class="hidden">HL</span>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-on-surface">
+                <span>${escapeHtml(data.penulis || "Biro Media & Informasi")}</span>
+                <span class="material-symbols-outlined text-[16px] text-primary-container" title="Terverifikasi Resmi Organisasi">verified</span>
+              </div>
+              <div class="flex items-center gap-2 text-xs text-secondary">
+                <span>${formatTanggal(data.tanggal)}</span>
+                <span class="opacity-40">•</span>
+                <span>HIMPALUBI FKIP UNIPAR</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Share Buttons Desktop -->
+          <div class="inline-flex items-center gap-1 p-1 rounded-full bg-surface-container-low border border-surface-container shadow-xs">
+            <a href="https://api.whatsapp.com/send?text=${shareText}${shareUrl}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-primary transition-all flex items-center justify-center cursor-pointer" title="Bagikan ke WhatsApp">
+              <span class="material-symbols-outlined text-[16px]">chat</span>
+            </a>
+            <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-primary transition-all flex items-center justify-center cursor-pointer" title="Bagikan ke X / Twitter">
+              <span class="material-symbols-outlined text-[16px]">share</span>
+            </a>
+            <button type="button" class="btn-copy-link w-8 h-8 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-primary transition-all flex items-center justify-center cursor-pointer" title="Salin Tautan">
+              <span class="material-symbols-outlined text-[16px]">link</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Featured Photo / Media Banner -->
+      <div class="my-6 sm:my-8">
+        ${data.foto_url ? `
+          <div class="rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-surface-container bg-surface-container">
+            <img src="${data.foto_url}" alt="Dokumentasi ${escapeHtml(data.judul)}" class="w-full h-auto max-h-[520px] object-cover" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+            <div class="hidden w-full h-64 flex flex-col items-center justify-center bg-gradient-to-br from-surface-container to-surface-container-high text-secondary p-6 text-center">
+              <span class="material-symbols-outlined text-[48px] text-primary-container mb-2">image</span>
+              <p class="text-sm font-bold text-on-surface">Dokumentasi Arsip HIMPALUBI UNIPAR</p>
+            </div>
+            <div class="py-2.5 px-4 bg-surface-container-low text-xs text-secondary flex flex-wrap items-center justify-between gap-2 border-t border-surface-container">
+              <span class="flex items-center gap-1.5 font-medium text-on-surface/80">
+                <span class="material-symbols-outlined text-[15px] text-primary-container" aria-hidden="true">photo_camera</span>
+                Dokumentasi Resmi Publikasi
+              </span>
+              <span class="text-secondary/80">HIMPALUBI FKIP UNIPAR</span>
+            </div>
+          </div>
+        ` : `
+          <div class="rounded-2xl sm:rounded-3xl bg-gradient-to-r from-surface-container to-surface-container-low border border-surface-container p-6 sm:p-8 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[26px]">newspaper</span>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-on-surface">Warta Publikasi Inklusif</h2>
+              <p class="text-xs text-secondary">Rilis resmi Himpunan Mahasiswa Pendidikan Luar Biasa Universitas PGRI Argopuro Jember.</p>
+            </div>
+          </div>
+        `}
+      </div>
+
+      <!-- Article Body -->
+      <div class="detail-isi space-y-6 pt-2 pb-8 border-b border-surface-container">
+        ${paragraphsHtml}
+      </div>
+
+      <!-- Social Share & Engagement Footer -->
+      <div class="py-6 border-b border-surface-container flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-primary">Bagikan Artikel</span>
+          <p class="text-xs text-secondary mt-0.5">Sebarluaskan warta dan narasi edukasi inklusif ini.</p>
+        </div>
+        
+        <!-- Action Cluster in a single unified pill container -->
+        <div class="inline-flex items-center gap-1.5 p-1.5 rounded-full bg-surface-container-low border border-surface-container shadow-xs">
+          <a href="https://api.whatsapp.com/send?text=${shareText}${shareUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold" title="Bagikan ke WhatsApp">
+            <span class="material-symbols-outlined text-[16px] text-green-600">chat</span>
+            <span>WhatsApp</span>
+          </a>
+          <span class="w-[1px] h-4 bg-surface-container" aria-hidden="true"></span>
+          <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold" title="Bagikan ke X / Twitter">
+            <span class="material-symbols-outlined text-[16px]">send</span>
+            <span>X / Twitter</span>
+          </a>
+          <span class="w-[1px] h-4 bg-surface-container" aria-hidden="true"></span>
+          <button type="button" class="btn-copy-link inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold cursor-pointer" title="Salin Tautan Artikel">
+            <span class="material-symbols-outlined text-[16px]">link</span>
+            <span>Salin</span>
+          </button>
+          <span class="w-[1px] h-4 bg-surface-container" aria-hidden="true"></span>
+          <button type="button" onclick="window.print()" class="w-8 h-8 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-on-surface transition-all flex items-center justify-center cursor-pointer" title="Cetak Artikel">
+            <span class="material-symbols-outlined text-[16px]">print</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Author Signature Box -->
+      <footer class="pt-8 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 bg-surface-container-low/60 rounded-2xl p-5 sm:p-6 mt-8 border border-surface-container">
+        <div class="w-14 h-14 rounded-full bg-surface-container-lowest p-2 border border-primary/20 shadow-xs shrink-0 flex items-center justify-center">
+          <img src="img/logo.png" alt="Logo HIMPALUBI" class="w-full h-full object-contain">
+        </div>
+        <div class="flex-1 text-center sm:text-left">
+          <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
+            <h2 class="text-sm sm:text-base font-bold text-on-surface">Redaksi &amp; Media HIMPALUBI UNIPAR</h2>
+            <span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-primary font-bold text-[10px] tracking-wide uppercase shadow-2xs">Organisasi Resmi</span>
+          </div>
+          <p class="text-xs text-secondary leading-relaxed mb-3">
+            Himpunan Mahasiswa Pendidikan Luar Biasa (HIMPALUBI) FKIP Universitas PGRI Argopuro Jember. Wadah aspirasi mahasiswa, advokasi disabilitas, dan pengembangan keilmuan pendidikan khusus.
+          </p>
+          <div class="flex items-center justify-center sm:justify-start gap-4 text-xs font-semibold text-primary">
+            <a href="tentang.html" class="hover:underline inline-flex items-center gap-1 hover:text-primary-container transition-colors">
+              <span>Profil Organisasi</span>
+              <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+            </a>
+            <span class="opacity-30 text-secondary">•</span>
+            <a href="kontak.html" class="hover:underline inline-flex items-center gap-1 hover:text-primary-container transition-colors">
+              <span>Hubungi Redaksi</span>
+              <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+      </footer>
+
+    </article>
   `;
+
+  // Pasang event listener tombol salin tautan
+  const copyButtons = el.querySelectorAll(".btn-copy-link");
+  copyButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          if (typeof tampilkanToast === "function") {
+            tampilkanToast("Tautan artikel berhasil disalin ke papan klip!", "check_circle");
+          } else {
+            alert("Tautan artikel berhasil disalin!");
+          }
+        }).catch(() => {
+          if (typeof tampilkanToast === "function") {
+            tampilkanToast("Gagal menyalin tautan.", "error");
+          }
+        });
+      }
+    });
+  });
+
+  // Muat Rekomendasi Terkait Lainnya
+  muatRekomendasiTerkait(id, kategori);
+}
+
+// ================= REKOMENDASI TERKAIT DI HALAMAN DETAIL =================
+async function muatRekomendasiTerkait(currentId, kategori) {
+  const section = document.getElementById("rekomendasi-section");
+  const grid = document.getElementById("rekomendasi-grid");
+  if (!section || !grid) return;
+
+  try {
+    let query = supabaseClient
+      .from("berita")
+      .select("*")
+      .neq("id", currentId)
+      .order("tanggal", { ascending: false })
+      .limit(2);
+
+    if (kategori) {
+      query = query.eq("kategori", kategori);
+    }
+
+    const { data, error } = await query;
+    if (error || !data || data.length === 0) {
+      section.classList.add("hidden");
+      return;
+    }
+
+    // Atur grid styling jika cuma 1 item vs 2 item
+    if (data.length === 1) {
+      grid.className = "grid grid-cols-1 max-w-xl gap-6";
+    } else {
+      grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
+    }
+
+    grid.innerHTML = data.map(item => `
+      <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-surface-container transition-all duration-300 flex flex-col sm:flex-row group">
+        <div class="sm:w-36 sm:min-w-[144px] h-36 sm:h-auto bg-surface-container overflow-hidden relative shrink-0">
+          ${item.foto_url ? `
+            <img src="${item.foto_url}" alt="${escapeHtml(item.judul)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+          ` : ''}
+          <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-3 text-center">
+            <div class="w-8 h-8 rounded-xl bg-primary-fixed text-primary flex items-center justify-center mb-1">
+              <span class="material-symbols-outlined text-[18px]">newspaper</span>
+            </div>
+            <span class="text-[10px] font-bold text-on-surface/70 uppercase tracking-wider">HIMPALUBI</span>
+          </div>
+        </div>
+        <div class="p-4 flex flex-col justify-between flex-1">
+          <div>
+            <div class="flex items-center gap-2 text-[11px] font-semibold text-secondary mb-1.5">
+              <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-primary font-bold uppercase tracking-wider text-[10px]">${escapeHtml(item.kategori || 'Berita')}</span>
+              <span class="opacity-40">•</span>
+              <span>${formatTanggal(item.tanggal)}</span>
+            </div>
+            <h3 class="text-sm font-bold text-on-surface line-clamp-2 group-hover:text-primary-container transition-colors leading-snug">
+              <a href="detail.html?id=${item.id}&kategori=${encodeURIComponent(item.kategori || 'Berita')}">
+                ${escapeHtml(item.judul)}
+              </a>
+            </h3>
+          </div>
+          <div class="pt-3 mt-3 border-t border-surface-container flex items-center justify-between text-xs">
+            <span class="flex items-center gap-1 text-secondary text-[11px]">
+              <span class="material-symbols-outlined text-[14px] text-primary-container">visibility</span>
+              ${ambilJumlahKlikBerita(item.id, 1)} Pembaca
+            </span>
+            <a href="detail.html?id=${item.id}&kategori=${encodeURIComponent(item.kategori || 'Berita')}" class="px-3 py-1 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary font-semibold text-xs transition-colors inline-flex items-center gap-1">
+              <span>Baca</span>
+              <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+      </article>
+    `).join("");
+
+    section.classList.remove("hidden");
+  } catch (e) {
+    section.classList.add("hidden");
+  }
 }
 
 // ================= BERANDA: Kegiatan Terbaru (3 kartu) =================
@@ -380,6 +746,339 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
 
   // Inisialisasi filter setelah card dimasukkan ke DOM
   inisialisasiFilterKegiatan();
+}
+
+// ================= HALAMAN BERITA (berita.html) =================
+async function muatHalamanBerita(gridId = "news-grid-container", featuredId = "featured-news-section", searchInputId = "news-search-input", counterId = "news-counter-notice") {
+  const grid = document.getElementById(gridId);
+  const featuredSec = document.getElementById(featuredId);
+  const counterNotice = document.getElementById(counterId);
+
+  if (!grid) return;
+
+  grid.innerHTML = skeletonListItems(4);
+
+  let supabaseData = null;
+  try {
+    const res = await supabaseClient
+      .from("berita")
+      .select("*")
+      .eq("kategori", "Berita")
+      .order("tanggal", { ascending: false });
+    supabaseData = res.data;
+  } catch (err) {
+    console.warn("Info: Gagal memuat berita dari Supabase.", err);
+  }
+
+  // Jika database kosong atau belum ada berita
+  if (!supabaseData || supabaseData.length === 0) {
+    if (featuredSec) {
+      featuredSec.classList.add("hidden");
+    }
+    grid.innerHTML = `
+      <div class="col-span-full py-16 px-6 text-center bg-surface-container-lowest rounded-3xl border border-surface-container shadow-xs">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-surface-container flex items-center justify-center text-primary-container mb-4 shadow-xs">
+          <span class="material-symbols-outlined text-[32px]">newspaper</span>
+        </div>
+        <h3 class="text-lg font-bold text-on-surface mb-2">Belum Ada Warta Berita</h3>
+        <p class="text-xs sm:text-sm text-secondary max-w-md mx-auto leading-relaxed">
+          Saat ini belum ada publikasi berita yang diunggah di database. Pengurus redaksi HIMPALUBI akan segera memperbarui warta dan rilis informasi terkini.
+        </p>
+      </div>
+    `;
+
+    if (counterNotice) {
+      counterNotice.textContent = "Belum Ada Warta Terdaftar";
+    }
+
+    const totalPubEl = document.getElementById("totalPubCount");
+    if (totalPubEl) {
+      totalPubEl.textContent = "0";
+    }
+    return;
+  }
+
+  // 1. Hubungkan berita terbaru dari Supabase ke Hero Sorotan Khusus secara dinamis
+  const latestItem = supabaseData[0];
+  const featuredContainer = document.getElementById("featured-news-container");
+  
+  if (featuredSec && featuredContainer) {
+    // Tampilkan isi teks yang mengisi penuh ruang vertikal kartu Sorotan Khusus
+    const fullText = (latestItem.isi || "").replace(/\s+/g, " ").trim();
+    const summaryText = ringkas(fullText, 1500);
+
+    const kata = fullText.split(/\s+/).filter(Boolean).length;
+    const readMin = Math.max(1, Math.ceil(kata / 180));
+    const totalHeroViews = latestItem.views || ambilJumlahKlikBerita(latestItem.id, 0);
+    const detailUrl = `detail.html?id=${latestItem.id}&kategori=Berita`;
+
+    featuredContainer.innerHTML = `
+      <div class="rounded-3xl bg-surface-container-lowest shadow-md overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-0 border border-surface-container">
+        
+        <!-- Media Visual Block -->
+        <div class="lg:col-span-6 relative min-h-[340px] sm:min-h-[400px] lg:min-h-[460px] flex flex-col justify-between p-6 sm:p-8 bg-surface-variant overflow-hidden">
+          ${latestItem.foto_url ? `
+            <img class="absolute inset-0 w-full h-full object-cover" src="${latestItem.foto_url}" alt="${escapeHtml(latestItem.judul)}" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+          ` : ''}
+          <div class="${latestItem.foto_url ? 'hidden ' : ''}absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container to-surface-container-high text-secondary p-8 text-center select-none">
+            <div class="w-16 h-16 rounded-3xl bg-primary-fixed text-primary flex items-center justify-center mb-3 shadow-sm">
+              <span class="material-symbols-outlined text-[36px]">campaign</span>
+            </div>
+            <span class="text-xs font-bold text-on-surface/70 tracking-wider uppercase">Sorotan Warta HIMPALUBI</span>
+          </div>
+          
+          <!-- Scrim gradient for contrast -->
+          <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface via-inverse-surface/30 to-transparent pointer-events-none"></div>
+          
+          <!-- Top Meta Badges -->
+          <div class="relative z-10 flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary-container text-on-primary text-xs uppercase tracking-wider font-bold shadow-sm">
+              <span class="material-symbols-outlined text-[16px]" aria-hidden="true">campaign</span>
+              <span>Sorotan Khusus</span>
+            </span>
+            <span class="px-3 py-1.5 rounded-full bg-inverse-surface/80 backdrop-blur-md text-white text-xs font-medium">
+              ${formatTanggal(latestItem.tanggal)}
+            </span>
+            <span class="px-3 py-1.5 rounded-full bg-inverse-surface/80 backdrop-blur-md text-white text-xs font-medium flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px]" aria-hidden="true">schedule</span>
+              <span>${readMin} Menit Baca</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Content Narrative Block -->
+        <div class="lg:col-span-6 p-6 sm:p-8 lg:p-10 flex flex-col justify-between gap-6 bg-surface-container-lowest">
+          <div class="flex flex-col flex-1 gap-3.5">
+            <div class="flex items-center gap-3">
+              <span class="px-3 py-1 rounded-full bg-primary-fixed text-primary text-xs uppercase font-bold tracking-wider">
+                ${escapeHtml(latestItem.subkategori || "Warta Resmi")}
+              </span>
+              <span class="text-xs text-secondary flex items-center gap-1">
+                <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">visibility</span>
+                <span>${totalHeroViews.toLocaleString("id-ID")} Pembaca</span>
+              </span>
+            </div>
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-on-surface leading-tight tracking-tight">
+              <a href="${detailUrl}" class="hover:text-primary-container transition-colors">${escapeHtml(latestItem.judul)}</a>
+            </h2>
+            <p class="text-sm sm:text-base text-secondary leading-relaxed line-clamp-[8] sm:line-clamp-[9] lg:line-clamp-[10]">
+              ${escapeHtml(summaryText)}
+            </p>
+          </div>
+
+          <!-- Bottom Footer Details -->
+          <div class="pt-6 mt-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-surface-container">
+            <!-- Author Block -->
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="w-10 h-10 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold shrink-0 shadow-2xs">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">edit_note</span>
+              </div>
+              <div class="flex flex-col min-w-0">
+                <span class="text-sm font-bold text-on-surface truncate">${escapeHtml(latestItem.penulis || "Redaksi HIMPALUBI")}</span>
+                <span class="text-xs text-secondary truncate">HIMPALUBI UNIPAR Jember</span>
+              </div>
+            </div>
+
+            <!-- Action Cluster -->
+            <div class="flex items-center gap-2.5">
+              <a class="px-5 py-2.5 rounded-full bg-primary-container text-on-primary text-xs font-semibold hover:bg-primary transition-all shadow-sm flex items-center gap-1.5 whitespace-nowrap min-h-[38px]" href="${detailUrl}">
+                <span>Baca Liputan Lengkap</span>
+                <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    `;
+    featuredSec.classList.remove("hidden");
+  }
+
+  // 2. Format list artikel murni dari Supabase
+  const displayList = supabaseData.map((item) => ({
+    id: item.id,
+    judul: item.judul,
+    isi: item.isi,
+    tanggal: item.tanggal,
+    kategori: item.subkategori || "Warta Resmi",
+    slug: (item.subkategori || "all").toLowerCase().replace(/[^a-z0-9]/g, ""),
+    penulis: item.penulis || "Redaksi HIMPALUBI",
+    readTime: Math.max(1, Math.ceil((item.isi || "").split(/\s+/).length / 180)).toString(),
+    foto_url: item.foto_url,
+    views: item.views || ambilJumlahKlikBerita(item.id, 0),
+    icon: "feed"
+  }));
+
+  // Perbarui total publikasi terdata
+  const totalPubEl = document.getElementById("totalPubCount");
+  if (totalPubEl) {
+    totalPubEl.textContent = `${displayList.length}+`;
+  }
+
+  // Render Grid Cards
+  grid.innerHTML = displayList.map(item => `
+    <article class="news-card group flex flex-col justify-between rounded-2xl bg-surface-container-lowest p-5 shadow-sm hover:shadow-md transition-all h-full border border-surface-container" data-category="${item.slug || 'all'}" data-title="${escapeHtml(item.judul)}">
+      <div class="flex flex-col gap-3.5">
+        <div class="relative w-full h-48 rounded-xl overflow-hidden bg-surface-container">
+          ${item.foto_url ? `
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${escapeHtml(item.judul)}" src="${item.foto_url}" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+          ` : ''}
+          <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
+            <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
+              <span class="material-symbols-outlined text-[24px]">${item.icon || 'article'}</span>
+            </div>
+            <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">HIMPALUBI UNIPAR</span>
+          </div>
+          <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-primary-container text-xs font-bold shadow-sm">
+            ${escapeHtml(item.kategori || 'Warta')}
+          </span>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-secondary">
+          <span class="material-symbols-outlined text-[14px]">calendar_today</span>
+          <span>${formatTanggal(item.tanggal)}</span>
+          <span>•</span>
+          <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary-container">visibility</span><span>${item.views.toLocaleString("id-ID")} Pembaca</span></span>
+        </div>
+        <h3 class="text-base font-bold text-on-surface group-hover:text-primary-container transition-colors leading-snug">
+          <a href="detail.html?id=${item.id}&kategori=Berita" class="hover:underline">${escapeHtml(item.judul)}</a>
+        </h3>
+        <p class="text-xs sm:text-sm text-secondary line-clamp-3 leading-relaxed">
+          ${escapeHtml(ringkas(item.isi, 150))}
+        </p>
+      </div>
+      <div class="pt-4 mt-4 flex items-center justify-between text-secondary border-t border-surface-container">
+        <span class="text-xs text-on-surface-variant font-medium">${escapeHtml(item.penulis || 'Redaksi')}</span>
+        <a class="text-xs text-primary font-bold flex items-center gap-1 hover:underline" href="detail.html?id=${item.id}&kategori=Berita">
+          <span>Baca</span>
+          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+    </article>
+  `).join("");
+
+  if (counterNotice) {
+    counterNotice.textContent = `Menampilkan ${displayList.length} Warta Terbaru`;
+  }
+
+  // Inisialisasi Filter & Search
+  inisialisasiFilterBerita();
+
+  // Inisialisasi Fitur Narasi Audio (Web Speech API)
+  inisialisasiSpeechNarrator();
+}
+
+function inisialisasiFilterBerita() {
+  const searchInput = document.getElementById("news-search-input");
+  const searchBtn = document.getElementById("news-search-btn");
+  const filterPills = document.querySelectorAll(".category-pill");
+  const newsCards = document.querySelectorAll(".news-card");
+  const counterNotice = document.getElementById("news-counter-notice");
+  const tagBtns = document.querySelectorAll(".tag-btn");
+
+  let currentCategory = "all";
+
+  function filterNews() {
+    const searchTerm = (searchInput?.value || "").toLowerCase().trim();
+    let visibleCount = 0;
+
+    newsCards.forEach((card) => {
+      const cardCat = card.dataset.category || "all";
+      const cardText = card.textContent.toLowerCase();
+
+      const matchCategory = currentCategory === "all" || cardCat === currentCategory || cardText.includes(currentCategory);
+      const matchSearch = !searchTerm || cardText.includes(searchTerm);
+
+      if (matchCategory && matchSearch) {
+        card.classList.remove("hidden");
+        visibleCount++;
+      } else {
+        card.classList.add("hidden");
+      }
+    });
+
+    if (counterNotice) {
+      counterNotice.textContent = `Menampilkan ${visibleCount} Warta`;
+    }
+  }
+
+  if (searchInput) searchInput.addEventListener("input", filterNews);
+  if (searchBtn) searchBtn.addEventListener("click", filterNews);
+
+  filterPills.forEach((pill) => {
+    pill.addEventListener("click", () => {
+      filterPills.forEach((p) => {
+        p.classList.remove("bg-primary-container", "text-on-primary", "font-bold");
+        p.classList.add("bg-surface", "text-secondary", "font-semibold");
+      });
+      pill.classList.remove("bg-surface", "text-secondary", "font-semibold");
+      pill.classList.add("bg-primary-container", "text-on-primary", "font-bold");
+      currentCategory = pill.dataset.category || "all";
+      filterNews();
+    });
+  });
+
+  tagBtns.forEach((tagBtn) => {
+    tagBtn.addEventListener("click", () => {
+      const tagText = tagBtn.dataset.tag || tagBtn.textContent.replace("#", "").trim();
+      if (searchInput) {
+        searchInput.value = tagText;
+        filterNews();
+        searchInput.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    });
+  });
+}
+
+function inisialisasiSpeechNarrator() {
+  const playBtn = document.getElementById("play-speech-btn");
+  const speechIcon = document.getElementById("speech-icon");
+  const statusLabel = document.getElementById("speech-title-status");
+  const timerLabel = document.getElementById("speech-timer");
+
+  if (!playBtn || !("speechSynthesis" in window)) return;
+
+  let isPlaying = false;
+
+  playBtn.addEventListener("click", () => {
+    if (isPlaying) {
+      window.speechSynthesis.cancel();
+      isPlaying = false;
+      if (speechIcon) speechIcon.textContent = "volume_up";
+      if (statusLabel) statusLabel.textContent = "Dengarkan Artikel (Fitur Suara)";
+      if (timerLabel) timerLabel.textContent = "Audio Dijeda";
+      return;
+    }
+
+    const title = document.getElementById("featured-title")?.textContent || "";
+    const summary = document.getElementById("featured-summary")?.textContent || "";
+    const textToRead = `${title}. ${summary}`;
+
+    const utterance = new SpeechSynthesisUtterance(textToRead);
+    utterance.lang = "id-ID";
+    utterance.rate = 1.0;
+
+    utterance.onstart = () => {
+      isPlaying = true;
+      if (speechIcon) speechIcon.textContent = "pause";
+      if (statusLabel) statusLabel.textContent = "Memutar Narasi Suara...";
+      if (timerLabel) timerLabel.textContent = "Sedang Memutar";
+    };
+
+    utterance.onend = () => {
+      isPlaying = false;
+      if (speechIcon) speechIcon.textContent = "volume_up";
+      if (statusLabel) statusLabel.textContent = "Dengarkan Artikel (Fitur Suara)";
+      if (timerLabel) timerLabel.textContent = "Selesai";
+    };
+
+    utterance.onerror = () => {
+      isPlaying = false;
+      if (speechIcon) speechIcon.textContent = "volume_up";
+      if (statusLabel) statusLabel.textContent = "Dengarkan Artikel (Fitur Suara)";
+    };
+
+    window.speechSynthesis.speak(utterance);
+  });
 }
 
 function inisialisasiFilterKegiatan() {
@@ -1356,9 +2055,16 @@ function formatTanggal(tgl) {
   const d = new Date(tgl);
   return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
 }
-function ringkas(teks, panjang) {
+function ringkas(teks, panjang = 200) {
   if (!teks) return "";
-  return teks.length > panjang ? teks.slice(0, panjang) + "…" : teks;
+  const clean = teks.replace(/\s+/g, " ").trim();
+  if (clean.length <= panjang) return clean;
+  const sub = clean.slice(0, panjang);
+  const lastSpace = sub.lastIndexOf(" ");
+  if (lastSpace > panjang * 0.6) {
+    return sub.slice(0, lastSpace) + "...";
+  }
+  return sub + "...";
 }
 function initial(nama) {
   if (!nama) return "?";
