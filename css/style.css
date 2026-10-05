@@ -94,6 +94,13 @@ p { max-width: 68ch; }
 a { color: var(--teal-700); }
 a:hover { color: var(--teal-900); }
 
+/* T3: tautan di footer mewarisi warna teks footer (sebelumnya #27313E di atas latar #27313E = tak terlihat).
+   Class Tailwind pada <a> (text-*, hover:text-*) tetap menang karena spesifisitasnya lebih tinggi. */
+footer a { color: inherit; }
+
+/* S1: judul/teks panjang tanpa spasi tidak boleh melebarkan halaman */
+h1, h2, h3, h4, h5, p, li, figcaption, blockquote { overflow-wrap: anywhere; }
+
 :focus-visible {
   outline: var(--focus-ring);
   outline-offset: 2px;

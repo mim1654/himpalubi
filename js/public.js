@@ -23,29 +23,6 @@ async function muatBerita(elId, batas, kategori) {
   }
 
   if (!data || data.length === 0) {
-    if (kategori === "Berita") {
-      el.innerHTML = `
-        <li class="news-item">
-          <time datetime="2025-04-12">12 April 2025</time>
-          <div>
-            <h3><a href="index.html#berita" style="color:inherit; text-decoration:none;">Pelantikan Dewan Pengurus HIMPALUBI UNIPAR Periode 2025/2026</a></h3>
-            <p class="excerpt">Serah terima jabatan ketua umum dan jajaran dewan pengurus diselenggarakan dengan khidmat di hadapan pimpinan program studi dan senat mahasiswa.</p>
-            <span class="more" style="color:var(--primary-container); font-weight:600;">Warta Resmi Organisasi</span>
-          </div>
-          <img src="img/berita-1.jpg" alt="Foto Pelantikan Pengurus" loading="lazy" onerror="this.style.display='none'">
-        </li>
-        <li class="news-item">
-          <time datetime="2025-04-08">08 April 2025</time>
-          <div>
-            <h3><a href="index.html#berita" style="color:inherit; text-decoration:none;">Mahasiswa PLB UNIPAR Raih Juara Inovasi Media Pembelajaran Inklusif</a></h3>
-            <p class="excerpt">Delegasi mahasiswa berhasil mengembangkan media pembelajaran adaptif ramah tunarungu dalam kompetisi karya inovasi tingkat regional.</p>
-            <span class="more" style="color:var(--primary-container); font-weight:600;">Prestasi Mahasiswa</span>
-          </div>
-          <img src="img/berita-2.jpg" alt="Foto Prestasi Mahasiswa" loading="lazy" onerror="this.style.display='none'">
-        </li>
-      `;
-      return;
-    }
     el.innerHTML = `<li>${emptyState(`Belum ada ${kategori.toLowerCase()}`, "Konten resmi akan tampil di sini begitu admin mempublikasikannya.", { icon: "event_available", btnText: "Kembali ke Beranda", btnHref: "index.html" })}</li>`;
     return;
   }
@@ -317,7 +294,7 @@ async function muatDetailKonten(elId, backLinkId) {
         </div>
         
         <!-- Action Cluster in a single unified pill container -->
-        <div class="inline-flex items-center gap-1.5 p-1.5 rounded-full bg-surface-container-low border border-surface-container shadow-xs">
+        <div class="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl sm:rounded-full max-w-full bg-surface-container-low border border-surface-container shadow-xs">
           <a href="https://api.whatsapp.com/send?text=${shareText}${shareUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold" title="Bagikan ke WhatsApp">
             <span class="material-symbols-outlined text-[16px] text-green-600">chat</span>
             <span>WhatsApp</span>
@@ -685,7 +662,7 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
 
   // 2. Render Grid Kegiatan
   grid.innerHTML = data.map((item) => `
-    <article class="event-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-surface-container overflow-hidden flex flex-col justify-between group" data-category="all" data-status="open" data-period="all">
+    <article class="event-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-surface-container overflow-hidden flex flex-col justify-between group" data-category="all" data-status="${statusKegiatan(item.tanggal)}" data-period="${periodeKegiatan(item.tanggal)}">
       <div>
         <div class="relative h-48 w-full overflow-hidden bg-surface-container flex items-center justify-center">
           ${item.foto_url ? `
@@ -745,6 +722,7 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
   `).join("");
 
   // Inisialisasi filter setelah card dimasukkan ke DOM
+  isiOpsiPeriodeKegiatan(data);
   inisialisasiFilterKegiatan();
 }
 
@@ -1081,6 +1059,24 @@ function inisialisasiSpeechNarrator() {
   });
 }
 
+// ---- Helper filter Kegiatan: status & periode diturunkan dari tanggal ----
+function statusKegiatan(tgl) {
+  const d = new Date(tgl);
+  if (isNaN(d)) return "all";
+  const hariIni = new Date(); hariIni.setHours(0, 0, 0, 0);
+  return d >= hariIni ? "upcoming" : "completed";
+}
+function periodeKegiatan(tgl) {
+  const d = new Date(tgl);
+  return isNaN(d) ? "all" : String(d.getFullYear());
+}
+function isiOpsiPeriodeKegiatan(data) {
+  const sel = document.getElementById("periodFilterSelect");
+  if (!sel) return;
+  const tahun = [...new Set((data || []).map((i) => periodeKegiatan(i.tanggal)).filter((t) => t !== "all"))].sort().reverse();
+  sel.innerHTML = '<option value="all">Semua Periode</option>' + tahun.map((t) => `<option value="${t}">Tahun ${t}</option>`).join("");
+}
+
 function inisialisasiFilterKegiatan() {
   const searchInput = document.getElementById("eventSearchInput");
   const statusSelect = document.getElementById("statusFilterSelect");
@@ -1201,110 +1197,8 @@ async function muatBeritaKartu(elId, batas) {
     return;
   }
 
-  // Tampilan berita kurasi bawaan jika database kosong
-  el.innerHTML = `
-    <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
-      <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
-        <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
-          <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
-            <span class="material-symbols-outlined text-[24px]">corporate_fare</span>
-          </div>
-          <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">HIMPALUBI UNIPAR</span>
-        </div>
-        <div class="absolute top-3.5 left-3.5 bg-primary-container text-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-          12 April 2025
-        </div>
-        <div class="absolute top-3.5 right-3.5 bg-inverse-surface/85 text-surface-bright px-2.5 py-0.5 rounded-full text-[11px] font-medium">
-          Organisasi
-        </div>
-      </div>
-      <div class="p-5 flex flex-col flex-1">
-        <h3 class="text-base font-bold text-on-surface mb-2 group-hover:text-primary-container transition-colors line-clamp-2">
-          <a href="berita.html" class="hover:underline">Pelantikan Dewan Pengurus HIMPALUBI UNIPAR Periode 2025/2026</a>
-        </h3>
-        <p class="text-xs text-secondary mb-5 flex-1 line-clamp-3 leading-relaxed">
-          Serah terima jabatan ketua umum dan jajaran dewan pengurus diselenggarakan dengan khidmat di hadapan pimpinan prodi dan senat mahasiswa.
-        </p>
-        <div class="flex items-center justify-between pt-3 border-t border-surface-container mt-auto">
-          <span class="flex items-center gap-1 text-secondary text-xs">
-            <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">feed</span>
-            12 April 2025
-          </span>
-          <a href="berita.html" class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary text-xs font-semibold transition-colors">
-            Baca
-          </a>
-        </div>
-      </div>
-    </article>
-
-    <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
-      <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
-        <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
-          <div class="w-12 h-12 rounded-2xl bg-surface-container-high text-primary flex items-center justify-center mb-2 shadow-xs">
-            <span class="material-symbols-outlined text-[24px]">emoji_events</span>
-          </div>
-          <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">Prestasi Mahasiswa</span>
-        </div>
-        <div class="absolute top-3.5 left-3.5 bg-primary-container text-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-          08 April 2025
-        </div>
-        <div class="absolute top-3.5 right-3.5 bg-inverse-surface/85 text-surface-bright px-2.5 py-0.5 rounded-full text-[11px] font-medium">
-          Prestasi
-        </div>
-      </div>
-      <div class="p-5 flex flex-col flex-1">
-        <h3 class="text-base font-bold text-on-surface mb-2 group-hover:text-primary-container transition-colors line-clamp-2">
-          <a href="berita.html" class="hover:underline">Mahasiswa PLB UNIPAR Raih Juara Inovasi Media Pembelajaran Inklusif</a>
-        </h3>
-        <p class="text-xs text-secondary mb-5 flex-1 line-clamp-3 leading-relaxed">
-          Delegasi mahasiswa berhasil mengembangkan aplikasi ramah tunarungu dalam kompetisi karya inovasi pembelajaran tingkat regional.
-        </p>
-        <div class="flex items-center justify-between pt-3 border-t border-surface-container mt-auto">
-          <span class="flex items-center gap-1 text-secondary text-xs">
-            <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">feed</span>
-            08 April 2025
-          </span>
-          <a href="berita.html" class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary text-xs font-semibold transition-colors">
-            Baca
-          </a>
-        </div>
-      </div>
-    </article>
-
-    <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
-      <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
-        <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
-          <div class="w-12 h-12 rounded-2xl bg-surface-container-high text-primary flex items-center justify-center mb-2 shadow-xs">
-            <span class="material-symbols-outlined text-[24px]">school</span>
-          </div>
-          <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">Akademik PLB</span>
-        </div>
-        <div class="absolute top-3.5 left-3.5 bg-primary-container text-on-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-          25 Maret 2025
-        </div>
-        <div class="absolute top-3.5 right-3.5 bg-inverse-surface/85 text-surface-bright px-2.5 py-0.5 rounded-full text-[11px] font-medium">
-          Akademik
-        </div>
-      </div>
-      <div class="p-5 flex flex-col flex-1">
-        <h3 class="text-base font-bold text-on-surface mb-2 group-hover:text-primary-container transition-colors line-clamp-2">
-          <a href="berita.html" class="hover:underline">Sosialisasi Kurikulum OBE dan Program Magang Inklusi Semester Genap</a>
-        </h3>
-        <p class="text-xs text-secondary mb-5 flex-1 line-clamp-3 leading-relaxed">
-          Pengenalan skema magang kemitraan di sekolah luar biasa dan pusat terapi anak berkebutuhan khusus wilayah Jember dan sekitarnya.
-        </p>
-        <div class="flex items-center justify-between pt-3 border-t border-surface-container mt-auto">
-          <span class="flex items-center gap-1 text-secondary text-xs">
-            <span class="material-symbols-outlined text-[16px] text-primary-container" aria-hidden="true">feed</span>
-            25 Maret 2025
-          </span>
-          <a href="berita.html" class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary text-xs font-semibold transition-colors">
-            Baca
-          </a>
-        </div>
-      </div>
-    </article>
-  `;
+  // Database kosong: tampilkan empty state (bukan berita contoh palsu)
+  el.innerHTML = `<div class="col-span-full">${emptyState("Belum ada berita", "Berita resmi akan tampil di sini begitu admin mempublikasikannya.", { icon: "newspaper", btnText: "Lihat Halaman Berita", btnHref: "berita.html" })}</div>`;
 }
 
 // ================= PENGURUS BERANDA (index.html) =================
