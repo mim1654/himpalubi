@@ -132,36 +132,41 @@
       <div id="pesan-pendaftaran" class="mb-6" aria-live="polite"></div>
 
       <form id="form-pendaftaran" class="flex flex-col gap-6">
+          <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
+            <label for="hp_konfirmasi_situs">Jangan diisi</label>
+            <input type="text" id="hp_konfirmasi_situs" name="hp_konfirmasi_situs" tabindex="-1" autocomplete="off">
+          </div>
+          
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <!-- Nama Lengkap -->
           <div class="flex flex-col gap-1.5 sm:col-span-2">
             <label for="nama" class="text-title-md font-semibold text-on-surface">Nama Lengkap <span class="text-primary-container">*</span></label>
-            <input type="text" id="nama" name="nama" required class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50" placeholder="Masukkan nama lengkap beserta gelar jika ada">
+            <input type="text" id="nama" name="nama" required maxlength="100" class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50" placeholder="Masukkan nama lengkap beserta gelar jika ada">
           </div>
 
           <!-- NIM -->
           <div class="flex flex-col gap-1.5">
             <label for="nim" class="text-title-md font-semibold text-on-surface">Nomor Induk Mahasiswa (NIM) <span class="text-primary-container">*</span></label>
-            <input type="text" id="nim" name="nim" pattern="[A-Za-z0-9]{6,20}" title="NIM boleh berisi huruf dan angka, 6-20 karakter" placeholder="Contoh: 231F10014" required class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50">
+            <input type="text" id="nim" name="nim" pattern="[A-Za-z0-9]{6,20}" title="NIM boleh berisi huruf dan angka, 6-20 karakter" placeholder="Contoh: 231F10014" required maxlength="20" class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50">
           </div>
 
           <!-- Angkatan -->
           <div class="flex flex-col gap-1.5">
             <label for="angkatan" class="text-title-md font-semibold text-on-surface">Tahun Angkatan <span class="text-primary-container">*</span></label>
-            <input type="text" id="angkatan" name="angkatan" placeholder="Contoh: 2025" required class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50">
+            <input type="text" id="angkatan" name="angkatan" placeholder="Contoh: 2025" required maxlength="10" class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50">
           </div>
 
           <!-- Program Studi -->
           <div class="flex flex-col gap-1.5 sm:col-span-2">
             <label for="program_studi" class="text-title-md font-semibold text-on-surface">Program Studi <span class="text-primary-container">*</span></label>
-            <input type="text" id="program_studi" name="program_studi" required value="Pendidikan Luar Biasa" class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50">
+            <input type="text" id="program_studi" name="program_studi" required value="Pendidikan Luar Biasa" maxlength="100" class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50">
           </div>
 
           <!-- Tempat Lahir -->
           <div class="flex flex-col gap-1.5">
             <label for="tempat_lahir" class="text-title-md font-semibold text-on-surface">Tempat Lahir <span class="text-primary-container">*</span></label>
-            <input type="text" id="tempat_lahir" name="tempat_lahir" placeholder="Contoh: Jember" required class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50">
+            <input type="text" id="tempat_lahir" name="tempat_lahir" placeholder="Contoh: Jember" required maxlength="100" class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50">
           </div>
 
           <!-- Tanggal Lahir -->
@@ -173,19 +178,19 @@
           <!-- Nomor WhatsApp -->
           <div class="flex flex-col gap-1.5">
             <label for="no_wa" class="text-title-md font-semibold text-on-surface">Nomor WhatsApp Aktif <span class="text-primary-container">*</span></label>
-            <input type="tel" id="no_wa" name="no_wa" inputmode="tel" pattern="^(\+62|62|0)8[0-9]{8,12}$" title="Format nomor Indonesia, contoh: 08123456789" placeholder="Contoh: 08123456789" required class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50">
+            <input type="tel" id="no_wa" name="no_wa" inputmode="tel" pattern="^(\+62|62|0)8[0-9]{8,12}$" title="Format nomor Indonesia, contoh: 08123456789" placeholder="Contoh: 08123456789" required maxlength="20" class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50">
           </div>
 
           <!-- Email -->
           <div class="flex flex-col gap-1.5">
             <label for="email" class="text-title-md font-semibold text-on-surface">Alamat Surel / Email <span class="text-primary-container">*</span></label>
-            <input type="email" id="email" name="email" placeholder="nama@email.com" required class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50">
+            <input type="email" id="email" name="email" placeholder="nama@email.com" required maxlength="254" class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50">
           </div>
 
           <!-- Alasan Bergabung -->
           <div class="flex flex-col gap-1.5 sm:col-span-2">
             <label for="alasan" class="text-title-md font-semibold text-on-surface">Motivasi &amp; Alasan Bergabung <span class="text-primary-container">*</span></label>
-            <textarea id="alasan" name="alasan" rows="4" required class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50" placeholder="Tuliskan motivasi, pengalaman, atau aspirasi kamu dalam berkontribusi di HIMPALUBI..."></textarea>
+            <textarea id="alasan" name="alasan" rows="4" required maxlength="2000" class="w-full px-4 py-3 rounded-xl bg-surface border border-surface-container text-on-surface text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 focus:outline-none transition-all placeholder:text-secondary/50" placeholder="Tuliskan motivasi, pengalaman, atau aspirasi kamu dalam berkontribusi di HIMPALUBI..."></textarea>
           </div>
         </div>
 

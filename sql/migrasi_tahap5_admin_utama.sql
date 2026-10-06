@@ -13,7 +13,7 @@ alter table admin_users add column if not exists peran text not null default 'ad
 -- berarti email ini belum ada di admin_users — pastikan sudah pernah login
 -- minimal sekali dan terdaftar (lihat migrasi_tahap3_keamanan.sql) dulu,
 -- baru jalankan ulang baris UPDATE ini.
-update admin_users set peran = 'utama' where email = 'ilmanmubarok16@gmail.com';
+update admin_users set peran = 'utama' where email = 'EMAIL_ADMIN_UTAMA_KAMU';
 
 -- 2. Fungsi bantu: cek apakah pemanggil adalah admin UTAMA
 create or replace function public.is_admin_utama()

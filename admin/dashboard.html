@@ -1110,7 +1110,7 @@
       await muatKomponenAdmin();
 
       try {
-        await wajibLogin();
+        if ((await wajibLogin()) === false) return;
       } catch (err) {
         console.warn("Pengecekan sesi admin:", err);
       }

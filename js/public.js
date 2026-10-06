@@ -35,7 +35,7 @@ async function muatBerita(elId, batas, kategori) {
         <p class="excerpt">${escapeHtml(ringkas(item.isi, 180))}</p>
         <a href="detail.html?id=${item.id}&kategori=${kategori}" class="more">Baca Selengkapnya &rarr;</a>
       </div>
-      ${item.foto_url ? `<img src="${item.foto_url}" alt="Foto ${escapeHtml(item.judul)}" loading="lazy" onerror="this.style.display='none'">` : ""}
+      ${item.foto_url ? `<img src="${urlGambarAman(item.foto_url)}" alt="Foto ${escapeHtml(item.judul)}" loading="lazy" onerror="this.style.display='none'">` : ""}
     </li>
   `).join("");
 }
@@ -255,7 +255,7 @@ async function muatDetailKonten(elId, backLinkId) {
       <div class="my-6 sm:my-8">
         ${data.foto_url ? `
           <div class="rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-surface-container bg-surface-container">
-            <img src="${data.foto_url}" alt="Dokumentasi ${escapeHtml(data.judul)}" class="w-full h-auto max-h-[520px] object-cover" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+            <img src="${urlGambarAman(data.foto_url)}" alt="Dokumentasi ${escapeHtml(data.judul)}" class="w-full h-auto max-h-[520px] object-cover" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
             <div class="hidden w-full h-64 flex flex-col items-center justify-center bg-gradient-to-br from-surface-container to-surface-container-high text-secondary p-6 text-center">
               <span class="material-symbols-outlined text-[48px] text-primary-container mb-2">image</span>
               <p class="text-sm font-bold text-on-surface">Dokumentasi Arsip HIMPALUBI UNIPAR</p>
@@ -405,7 +405,7 @@ async function muatRekomendasiTerkait(currentId, kategori) {
       <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-surface-container transition-all duration-300 flex flex-col sm:flex-row group">
         <div class="sm:w-36 sm:min-w-[144px] h-36 sm:h-auto bg-surface-container overflow-hidden relative shrink-0">
           ${item.foto_url ? `
-            <img src="${item.foto_url}" alt="${escapeHtml(item.judul)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+            <img src="${urlGambarAman(item.foto_url)}" alt="${escapeHtml(item.judul)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
           ` : ''}
           <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-3 text-center">
             <div class="w-8 h-8 rounded-xl bg-primary-fixed text-primary flex items-center justify-center mb-1">
@@ -471,7 +471,7 @@ async function muatKegiatanTerbaru(elId) {
       <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
         <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
           ${item.foto_url ? `
-            <img src="${item.foto_url}" alt="Foto ${escapeHtml(item.judul)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+            <img src="${urlGambarAman(item.foto_url)}" alt="Foto ${escapeHtml(item.judul)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
           ` : ''}
           <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
             <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
@@ -583,7 +583,7 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
         <!-- Media Column -->
         <div class="lg:col-span-5 relative min-h-[280px] sm:min-h-[340px] lg:min-h-full bg-surface-container flex items-center justify-center overflow-hidden">
           ${fItem.foto_url ? `
-            <img class="w-full h-full object-cover" alt="${escapeHtml(fItem.judul)}" src="${fItem.foto_url}" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+            <img class="w-full h-full object-cover" alt="${escapeHtml(fItem.judul)}" src="${urlGambarAman(fItem.foto_url)}" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
           ` : ''}
           <div class="${fItem.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-6 text-center select-none">
             <div class="w-14 h-14 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-3 shadow-sm">
@@ -666,7 +666,7 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
       <div>
         <div class="relative h-48 w-full overflow-hidden bg-surface-container flex items-center justify-center">
           ${item.foto_url ? `
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${escapeHtml(item.judul)}" src="${item.foto_url}" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${escapeHtml(item.judul)}" src="${urlGambarAman(item.foto_url)}" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
           ` : ''}
           <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
             <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
@@ -796,7 +796,7 @@ async function muatHalamanBerita(gridId = "news-grid-container", featuredId = "f
         <!-- Media Visual Block -->
         <div class="lg:col-span-6 relative min-h-[340px] sm:min-h-[400px] lg:min-h-[460px] flex flex-col justify-between p-6 sm:p-8 bg-surface-variant overflow-hidden">
           ${latestItem.foto_url ? `
-            <img class="absolute inset-0 w-full h-full object-cover" src="${latestItem.foto_url}" alt="${escapeHtml(latestItem.judul)}" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+            <img class="absolute inset-0 w-full h-full object-cover" src="${urlGambarAman(latestItem.foto_url)}" alt="${escapeHtml(latestItem.judul)}" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
           ` : ''}
           <div class="${latestItem.foto_url ? 'hidden ' : ''}absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container to-surface-container-high text-secondary p-8 text-center select-none">
             <div class="w-16 h-16 rounded-3xl bg-primary-fixed text-primary flex items-center justify-center mb-3 shadow-sm">
@@ -899,7 +899,7 @@ async function muatHalamanBerita(gridId = "news-grid-container", featuredId = "f
       <div class="flex flex-col gap-3.5">
         <div class="relative w-full h-48 rounded-xl overflow-hidden bg-surface-container">
           ${item.foto_url ? `
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${escapeHtml(item.judul)}" src="${item.foto_url}" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${escapeHtml(item.judul)}" src="${urlGambarAman(item.foto_url)}" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
           ` : ''}
           <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
             <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
@@ -1160,7 +1160,7 @@ async function muatBeritaKartu(elId, batas) {
       <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-surface-container group">
         <div class="relative h-48 bg-surface-container overflow-hidden flex items-center justify-center">
           ${item.foto_url ? `
-            <img src="${item.foto_url}" alt="Foto ${escapeHtml(item.judul)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+            <img src="${urlGambarAman(item.foto_url)}" alt="Foto ${escapeHtml(item.judul)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
           ` : ''}
           <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
             <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
@@ -1236,7 +1236,7 @@ async function muatPengurusBeranda(elId = "pengurus-beranda-grid", batas = 5) {
       const isPucuk = idx === 0 || (p.jabatan && p.jabatan.toLowerCase().includes("ketua umum"));
       const initialName = initial(p.nama);
       const photoHtml = p.foto_url
-        ? `<img src="${p.foto_url}" alt="Foto ${escapeHtml(p.nama)}" class="w-full h-full object-cover rounded-full" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full rounded-full ${isPucuk ? 'bg-primary-fixed text-primary-container' : 'bg-surface-container-high text-on-surface'} flex items-center justify-center font-bold text-lg sm:text-xl\\'>${initialName}</div>'">`
+        ? `<img src="${urlGambarAman(p.foto_url)}" alt="Foto ${escapeHtml(p.nama)}" class="w-full h-full object-cover rounded-full" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full rounded-full ${isPucuk ? 'bg-primary-fixed text-primary-container' : 'bg-surface-container-high text-on-surface'} flex items-center justify-center font-bold text-lg sm:text-xl\\'>${initialName}</div>'">`
         : `<div class="w-full h-full rounded-full ${isPucuk ? 'bg-primary-fixed text-primary-container' : 'bg-surface-container-high text-on-surface'} flex items-center justify-center font-bold text-lg sm:text-xl">${initialName}</div>`;
 
       return `
@@ -1327,7 +1327,7 @@ async function muatAnggota(elId) {
 function kartuAnggota(a) {
   const initialName = initial(a.nama);
   const photoHtml = a.foto_url
-    ? `<img src="${a.foto_url}" alt="Foto ${escapeHtml(a.nama)}" class="w-full h-full object-cover rounded-full" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-lg\\'>${initialName}</div>'">`
+    ? `<img src="${urlGambarAman(a.foto_url)}" alt="Foto ${escapeHtml(a.nama)}" class="w-full h-full object-cover rounded-full" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-lg\\'>${initialName}</div>'">`
     : `<div class="w-full h-full rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-lg">${initialName}</div>`;
 
   return `
@@ -1508,7 +1508,7 @@ async function muatGaleriHalaman(elId) {
   el.innerHTML = data.map(g => `
     <div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-surface-container h-64 border border-surface-container cursor-pointer flex items-center justify-center">
       ${g.foto_url ? `
-        <img src="${g.foto_url}" alt="${escapeHtml(g.judul || 'Foto Galeri')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+        <img src="${urlGambarAman(g.foto_url)}" alt="${escapeHtml(g.judul || 'Foto Galeri')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
       ` : ''}
       <div class="${g.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
         <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
@@ -1558,7 +1558,7 @@ async function muatGaleriBeranda(elId = "galeri-beranda-grid", batas = 4) {
   el.innerHTML = data.map((item) => `
     <div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-surface-container h-64 border border-surface-container cursor-pointer flex items-center justify-center">
       ${item.foto_url ? `
-        <img src="${item.foto_url}" alt="${escapeHtml(item.judul || 'Dokumentasi Kegiatan')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+        <img src="${urlGambarAman(item.foto_url)}" alt="${escapeHtml(item.judul || 'Dokumentasi Kegiatan')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
       ` : ''}
       <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
         <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
@@ -1626,9 +1626,9 @@ async function muatKontakHalaman() {
   setTeksAman("kontak-telepon", data.telepon);
 
   const ig = document.getElementById("kontak-instagram");
-  if (ig && data.instagram) ig.href = data.instagram;
+  if (ig && urlTautanAman(data.instagram)) ig.href = urlTautanAman(data.instagram);
   const yt = document.getElementById("kontak-youtube");
-  if (yt && data.youtube) yt.href = data.youtube;
+  if (yt && urlTautanAman(data.youtube)) yt.href = urlTautanAman(data.youtube);
 }
 
 // ================= FOOTER: isi otomatis dari Pengaturan =================
@@ -1643,9 +1643,9 @@ async function muatPengaturanFooter() {
   setTeksAman("footer-telepon", data.telepon);
 
   const ig = document.getElementById("footer-instagram");
-  if (ig && data.instagram) ig.href = data.instagram;
+  if (ig && urlTautanAman(data.instagram)) ig.href = urlTautanAman(data.instagram);
   const yt = document.getElementById("footer-youtube");
-  if (yt && data.youtube) yt.href = data.youtube;
+  if (yt && urlTautanAman(data.youtube)) yt.href = urlTautanAman(data.youtube);
 }
 
 // ================= BERANDA: Tagline Hero (dinamis dari Pengaturan) =================
@@ -1808,7 +1808,7 @@ async function muatTestimoniBeranda(elId) {
     <div class="testimoni-card">
       <p class="kutipan">${escapeHtml(t.isi)}</p>
       <div class="testimoni-orang">
-        <div class="foto">${t.foto_url ? `<img src="${t.foto_url}" alt="Foto ${escapeHtml(t.nama)}" loading="lazy">` : initial(t.nama)}</div>
+        <div class="foto">${t.foto_url ? `<img src="${urlGambarAman(t.foto_url)}" alt="Foto ${escapeHtml(t.nama)}" loading="lazy">` : initial(t.nama)}</div>
         <div>
           <div class="nama">${escapeHtml(t.nama)}</div>
           <div class="jabatan">${escapeHtml(t.jabatan || "")}</div>
@@ -1900,6 +1900,14 @@ function pasangFormPendaftaran(formId) {
       pesanEl.className = "form-message error";
       pesanEl.textContent = "Format Nomor WhatsApp tidak valid. Contoh: 08123456789.";
       form.no_wa.focus();
+      return;
+    }
+
+    // Honeypot anti-bot: kolom tersembunyi yang tidak pernah terisi oleh manusia.
+    if (form.hp_konfirmasi_situs && form.hp_konfirmasi_situs.value.trim() !== "") {
+      pesanEl.className = "form-message success";
+      pesanEl.textContent = "Pendaftaran berhasil dikirim.";
+      form.reset();
       return;
     }
 
@@ -2056,6 +2064,19 @@ function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
   }[c]));
+}
+
+// Keamanan URL: hanya izinkan http(s), data:image, atau path relatif; semua karakter atribut di-escape.
+function urlGambarAman(u) {
+  const s = String(u === null || u === undefined ? "" : u).trim();
+  if (!s) return "";
+  const adaSkema = /^[a-z][a-z0-9+.-]*:/i.test(s);
+  const aman = /^https?:\/\//i.test(s) || /^data:image\/(png|jpe?g|gif|webp|avif|svg\+xml)[;,]/i.test(s) || (!adaSkema && !s.startsWith("//"));
+  return aman ? escapeHtml(s) : "";
+}
+function urlTautanAman(u) {
+  const s = String(u === null || u === undefined ? "" : u).trim();
+  return /^https?:\/\//i.test(s) ? s : "";
 }
 
 // ================= SEO: update meta/OG tag dinamis di halaman detail =================

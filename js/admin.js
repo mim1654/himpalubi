@@ -9,6 +9,19 @@ function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
+// Keamanan URL: hanya izinkan http(s), data:image, atau path relatif; semua karakter atribut di-escape.
+function urlGambarAman(u) {
+  const s = String(u === null || u === undefined ? "" : u).trim();
+  if (!s) return "";
+  const adaSkema = /^[a-z][a-z0-9+.-]*:/i.test(s);
+  const aman = /^https?:\/\//i.test(s) || /^data:image\/(png|jpe?g|gif|webp|avif|svg\+xml)[;,]/i.test(s) || (!adaSkema && !s.startsWith("//"));
+  return aman ? escapeHtml(s) : "";
+}
+function urlTautanAman(u) {
+  const s = String(u === null || u === undefined ? "" : u).trim();
+  return /^https?:\/\//i.test(s) ? s : "";
+}
+
 // ================= TOAST NOTIFIKASI POPUP (FLOATING TOAST) =================
 function tampilkanToast(pesan, jenis = "sukses") {
   let wrap = document.getElementById("admin-toast-container");
@@ -74,6 +87,14 @@ function pasangFormLogin(formId) {
   const form = document.getElementById(formId);
   if (!form) return;
 
+  if (new URLSearchParams(window.location.search).get("akses") === "ditolak") {
+    const pesanAwal = document.getElementById("pesan-login");
+    if (pesanAwal) {
+      pesanAwal.className = "form-message error";
+      pesanAwal.textContent = "Akun ini tidak memiliki akses admin. Hubungi Admin Utama untuk mendapat undangan.";
+    }
+  }
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const pesanEl = document.getElementById("pesan-login");
@@ -109,11 +130,29 @@ function pasangFormLogin(formId) {
   });
 }
 
+// Mengembalikan true jika pengguna adalah admin. Bila bukan admin: logout lalu arahkan ke login.
+// Jika pengecekan gagal karena jaringan/server, pengguna TIDAK dikeluarkan (RLS tetap melindungi data).
 async function wajibLogin() {
   const { data } = await supabaseClient.auth.getSession();
   if (!data.session) {
     window.location.href = "login.html";
+    return false;
   }
+  const { data: baris, error } = await supabaseClient
+    .from("admin_users")
+    .select("id")
+    .eq("id", data.session.user.id)
+    .limit(1);
+  if (error) {
+    console.warn("Gagal memverifikasi peran admin:", error.message);
+    return true;
+  }
+  if (!baris || baris.length === 0) {
+    await supabaseClient.auth.signOut();
+    window.location.href = "login.html?akses=ditolak";
+    return false;
+  }
+  return true;
 }
 
 // ================= MODAL KONFIRMASI UNIVERSAL (POPUP) =================
@@ -246,6 +285,12 @@ function pasangFormDaftarAdmin(formId) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const pesanEl = document.getElementById("pesan-daftar");
+    if (form.kode_undangan && form.kode_undangan.value.trim() === "") {
+      pesanEl.className = "form-message error";
+      pesanEl.textContent = "Kode undangan wajib diisi. Minta kode kepada Admin Utama.";
+      form.kode_undangan.focus();
+      return;
+    }
     const tombol = form.querySelector("button[type=submit]");
     tombol.disabled = true;
     tombol.innerHTML = `
@@ -256,6 +301,7 @@ function pasangFormDaftarAdmin(formId) {
     const { error } = await supabaseClient.auth.signUp({
       email: form.email.value.trim(),
       password: form.password.value,
+      options: { data: { kode_undangan: (form.kode_undangan ? form.kode_undangan.value.trim() : "") } },
     });
 
     tombol.disabled = false;
@@ -271,7 +317,7 @@ function pasangFormDaftarAdmin(formId) {
     }
 
     pesanEl.className = "form-message success";
-    pesanEl.textContent = "Akun berhasil dibuat. Jika email Anda telah diundang, Anda dapat langsung masuk melalui halaman login.";
+    pesanEl.textContent = "Akun berhasil dibuat. Jika email dan kode undangan Anda benar, Anda dapat langsung masuk melalui halaman login.";
     form.reset();
   });
 }
@@ -327,7 +373,7 @@ async function renderKelolaAdminJikaUtama() {
             <div class="sm:col-span-2">
               <label for="email-undangan" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Email Calon Admin</label>
               <input type="email" id="email-undangan" name="email" required placeholder="nama@email.com" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-              <p class="text-[11px] text-secondary mt-1.5">Setelah diundang, minta yang bersangkutan membuka <strong>admin/daftar.html</strong> dengan email yang sama.</p>
+              <p class="text-[11px] text-secondary mt-1.5">Setelah diundang, berikan <strong>kode undangan</strong> yang muncul kepada yang bersangkutan, lalu minta membuka <strong>admin/daftar.html</strong> dengan email yang sama.</p>
             </div>
             <div class="flex items-end">
               <button type="submit" class="w-full py-2.5 px-6 rounded-full bg-primary hover:bg-primary-container text-on-primary text-sm font-semibold tracking-wide shadow-sm hover:shadow-md transition-all active:scale-[0.98] min-h-[44px]">
@@ -546,7 +592,7 @@ async function muatUndanganAdmin(page) {
 
   el.innerHTML = paged.map(u => `
     <tr class="hover:bg-surface-container-low/70 transition-colors border-b border-surface-container/60 last:border-b-0">
-      <td class="py-3.5 px-4 font-semibold text-on-surface">${escapeHtml(u.email)}</td>
+      <td class="py-3.5 px-4 font-semibold text-on-surface">${escapeHtml(u.email)}${u.kode ? `<div class="mt-0.5 text-[11px] font-normal text-secondary">Kode undangan: <span class="font-mono font-semibold text-on-surface select-all">${escapeHtml(u.kode)}</span></div>` : ""}</td>
       <td class="py-3.5 px-4 text-secondary text-xs">${formatTanggal(u.dibuat_pada)}</td>
       <td class="py-3.5 px-4 text-right">
         <button type="button" onclick="batalkanUndangan('${u.email.replace(/'/g, "\\'")}')" title="Batalkan Undangan" aria-label="Batalkan Undangan" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
@@ -565,12 +611,13 @@ function pasangFormUndangAdmin(formId) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = form.email.value.trim();
-    const emailAdminSaatIni = document.getElementById("admin-email")?.textContent || null;
+    const { data: sesiUndang } = await supabaseClient.auth.getSession();
+    const emailAdminSaatIni = sesiUndang?.session?.user?.email || null;
 
-    const { error } = await supabaseClient.from("admin_undangan").insert({
+    const { data: undanganBaru, error } = await supabaseClient.from("admin_undangan").insert({
       email,
       diundang_oleh: emailAdminSaatIni,
-    });
+    }).select().single();
 
     if (error) {
       tampilkanToast(error.code === "23505" ? "Email tersebut sudah diundang sebelumnya." : "Gagal mengirimkan undangan.", "gagal");
@@ -578,7 +625,8 @@ function pasangFormUndangAdmin(formId) {
       return;
     }
 
-    tampilkanToast(`Undangan berhasil terkirim untuk ${email}.`, "sukses");
+    const kodeBaru = undanganBaru && undanganBaru.kode;
+    tampilkanToast(kodeBaru ? `Undangan dibuat untuk ${email}. Berikan kode ini kepada yang bersangkutan: ${kodeBaru}` : `Undangan berhasil terkirim untuk ${email}.`, "sukses");
     form.reset();
     muatUndanganAdmin();
   });
@@ -903,7 +951,7 @@ function tampilkanFotoLama(previewElId, url) {
   if (!preview) return;
   preview.innerHTML = url ? `
     <div class="inline-flex items-center gap-2 p-1.5 bg-surface-container-low rounded-xl border border-surface-container">
-      <img src="${url}" alt="Foto Saat Ini" class="w-16 h-16 object-cover rounded-lg shadow-xs">
+      <img src="${urlGambarAman(url)}" alt="Foto Saat Ini" class="w-16 h-16 object-cover rounded-lg shadow-xs">
       <span class="text-xs text-secondary pr-2">Foto saat ini</span>
     </div>
   ` : "";
@@ -2432,7 +2480,7 @@ async function muatTabelGaleri(page) {
     <tr class="hover:bg-surface-container-low/70 transition-colors border-b border-surface-container/60 last:border-b-0">
       <td class="py-3.5 px-4">
         ${g.foto_url 
-          ? `<img src="${g.foto_url}" alt="Dokumentasi" loading="lazy" class="w-16 h-12 rounded-lg object-cover border border-surface-container shadow-xs">` 
+          ? `<img src="${urlGambarAman(g.foto_url)}" alt="Dokumentasi" loading="lazy" class="w-16 h-12 rounded-lg object-cover border border-surface-container shadow-xs">` 
           : '<span class="text-xs text-secondary">-</span>'}
       </td>
       <td class="py-3.5 px-4 font-semibold text-on-surface">${escapeHtml(g.judul || "-")}</td>

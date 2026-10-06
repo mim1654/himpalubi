@@ -8,7 +8,7 @@
 -- Ganti email di bawah kalau ada admin lain yang mengalami hal sama.
 update auth.users
 set email_confirmed_at = now()
-where email = 'rosabunga113@gmail.com' and email_confirmed_at is null;
+where email = 'EMAIL_ADMIN_YANG_DIUNDANG' and email_confirmed_at is null;
 
 -- PERBAIKAN B — Mulai sekarang, siapa pun yang daftar lewat admin/daftar.html
 -- dengan email yang SUDAH DIUNDANG akan otomatis dianggap terkonfirmasi,
