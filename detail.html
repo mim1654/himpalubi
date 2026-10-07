@@ -122,7 +122,7 @@
     }
   };
 </script>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=3.0">
 </head>
 <body data-page="berita" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col transition-all">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
@@ -192,7 +192,7 @@
 </main>
 
 <!-- Global Toast Notification for Feedback -->
-<div id="toast-notifikasi" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 bg-inverse-surface text-inverse-on-surface px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 text-sm font-medium">
+<div id="toast-notifikasi" role="region" aria-label="Notifikasi" aria-live="polite" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 bg-inverse-surface text-inverse-on-surface px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 text-sm font-medium">
   <span class="material-symbols-outlined text-inverse-primary text-[20px]" id="toast-icon">check_circle</span>
   <span id="toast-message">Tautan artikel berhasil disalin!</span>
 </div>
@@ -202,9 +202,9 @@
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/supabaseClient.js"></script>
-<script src="js/public.js"></script>
-<script src="js/components.js"></script>
+<script src="js/supabaseClient.js?v=3.0"></script>
+<script src="js/public.js?v=3.0"></script>
+<script src="js/components.js?v=3.0"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     muatKomponen();

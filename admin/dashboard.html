@@ -2,6 +2,7 @@
 <html lang="id" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
+  <meta name="robots" content="noindex, nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Admin | HIMPALUBI UNIPAR</title>
   <meta name="description" content="Dashboard Pengelolaan Website HIMPALUBI Universitas PGRI Argopuro Jember.">
@@ -313,13 +314,13 @@
             </a>
           </div>
 
-          <div class="overflow-x-auto rounded-xl border border-surface-container">
+          <div class="overflow-x-auto rounded-xl border border-surface-container" tabindex="0" role="region" aria-label="Tabel ringkasan">
             <table class="w-full text-left border-collapse text-sm">
               <thead>
                 <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
-                  <th class="py-3 px-4">Nama Lengkap</th>
-                  <th class="py-3 px-4">Tanggal Daftar</th>
-                  <th class="py-3 px-4">Status</th>
+                  <th scope="col" class="py-3 px-4">Nama Lengkap</th>
+                  <th scope="col" class="py-3 px-4">Tanggal Daftar</th>
+                  <th scope="col" class="py-3 px-4">Status</th>
                 </tr>
               </thead>
               <tbody id="pendaftar-terbaru" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
@@ -410,14 +411,14 @@
           </div>
 
           <div class="bg-surface-container-lowest rounded-2xl border border-surface-container overflow-hidden shadow-sm">
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel berita">
               <table class="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
-                    <th class="py-3 px-4">Judul</th>
-                    <th class="py-3 px-4">Tanggal</th>
-                    <th class="py-3 px-4">Penulis</th>
-                    <th class="py-3 px-4 text-right">Aksi</th>
+                    <th scope="col" class="py-3 px-4">Judul</th>
+                    <th scope="col" class="py-3 px-4">Tanggal</th>
+                    <th scope="col" class="py-3 px-4">Penulis</th>
+                    <th scope="col" class="py-3 px-4 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="tabel-berita" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
@@ -480,14 +481,14 @@
           </div>
 
           <div class="bg-surface-container-lowest rounded-2xl border border-surface-container overflow-hidden shadow-sm">
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel kegiatan">
               <table class="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
-                    <th class="py-3 px-4">Nama Kegiatan</th>
-                    <th class="py-3 px-4">Tanggal</th>
-                    <th class="py-3 px-4">Penyelenggara</th>
-                    <th class="py-3 px-4 text-right">Aksi</th>
+                    <th scope="col" class="py-3 px-4">Nama Kegiatan</th>
+                    <th scope="col" class="py-3 px-4">Tanggal</th>
+                    <th scope="col" class="py-3 px-4">Penyelenggara</th>
+                    <th scope="col" class="py-3 px-4 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="tabel-kegiatan" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
@@ -599,14 +600,14 @@
           <div class="p-4 bg-surface-container-low border-b border-surface-container">
             <h3 class="text-sm font-bold text-on-surface">Foto Dokumentasi Tersimpan</h3>
           </div>
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel galeri">
             <table class="w-full text-left border-collapse text-sm">
               <thead>
                 <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
-                  <th class="py-3 px-4">Foto</th>
-                  <th class="py-3 px-4">Judul / Keterangan</th>
-                  <th class="py-3 px-4">Tanggal</th>
-                  <th class="py-3 px-4 text-right">Aksi</th>
+                  <th scope="col" class="py-3 px-4">Foto</th>
+                  <th scope="col" class="py-3 px-4">Judul / Keterangan</th>
+                  <th scope="col" class="py-3 px-4">Tanggal</th>
+                  <th scope="col" class="py-3 px-4 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tabel-galeri" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
@@ -709,15 +710,15 @@
           <div class="p-4 bg-surface-container-low border-b border-surface-container">
             <h3 class="text-sm font-bold text-on-surface">Daftar Anggota Terdaftar</h3>
           </div>
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel anggota">
             <table class="w-full text-left border-collapse text-sm">
               <thead>
                 <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
-                  <th class="py-3 px-4">Nama Lengkap</th>
-                  <th class="py-3 px-4">NIM</th>
-                  <th class="py-3 px-4">Angkatan</th>
-                  <th class="py-3 px-4">Status</th>
-                  <th class="py-3 px-4 text-right">Aksi</th>
+                  <th scope="col" class="py-3 px-4">Nama Lengkap</th>
+                  <th scope="col" class="py-3 px-4">NIM</th>
+                  <th scope="col" class="py-3 px-4">Angkatan</th>
+                  <th scope="col" class="py-3 px-4">Status</th>
+                  <th scope="col" class="py-3 px-4 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tabel-anggota" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
@@ -792,15 +793,15 @@
           <div class="p-4 bg-surface-container-low border-b border-surface-container">
             <h3 class="text-sm font-bold text-on-surface">Daftar Susunan Pengurus</h3>
           </div>
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel struktur">
             <table class="w-full text-left border-collapse text-sm">
               <thead>
                 <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
-                  <th class="py-3 px-4">Urutan</th>
-                  <th class="py-3 px-4">Nama Lengkap</th>
-                  <th class="py-3 px-4">Jabatan</th>
-                  <th class="py-3 px-4">Divisi</th>
-                  <th class="py-3 px-4 text-right">Aksi</th>
+                  <th scope="col" class="py-3 px-4">Urutan</th>
+                  <th scope="col" class="py-3 px-4">Nama Lengkap</th>
+                  <th scope="col" class="py-3 px-4">Jabatan</th>
+                  <th scope="col" class="py-3 px-4">Divisi</th>
+                  <th scope="col" class="py-3 px-4 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tabel-struktur" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
@@ -826,18 +827,18 @@
 
         <div class="bg-surface-container-lowest rounded-2xl border border-surface-container overflow-hidden shadow-sm">
           <div class="p-4 bg-surface-container-low border-b border-surface-container">
-            <h3 class="text-sm font-bold text-on-surface">Daftar Pendaftar Masuk</h3>
+            <h3 aria-level="2" class="text-sm font-bold text-on-surface">Daftar Pendaftar Masuk</h3>
           </div>
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel pendaftaran">
             <table class="w-full text-left border-collapse text-sm">
               <thead>
                 <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
-                  <th class="py-3 px-4">Nama Lengkap</th>
-                  <th class="py-3 px-4">NIM</th>
-                  <th class="py-3 px-4">No. WhatsApp</th>
-                  <th class="py-3 px-4">Tanggal Daftar</th>
-                  <th class="py-3 px-4">Status</th>
-                  <th class="py-3 px-4 text-right">Aksi</th>
+                  <th scope="col" class="py-3 px-4">Nama Lengkap</th>
+                  <th scope="col" class="py-3 px-4">NIM</th>
+                  <th scope="col" class="py-3 px-4">No. WhatsApp</th>
+                  <th scope="col" class="py-3 px-4">Tanggal Daftar</th>
+                  <th scope="col" class="py-3 px-4">Status</th>
+                  <th scope="col" class="py-3 px-4 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tabel-pendaftaran" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
@@ -892,13 +893,13 @@
           <div class="p-4 bg-surface-container-low border-b border-surface-container">
             <h3 class="text-sm font-bold text-on-surface">Daftar FAQ Aktif</h3>
           </div>
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel faq">
             <table class="w-full text-left border-collapse text-sm">
               <thead>
                 <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
-                  <th class="py-3 px-4">Pertanyaan</th>
-                  <th class="py-3 px-4">Urutan</th>
-                  <th class="py-3 px-4 text-right">Aksi</th>
+                  <th scope="col" class="py-3 px-4">Pertanyaan</th>
+                  <th scope="col" class="py-3 px-4">Urutan</th>
+                  <th scope="col" class="py-3 px-4 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tabel-faq" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
@@ -965,14 +966,14 @@
           <div class="p-4 bg-surface-container-low border-b border-surface-container">
             <h3 class="text-sm font-bold text-on-surface">Daftar Testimoni</h3>
           </div>
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel testimoni">
             <table class="w-full text-left border-collapse text-sm">
               <thead>
                 <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
-                  <th class="py-3 px-4">Nama</th>
-                  <th class="py-3 px-4">Jabatan</th>
-                  <th class="py-3 px-4">Urutan</th>
-                  <th class="py-3 px-4 text-right">Aksi</th>
+                  <th scope="col" class="py-3 px-4">Nama</th>
+                  <th scope="col" class="py-3 px-4">Jabatan</th>
+                  <th scope="col" class="py-3 px-4">Urutan</th>
+                  <th scope="col" class="py-3 px-4 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tabel-testimoni" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
@@ -1097,13 +1098,15 @@
 
   </div>
 
+  </div>
+
   <!-- Dependencies: Supabase, SheetJS XLSX, html-docx-js -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
-  <script src="../js/supabaseClient.js"></script>
-  <script src="../js/public.js?v=2.1"></script>
-  <script src="../js/admin.js?v=2.1"></script>
+  <script src="../js/supabaseClient.js?v=3.0"></script>
+  <script src="../js/public.js?v=3.0"></script>
+  <script src="../js/admin.js?v=3.0"></script>
   <script>
     (async () => {
       // 1. Muat modular Sidebar & Top Navbar

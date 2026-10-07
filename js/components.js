@@ -86,17 +86,33 @@ function pasangHamburger() {
   const icon = document.getElementById("mobile-menu-icon");
   if (!tombol || !panel) return;
 
+  // Saat menu terbuka: halaman di belakangnya tidak ikut ter-scroll, fokus pindah ke menu.
+  function kunciScroll(aktif) {
+    document.body.style.overflow = aktif ? "hidden" : "";
+  }
+
   function toggle() {
     const isHidden = panel.classList.toggle("hidden");
     tombol.setAttribute("aria-expanded", !isHidden);
     if (icon) icon.textContent = isHidden ? "menu" : "close";
+    kunciScroll(!isHidden);
+    if (!isHidden) {
+      const pertama = panel.querySelector("a, button");
+      if (pertama) pertama.focus({ preventScroll: true });
+    }
   }
 
   function tutup() {
     panel.classList.add("hidden");
     tombol.setAttribute("aria-expanded", "false");
     if (icon) icon.textContent = "menu";
+    kunciScroll(false);
   }
+
+  // Layar melebar ke mode desktop: tutup menu mobile agar scroll tidak terkunci.
+  window.addEventListener("resize", () => {
+    if (window.matchMedia("(min-width: 1280px)").matches && !panel.classList.contains("hidden")) tutup();
+  });
 
   tombol.addEventListener("click", (e) => {
     e.stopPropagation();

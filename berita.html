@@ -129,7 +129,7 @@
     }
   };
 </script>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=3.0">
 </head>
 <body data-page="berita" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col transition-all">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
@@ -189,7 +189,7 @@
         <!-- Search Input -->
         <div class="relative w-full">
           <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[22px]" aria-hidden="true">search</span>
-          <input class="w-full pl-12 pr-28 py-3.5 rounded-xl bg-surface text-sm text-on-surface placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-primary-container border border-surface-container" id="news-search-input" placeholder="Cari berita advokasi, nomor rilis pers, judul kajian ilmiah, atau nama mahasiswa..." type="search">
+          <input class="w-full pl-12 pr-28 py-3.5 rounded-xl bg-surface text-sm text-on-surface placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-primary-container border border-surface-container" id="news-search-input" aria-label="Cari berita" placeholder="Cari berita advokasi, nomor rilis pers, judul kajian ilmiah, atau nama mahasiswa..." type="search">
           <button class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg bg-primary-container text-on-primary text-xs font-semibold hover:bg-primary transition-all flex items-center gap-1.5 shadow-sm min-h-[36px]" type="button" id="news-search-btn">
             <span>Cari</span>
             <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
@@ -299,9 +299,9 @@
 
 <!-- Core Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/supabaseClient.js"></script>
-<script src="js/public.js"></script>
-<script src="js/components.js"></script>
+<script src="js/supabaseClient.js?v=3.0"></script>
+<script src="js/public.js?v=3.0"></script>
+<script src="js/components.js?v=3.0"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {

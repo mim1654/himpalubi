@@ -120,7 +120,7 @@
     }
   };
 </script>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=3.0">
 </head>
 <body data-page="kegiatan" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
@@ -165,12 +165,12 @@
         <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
           <div class="md:col-span-6 relative">
             <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[20px]" aria-hidden="true">search</span>
-            <input class="w-full pl-11 pr-4 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary-container/20 shadow-sm placeholder:text-secondary/70 transition-all" id="eventSearchInput" placeholder="Cari agenda atau nama kegiatan..." type="text">
+            <input class="w-full pl-11 pr-4 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary-container/20 shadow-sm placeholder:text-secondary/70 transition-all" id="eventSearchInput" aria-label="Cari agenda atau nama kegiatan" placeholder="Cari agenda atau nama kegiatan..." type="text">
           </div>
           <div class="md:col-span-3">
             <div class="relative">
               <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[18px]" aria-hidden="true">tune</span>
-              <select id="statusFilterSelect" class="w-full pl-9 pr-8 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface text-sm focus:outline-none shadow-sm appearance-none cursor-pointer">
+              <select id="statusFilterSelect" aria-label="Filter status kegiatan" class="w-full pl-9 pr-8 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface text-sm focus:outline-none shadow-sm appearance-none cursor-pointer">
                 <option value="all">Semua Status</option>
                 <option value="upcoming">Akan Datang</option>
                 <option value="completed">Telah Selesai</option>
@@ -181,7 +181,7 @@
           <div class="md:col-span-3">
             <div class="relative">
               <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[18px]" aria-hidden="true">calendar_month</span>
-              <select id="periodFilterSelect" class="w-full pl-9 pr-8 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface text-sm focus:outline-none shadow-sm appearance-none cursor-pointer">
+              <select id="periodFilterSelect" aria-label="Filter periode kegiatan" class="w-full pl-9 pr-8 py-2.5 rounded-xl bg-surface-container-lowest text-on-surface text-sm focus:outline-none shadow-sm appearance-none cursor-pointer">
                 <option value="all">Semua Periode</option>
               </select>
               <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary text-[18px] pointer-events-none" aria-hidden="true">expand_more</span>
@@ -382,9 +382,9 @@
 
 <!-- Core Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/supabaseClient.js"></script>
-<script src="js/public.js"></script>
-<script src="js/components.js"></script>
+<script src="js/supabaseClient.js?v=3.0"></script>
+<script src="js/public.js?v=3.0"></script>
+<script src="js/components.js?v=3.0"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {

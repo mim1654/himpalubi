@@ -265,7 +265,7 @@ async function muatDetailKonten(elId, backLinkId) {
                 <span class="material-symbols-outlined text-[15px] text-primary-container" aria-hidden="true">photo_camera</span>
                 Dokumentasi Resmi Publikasi
               </span>
-              <span class="text-secondary/80">HIMPALUBI FKIP UNIPAR</span>
+              <span class="text-secondary">HIMPALUBI FKIP UNIPAR</span>
             </div>
           </div>
         ` : `
@@ -1337,7 +1337,7 @@ function kartuAnggota(a) {
       </div>
       <h3 class="text-title-md font-bold text-on-surface mb-0.5 line-clamp-1" title="${escapeHtml(a.nama)}">${escapeHtml(a.nama)}</h3>
       <div class="text-label-md text-secondary font-medium">${escapeHtml(a.jabatan || "Anggota")}</div>
-      ${a.nim ? `<div class="text-label-sm text-secondary/70 font-mono mt-1">${escapeHtml(a.nim)}</div>` : ''}
+      ${a.nim ? `<div class="text-label-sm text-secondary font-mono mt-1">${escapeHtml(a.nim)}</div>` : ''}
     </div>
   `;
 }
@@ -1517,7 +1517,7 @@ async function muatGaleriHalaman(elId) {
         <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">Galeri HIMPALUBI</span>
       </div>
       <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/20 to-transparent flex flex-col justify-end p-4 text-on-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <h3 class="text-sm font-bold text-on-primary leading-snug line-clamp-2">${escapeHtml(g.judul || '')}</h3>
+        <h3 aria-level="2" class="text-sm font-bold text-on-primary leading-snug line-clamp-2">${escapeHtml(g.judul || '')}</h3>
         ${g.keterangan ? `<p class="text-xs text-secondary-fixed-dim mt-0.5 line-clamp-1">${escapeHtml(g.keterangan)}</p>` : ''}
       </div>
     </div>

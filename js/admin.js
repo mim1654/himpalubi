@@ -340,7 +340,7 @@ async function renderKelolaAdminJikaUtama() {
   if (navSlot) {
     navSlot.innerHTML = `
       <div>
-        <p class="text-[11px] font-semibold text-secondary/80 uppercase tracking-wider px-3 mb-1.5">Admin Utama</p>
+        <p class="text-[11px] font-semibold text-secondary uppercase tracking-wider px-3 mb-1.5">Admin Utama</p>
         <ul class="space-y-1">
           <li>
             <a href="#kelola-admin" data-section="kelola-admin" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
@@ -388,13 +388,13 @@ async function renderKelolaAdminJikaUtama() {
             <div class="p-4 bg-surface-container-low border-b border-surface-container">
               <h3 class="text-sm font-bold text-on-surface">Undangan Menunggu Klaim</h3>
             </div>
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel undangan menunggu klaim">
               <table class="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
-                    <th class="py-3 px-4">Email</th>
-                    <th class="py-3 px-4">Tanggal Diundang</th>
-                    <th class="py-3 px-4 text-right">Aksi</th>
+                    <th scope="col" class="py-3 px-4">Email</th>
+                    <th scope="col" class="py-3 px-4">Tanggal Diundang</th>
+                    <th scope="col" class="py-3 px-4 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="tabel-undangan-admin" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
@@ -408,14 +408,14 @@ async function renderKelolaAdminJikaUtama() {
             <div class="p-4 bg-surface-container-low border-b border-surface-container">
               <h3 class="text-sm font-bold text-on-surface">Daftar Admin Aktif</h3>
             </div>
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel admin aktif">
               <table class="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
-                    <th class="py-3 px-4">Email</th>
-                    <th class="py-3 px-4">Peran</th>
-                    <th class="py-3 px-4">Terdaftar</th>
-                    <th class="py-3 px-4 text-right">Aksi</th>
+                    <th scope="col" class="py-3 px-4">Email</th>
+                    <th scope="col" class="py-3 px-4">Peran</th>
+                    <th scope="col" class="py-3 px-4">Terdaftar</th>
+                    <th scope="col" class="py-3 px-4 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="tabel-admin-aktif" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
@@ -430,13 +430,13 @@ async function renderKelolaAdminJikaUtama() {
           <div class="p-4 bg-surface-container-low border-b border-surface-container">
             <h3 class="text-sm font-bold text-on-surface">Riwayat Aktivitas Reset Sandi</h3>
           </div>
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel riwayat reset sandi">
             <table class="w-full text-left border-collapse text-sm">
               <thead>
                 <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
-                  <th class="py-3 px-4">Dilakukan Oleh</th>
-                  <th class="py-3 px-4">Aktivitas</th>
-                  <th class="py-3 px-4 text-right">Waktu</th>
+                  <th scope="col" class="py-3 px-4">Dilakukan Oleh</th>
+                  <th scope="col" class="py-3 px-4">Aktivitas</th>
+                  <th scope="col" class="py-3 px-4 text-right">Waktu</th>
                 </tr>
               </thead>
               <tbody id="tabel-riwayat-reset" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
@@ -641,7 +641,8 @@ function batalkanUndangan(email) {
     ikon: "cancel",
     tipe: "danger",
     onKonfirmasi: async () => {
-      await supabaseClient.from("admin_undangan").delete().eq("email", email);
+      const { error: errHapus } = await supabaseClient.from("admin_undangan").delete().eq("email", email);
+      if (errHapus) { tampilkanToast("Gagal menghapus data: " + errHapus.message, "gagal"); console.error(errHapus); return; }
       muatUndanganAdmin();
       tampilkanToast(`Undangan untuk ${email} berhasil dibatalkan.`, "sukses");
     }
@@ -709,7 +710,8 @@ function cabutAksesAdmin(id, email) {
     ikon: "person_remove",
     tipe: "danger",
     onKonfirmasi: async () => {
-      await supabaseClient.from("admin_users").delete().eq("id", id);
+      const { error: errHapus } = await supabaseClient.from("admin_users").delete().eq("id", id);
+      if (errHapus) { tampilkanToast("Gagal menghapus data: " + errHapus.message, "gagal"); console.error(errHapus); return; }
       tampilkanToast(`Akses admin untuk ${email} telah dicabut.`, "sukses");
       muatDaftarAdminAktifUtama();
     }
@@ -1227,7 +1229,7 @@ const adminSidebarTemplate = `
     
     <!-- Grup 1: Utama -->
     <div>
-      <p class="text-[11px] font-semibold text-secondary/80 uppercase tracking-wider px-3 mb-1.5">Utama</p>
+      <p class="text-[11px] font-semibold text-secondary uppercase tracking-wider px-3 mb-1.5">Utama</p>
       <ul class="space-y-1">
         <li>
           <a href="#ringkasan" data-section="ringkasan" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors" aria-current="page">
@@ -1240,7 +1242,7 @@ const adminSidebarTemplate = `
 
     <!-- Grup 2: Konten -->
     <div>
-      <p class="text-[11px] font-semibold text-secondary/80 uppercase tracking-wider px-3 mb-1.5">Konten</p>
+      <p class="text-[11px] font-semibold text-secondary uppercase tracking-wider px-3 mb-1.5">Konten</p>
       <ul class="space-y-1">
         <li>
           <a href="#kelola-konten" data-section="kelola-konten" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
@@ -1259,7 +1261,7 @@ const adminSidebarTemplate = `
 
     <!-- Grup 3: Keanggotaan -->
     <div>
-      <p class="text-[11px] font-semibold text-secondary/80 uppercase tracking-wider px-3 mb-1.5">Keanggotaan</p>
+      <p class="text-[11px] font-semibold text-secondary uppercase tracking-wider px-3 mb-1.5">Keanggotaan</p>
       <ul class="space-y-1">
         <li>
           <a href="#kelola-anggota" data-section="kelola-anggota" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
@@ -1284,7 +1286,7 @@ const adminSidebarTemplate = `
 
     <!-- Grup 4: Organisasi -->
     <div>
-      <p class="text-[11px] font-semibold text-secondary/80 uppercase tracking-wider px-3 mb-1.5">Organisasi</p>
+      <p class="text-[11px] font-semibold text-secondary uppercase tracking-wider px-3 mb-1.5">Organisasi</p>
       <ul class="space-y-1">
         <li>
           <a href="#kelola-faq" data-section="kelola-faq" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
@@ -1312,10 +1314,10 @@ const adminSidebarTemplate = `
 
     <!-- Grup 5: Tautan Eksternal -->
     <div>
-      <p class="text-[11px] font-semibold text-secondary/80 uppercase tracking-wider px-3 mb-1.5">Tautan</p>
+      <p class="text-[11px] font-semibold text-secondary uppercase tracking-wider px-3 mb-1.5">Tautan</p>
       <ul class="space-y-1">
         <li>
-          <a href="../index.html" target="_blank" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-primary hover:bg-surface-container-low transition-colors">
+          <a href="../index.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-primary hover:bg-surface-container-low transition-colors">
             <span class="material-symbols-outlined text-[20px] text-secondary">open_in_new</span>
             <span>Lihat Website</span>
           </a>
@@ -1361,13 +1363,13 @@ const adminNavbarTemplate = `
         aria-expanded="false" 
         aria-haspopup="true"
         aria-label="Menu profil administrator">
-        <div id="admin-navbar-avatar" class="w-9 h-9 rounded-full bg-primary-fixed text-primary font-bold flex items-center justify-center text-xs flex-shrink-0 shadow-xs ring-2 ring-primary/10">
+        <span id="admin-navbar-avatar" class="w-9 h-9 rounded-full bg-primary-fixed text-primary font-bold flex items-center justify-center text-xs flex-shrink-0 shadow-xs ring-2 ring-primary/10">
           A
-        </div>
-        <div class="hidden lg:flex flex-col text-left">
+        </span>
+        <span class="hidden lg:flex flex-col text-left">
           <span id="admin-navbar-email" class="text-xs font-semibold text-on-surface max-w-[140px] truncate leading-tight">Admin</span>
           <span class="text-[10px] text-secondary leading-tight">Administrator</span>
-        </div>
+        </span>
         <span class="material-symbols-outlined text-[18px] text-secondary transition-transform duration-200 hidden sm:inline" id="profil-navbar-caret">expand_more</span>
       </button>
 
@@ -1390,7 +1392,7 @@ const adminNavbarTemplate = `
         </button>
         <a 
           href="../index.html" 
-          target="_blank" 
+          target="_blank" rel="noopener noreferrer" 
           class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors cursor-pointer"
           role="menuitem">
           <span class="material-symbols-outlined text-[18px]">open_in_new</span>
@@ -2094,7 +2096,8 @@ function hapusKonten(id, kategori) {
     ikon: "delete",
     onKonfirmasi: async () => {
       const { data } = await supabaseClient.from("berita").select("foto_url").eq("id", id).single();
-      await supabaseClient.from("berita").delete().eq("id", id);
+      const { error: errHapus } = await supabaseClient.from("berita").delete().eq("id", id);
+      if (errHapus) { tampilkanToast("Gagal menghapus data: " + errHapus.message, "gagal"); console.error(errHapus); return; }
       if (data?.foto_url) hapusFotoDariStorage(data.foto_url);
       const cfg = KONTEN_CONFIG[kategori];
       muatTabelKonten(kategori, cfg.tabelElId);
@@ -2271,7 +2274,8 @@ function hapusOrang(id, kategori) {
     ikon: "delete",
     onKonfirmasi: async () => {
       const { data } = await supabaseClient.from("anggota").select("foto_url").eq("id", id).single();
-      await supabaseClient.from("anggota").delete().eq("id", id);
+      const { error: errHapus } = await supabaseClient.from("anggota").delete().eq("id", id);
+      if (errHapus) { tampilkanToast("Gagal menghapus data: " + errHapus.message, "gagal"); console.error(errHapus); return; }
       if (data?.foto_url) hapusFotoDariStorage(data.foto_url);
       const cfg = ORANG_CONFIG[kategori];
       muatTabelOrang(kategori, cfg.tabelElId);
@@ -2313,10 +2317,10 @@ async function muatTabelPendaftaran(page) {
   el.innerHTML = paged.map(p => {
     const isMenunggu = p.status === "Menunggu";
     const tombolAksi = isMenunggu ? `
-      <button type="button" onclick="ubahStatusPendaftaran('${p.id}','Diterima')" title="Terima Pendaftaran" aria-label="Terima Pendaftaran" class="w-8 h-8 rounded-lg flex items-center justify-center text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-all active:scale-95 focus:ring-2 focus:ring-emerald-500/20 cursor-pointer">
+      <button type="button" onclick="konfirmasiStatusPendaftaran('${p.id}','Diterima')" title="Terima Pendaftaran" aria-label="Terima Pendaftaran" class="w-8 h-8 rounded-lg flex items-center justify-center text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-all active:scale-95 focus:ring-2 focus:ring-emerald-500/20 cursor-pointer">
         <span class="material-symbols-outlined text-[18px]">check</span>
       </button>
-      <button type="button" onclick="ubahStatusPendaftaran('${p.id}','Ditolak')" title="Tolak Pendaftaran" aria-label="Tolak Pendaftaran" class="w-8 h-8 rounded-lg flex items-center justify-center text-rose-700 bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-rose-500/20 cursor-pointer">
+      <button type="button" onclick="konfirmasiStatusPendaftaran('${p.id}','Ditolak')" title="Tolak Pendaftaran" aria-label="Tolak Pendaftaran" class="w-8 h-8 rounded-lg flex items-center justify-center text-rose-700 bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-rose-500/20 cursor-pointer">
         <span class="material-symbols-outlined text-[18px]">close</span>
       </button>
     ` : "";
@@ -2424,32 +2428,72 @@ async function bukaModalDetailPendaftar(id) {
   overlay.addEventListener("click", (e) => { if (e.target === overlay) tutup(); });
 }
 
+// Konfirmasi dulu sebelum status pendaftar diubah (mencegah salah klik).
+function konfirmasiStatusPendaftaran(id, status) {
+  const terima = status === "Diterima";
+  tampilkanModalKonfirmasi({
+    judul: terima ? "Terima pendaftar ini?" : "Tolak pendaftar ini?",
+    pesan: terima
+      ? "Pendaftar akan ditandai Diterima dan otomatis ditambahkan ke daftar anggota beserta NIM-nya."
+      : "Pendaftar akan ditandai Ditolak dan tidak ditambahkan ke daftar anggota.",
+    teksKonfirmasi: terima ? "Ya, Terima" : "Ya, Tolak",
+    teksBatal: "Batal",
+    tipe: terima ? "info" : "danger",
+    ikon: terima ? "how_to_reg" : "person_off",
+    onKonfirmasi: () => ubahStatusPendaftaran(id, status),
+  });
+}
+
 async function ubahStatusPendaftaran(id, status) {
-  const { error } = await supabaseClient.from("pendaftaran").update({ status }).eq("id", id);
-  if (error) { tampilkanToast("Gagal mengubah status pendaftar.", "gagal"); console.error(error); return; }
+  let sudahJadiAnggota = false;
 
   if (status === "Diterima") {
-    const { data: pendaftar } = await supabaseClient.from("pendaftaran").select("*").eq("id", id).single();
-    if (pendaftar) {
-      const { data: sudahAda } = await supabaseClient
-        .from("anggota")
-        .select("id")
-        .eq("nama", pendaftar.nama)
-        .eq("angkatan", pendaftar.angkatan || "");
+    // 1) Tambahkan ke anggota LEBIH DULU. Jika gagal, status pendaftar tidak diubah.
+    const { data: pendaftar, error: errAmbil } = await supabaseClient.from("pendaftaran").select("*").eq("id", id).single();
+    if (errAmbil || !pendaftar) { tampilkanToast("Gagal membaca data pendaftar.", "gagal"); console.error(errAmbil); return; }
 
-      if (!sudahAda || sudahAda.length === 0) {
-        await supabaseClient.from("anggota").insert({
-          nama: pendaftar.nama,
-          jabatan: "Anggota",
-          angkatan: pendaftar.angkatan,
-          status: "Aktif",
-          kategori: "Anggota",
-        });
+    let duplikat = false;
+    if (pendaftar.nim) {
+      const { data: samaNim, error: errNim } = await supabaseClient.from("anggota").select("id").eq("nim", pendaftar.nim);
+      if (errNim) { tampilkanToast("Gagal memeriksa data anggota.", "gagal"); console.error(errNim); return; }
+      duplikat = !!(samaNim && samaNim.length);
+    }
+    if (!duplikat) {
+      const { data: samaNama, error: errNama } = await supabaseClient
+        .from("anggota").select("id").eq("nama", pendaftar.nama).eq("angkatan", pendaftar.angkatan || "");
+      if (errNama) { tampilkanToast("Gagal memeriksa data anggota.", "gagal"); console.error(errNama); return; }
+      duplikat = !!(samaNama && samaNama.length);
+    }
+
+    if (duplikat) {
+      sudahJadiAnggota = true;
+    } else {
+      const { error: errTambah } = await supabaseClient.from("anggota").insert({
+        nama: pendaftar.nama,
+        nim: pendaftar.nim || null,
+        jabatan: "Anggota",
+        angkatan: pendaftar.angkatan,
+        status: "Aktif",
+        kategori: "Anggota",
+      });
+      if (errTambah) {
+        tampilkanToast("Gagal menambahkan ke daftar anggota. Status pendaftar tidak diubah.", "gagal");
+        console.error(errTambah);
+        return;
       }
     }
   }
 
-  tampilkanToast(`Status pendaftaran berhasil diubah jadi ${status}.`, "sukses");
+  // 2) Baru ubah status pendaftar.
+  const { error } = await supabaseClient.from("pendaftaran").update({ status }).eq("id", id);
+  if (error) { tampilkanToast("Gagal mengubah status pendaftar.", "gagal"); console.error(error); return; }
+
+  tampilkanToast(
+    sudahJadiAnggota
+      ? "Status diubah jadi Diterima. Pendaftar sudah ada di daftar anggota, jadi tidak ditambahkan lagi."
+      : `Status pendaftaran berhasil diubah jadi ${status}.`,
+    "sukses"
+  );
   muatTabelPendaftaran();
   muatTabelOrang("Anggota", "tabel-anggota");
   muatRingkasan();
@@ -2553,7 +2597,8 @@ function hapusGaleri(id) {
     ikon: "delete",
     onKonfirmasi: async () => {
       const { data } = await supabaseClient.from("galeri").select("foto_url").eq("id", id).single();
-      await supabaseClient.from("galeri").delete().eq("id", id);
+      const { error: errHapus } = await supabaseClient.from("galeri").delete().eq("id", id);
+      if (errHapus) { tampilkanToast("Gagal menghapus data: " + errHapus.message, "gagal"); console.error(errHapus); return; }
       if (data?.foto_url) hapusFotoDariStorage(data.foto_url);
       muatTabelGaleri();
       tampilkanToast("Foto galeri berhasil dihapus.", "sukses");
@@ -2568,7 +2613,7 @@ async function muatDaftarProgramAdmin(page) {
   if (!page) page = ambilHalamanTabel("daftar-program-admin");
   aturHalamanTabel("daftar-program-admin", page);
 
-  el.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-left text-sm"><tbody>${skeletonBarisTabel(4, 3)}</tbody></table></div>`;
+  el.innerHTML = `<div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel program kerja"><table class="w-full text-left text-sm"><tbody>${skeletonBarisTabel(4, 3)}</tbody></table></div>`;
   const { data, error } = await supabaseClient.from("program_kerja").select("*").order("divisi");
   if (error) { el.innerHTML = `<p class="py-4 text-center text-error text-xs">Gagal memuat data program kerja.</p>`; return; }
 
@@ -2583,14 +2628,14 @@ async function muatDaftarProgramAdmin(page) {
   const paged = data.slice(offset, offset + BATAS_PER_HALAMAN);
 
   el.innerHTML = `
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel program kerja">
       <table class="w-full text-left border-collapse text-sm">
         <thead>
           <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-bold text-secondary uppercase tracking-wider">
-            <th class="py-3 px-4">Nama Program</th>
-            <th class="py-3 px-4">Divisi</th>
-            <th class="py-3 px-4">Status</th>
-            <th class="py-3 px-4 text-right">Aksi</th>
+            <th scope="col" class="py-3 px-4">Nama Program</th>
+            <th scope="col" class="py-3 px-4">Divisi</th>
+            <th scope="col" class="py-3 px-4">Status</th>
+            <th scope="col" class="py-3 px-4 text-right">Aksi</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-surface-container text-on-surface">
@@ -2671,7 +2716,8 @@ function hapusProgram(id) {
     tipe: "danger",
     ikon: "delete",
     onKonfirmasi: async () => {
-      await supabaseClient.from("program_kerja").delete().eq("id", id);
+      const { error: errHapus } = await supabaseClient.from("program_kerja").delete().eq("id", id);
+      if (errHapus) { tampilkanToast("Gagal menghapus data: " + errHapus.message, "gagal"); console.error(errHapus); return; }
       muatDaftarProgramAdmin();
       tampilkanToast("Program kerja berhasil dihapus.", "sukses");
     }
@@ -2823,7 +2869,8 @@ function hapusFaq(id) {
     tipe: "danger",
     ikon: "delete",
     onKonfirmasi: async () => {
-      await supabaseClient.from("faq").delete().eq("id", id);
+      const { error: errHapus } = await supabaseClient.from("faq").delete().eq("id", id);
+      if (errHapus) { tampilkanToast("Gagal menghapus data: " + errHapus.message, "gagal"); console.error(errHapus); return; }
       muatTabelFaq();
       tampilkanToast("FAQ berhasil dihapus.", "sukses");
     }
@@ -2948,7 +2995,8 @@ function hapusTestimoni(id) {
     ikon: "delete",
     onKonfirmasi: async () => {
       const { data } = await supabaseClient.from("testimoni").select("foto_url").eq("id", id).single();
-      await supabaseClient.from("testimoni").delete().eq("id", id);
+      const { error: errHapus } = await supabaseClient.from("testimoni").delete().eq("id", id);
+      if (errHapus) { tampilkanToast("Gagal menghapus data: " + errHapus.message, "gagal"); console.error(errHapus); return; }
       if (data?.foto_url) hapusFotoDariStorage(data.foto_url);
       muatTabelTestimoni();
       tampilkanToast("Testimoni berhasil dihapus.", "sukses");
