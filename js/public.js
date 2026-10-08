@@ -1,44 +1,3 @@
-// ================= HALAMAN LIST: Berita & Kegiatan (berita.html / kegiatan.html) =================
-// Dipakai untuk daftar lengkap. kategori: "Berita" atau "Kegiatan".
-async function muatBerita(elId, batas, kategori) {
-  const el = document.getElementById(elId);
-  if (!el) return;
-  kategori = kategori || "Berita";
-  el.innerHTML = skeletonListItems(batas || 3);
-
-  let query = supabaseClient
-    .from("berita")
-    .select("*")
-    .eq("kategori", kategori)
-    .order("tanggal", { ascending: false });
-
-  if (batas) query = query.limit(batas);
-
-  const { data, error } = await query;
-
-  if (error) {
-    el.innerHTML = `<p class="form-message error">Data belum bisa dimuat. Coba muat ulang halaman.</p>`;
-    console.error(error);
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    el.innerHTML = `<li>${emptyState(`Belum ada ${kategori.toLowerCase()}`, "Konten resmi akan tampil di sini begitu admin mempublikasikannya.", { icon: "event_available", btnText: "Kembali ke Beranda", btnHref: "index.html" })}</li>`;
-    return;
-  }
-
-  el.innerHTML = data.map(item => `
-    <li class="news-item">
-      <time datetime="${item.tanggal}">${formatTanggal(item.tanggal)}</time>
-      <div>
-        <h3><a href="detail.html?id=${item.id}&kategori=${kategori}" style="color:inherit; text-decoration:none;">${escapeHtml(item.judul)}</a></h3>
-        <p class="excerpt">${escapeHtml(ringkas(item.isi, 180))}</p>
-        <a href="detail.html?id=${item.id}&kategori=${kategori}" class="more">Baca Selengkapnya &rarr;</a>
-      </div>
-      ${item.foto_url ? `<img src="${urlGambarAman(item.foto_url)}" alt="Foto ${escapeHtml(item.judul)}" loading="lazy" onerror="this.style.display='none'">` : ""}
-    </li>
-  `).join("");
-}
 
 // ================= HELPER PELACAKAN KLIK / PEMBACA BERITA =================
 function ambilJumlahKlikBerita(articleId, fallback = 0) {
@@ -51,6 +10,8 @@ function ambilJumlahKlikBerita(articleId, fallback = 0) {
     return fallback;
   }
 }
+
+const _pembacaServer = {};
 
 function tambahKlikBerita(articleId) {
   if (!articleId) return 0;
@@ -67,21 +28,16 @@ function tambahKlikBerita(articleId) {
     const updated = current + 1;
     localStorage.setItem(key, updated.toString());
 
-    // Coba simpan penambahan ke Supabase jika kolom views ada
-    if (window.supabaseClient && typeof articleId !== "string") {
-      supabaseClient
-        .from("berita")
-        .select("views")
-        .eq("id", articleId)
-        .single()
-        .then(({ data }) => {
-          if (data && typeof data.views !== "undefined") {
-            supabaseClient
-              .from("berita")
-              .update({ views: (data.views || 0) + 1 })
-              .eq("id", articleId)
-              .then(() => {});
-          }
+    // Catat ke server lewat fungsi database (hanya menambah 1; pengunjung tidak bisa menulis angka sendiri).
+    // Jika fungsi belum dipasang di Supabase, hitungan lokal di atas tetap dipakai.
+    if (typeof supabaseClient !== "undefined") {
+      Promise.resolve(supabaseClient.rpc("tambah_pembaca", { p_id: articleId }))
+        .then(({ data, error }) => {
+          if (error || typeof data !== "number") return;
+          _pembacaServer[articleId] = data;
+          try { localStorage.setItem(key, String(data)); } catch (e) {}
+          const el = document.getElementById("jumlah-pembaca-detail");
+          if (el) el.textContent = data.toLocaleString("id-ID");
         })
         .catch(() => {});
     }
@@ -173,7 +129,7 @@ async function muatDetailKonten(elId, backLinkId) {
   // Estimasi Waktu Baca
   const kata = (data.isi || "").trim().split(/\s+/).filter(Boolean).length;
   const waktuBaca = Math.max(1, Math.ceil(kata / 180));
-  const totalViews = data.views || ambilJumlahKlikBerita(id, 1);
+  const totalViews = _pembacaServer[id] ?? (data.views || ambilJumlahKlikBerita(id, 1));
   const currentUrl = window.location.href;
   const shareText = encodeURIComponent(`${data.judul} — Publikasi Resmi HIMPALUBI UNIPAR\n\n`);
   const shareUrl = encodeURIComponent(currentUrl);
@@ -209,7 +165,7 @@ async function muatDetailKonten(elId, backLinkId) {
           <span class="opacity-40 text-secondary" aria-hidden="true">•</span>
           <span class="inline-flex items-center gap-1 text-xs font-semibold text-secondary">
             <span class="material-symbols-outlined text-[15px] text-primary-container">visibility</span>
-            <span>${totalViews.toLocaleString("id-ID")} Pembaca</span>
+            <span><span id="jumlah-pembaca-detail">${totalViews.toLocaleString("id-ID")}</span> Pembaca</span>
           </span>
         </div>
 
@@ -942,7 +898,6 @@ async function muatHalamanBerita(gridId = "news-grid-container", featuredId = "f
   inisialisasiFilterBerita();
 
   // Inisialisasi Fitur Narasi Audio (Web Speech API)
-  inisialisasiSpeechNarrator();
 }
 
 function inisialisasiFilterBerita() {
@@ -1007,57 +962,6 @@ function inisialisasiFilterBerita() {
   });
 }
 
-function inisialisasiSpeechNarrator() {
-  const playBtn = document.getElementById("play-speech-btn");
-  const speechIcon = document.getElementById("speech-icon");
-  const statusLabel = document.getElementById("speech-title-status");
-  const timerLabel = document.getElementById("speech-timer");
-
-  if (!playBtn || !("speechSynthesis" in window)) return;
-
-  let isPlaying = false;
-
-  playBtn.addEventListener("click", () => {
-    if (isPlaying) {
-      window.speechSynthesis.cancel();
-      isPlaying = false;
-      if (speechIcon) speechIcon.textContent = "volume_up";
-      if (statusLabel) statusLabel.textContent = "Dengarkan Artikel (Fitur Suara)";
-      if (timerLabel) timerLabel.textContent = "Audio Dijeda";
-      return;
-    }
-
-    const title = document.getElementById("featured-title")?.textContent || "";
-    const summary = document.getElementById("featured-summary")?.textContent || "";
-    const textToRead = `${title}. ${summary}`;
-
-    const utterance = new SpeechSynthesisUtterance(textToRead);
-    utterance.lang = "id-ID";
-    utterance.rate = 1.0;
-
-    utterance.onstart = () => {
-      isPlaying = true;
-      if (speechIcon) speechIcon.textContent = "pause";
-      if (statusLabel) statusLabel.textContent = "Memutar Narasi Suara...";
-      if (timerLabel) timerLabel.textContent = "Sedang Memutar";
-    };
-
-    utterance.onend = () => {
-      isPlaying = false;
-      if (speechIcon) speechIcon.textContent = "volume_up";
-      if (statusLabel) statusLabel.textContent = "Dengarkan Artikel (Fitur Suara)";
-      if (timerLabel) timerLabel.textContent = "Selesai";
-    };
-
-    utterance.onerror = () => {
-      isPlaying = false;
-      if (speechIcon) speechIcon.textContent = "volume_up";
-      if (statusLabel) statusLabel.textContent = "Dengarkan Artikel (Fitur Suara)";
-    };
-
-    window.speechSynthesis.speak(utterance);
-  });
-}
 
 // ---- Helper filter Kegiatan: status & periode diturunkan dari tanggal ----
 function statusKegiatan(tgl) {
@@ -1797,25 +1701,28 @@ async function muatFaqHalaman(elId) {
 async function muatTestimoniBeranda(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
+  const section = el.closest("section");
   const { data, error } = await supabaseClient.from("testimoni").select("*").order("urutan", { ascending: true, nullsFirst: false }).limit(6);
   if (error || !data || data.length === 0) {
     el.innerHTML = "";
-    const section = el.closest("section");
-    if (section) section.style.display = "none";
+    if (section) section.hidden = true;
     return;
   }
-  el.innerHTML = data.map(t => `
-    <div class="testimoni-card">
-      <p class="kutipan">${escapeHtml(t.isi)}</p>
-      <div class="testimoni-orang">
-        <div class="foto">${t.foto_url ? `<img src="${urlGambarAman(t.foto_url)}" alt="Foto ${escapeHtml(t.nama)}" loading="lazy">` : initial(t.nama)}</div>
-        <div>
-          <div class="nama">${escapeHtml(t.nama)}</div>
-          <div class="jabatan">${escapeHtml(t.jabatan || "")}</div>
+  el.innerHTML = data.map((t) => `
+    <figure class="min-w-0 flex flex-col justify-between gap-5 p-6 rounded-2xl bg-surface-container-lowest border border-surface-container shadow-xs">
+      <blockquote class="text-body-md text-on-surface leading-relaxed">&ldquo;${escapeHtml(t.isi)}&rdquo;</blockquote>
+      <figcaption class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-full overflow-hidden bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-bold shrink-0">
+          ${t.foto_url ? `<img src="${urlGambarAman(t.foto_url)}" alt="" class="w-full h-full object-cover" loading="lazy" onerror="this.remove()">` : escapeHtml(initial(t.nama))}
         </div>
-      </div>
-    </div>
+        <div class="min-w-0">
+          <div class="text-label-md font-semibold text-on-surface">${escapeHtml(t.nama)}</div>
+          ${t.jabatan ? `<div class="text-label-sm text-secondary">${escapeHtml(t.jabatan)}</div>` : ""}
+        </div>
+      </figcaption>
+    </figure>
   `).join("");
+  if (section) section.hidden = false;
 }
 
 // ================= TICKER / WARTA: Pengumuman Berjalan =================
@@ -1988,19 +1895,6 @@ function skeletonListItem() {
 }
 function skeletonListItems(jumlah) {
   return Array(jumlah || 3).fill(0).map(skeletonListItem).join("");
-}
-function skeletonPhotoCard() {
-  return `<div class="news-photo-card" style="background: var(--sage-100);"><span class="skeleton skeleton-image" style="height:100%; position:absolute; inset:0; border-radius: var(--radius);"></span></div>`;
-}
-function skeletonContentCard() {
-  return `<div class="content-card">
-    <span class="skeleton skeleton-image"></span>
-    <div class="body">
-      <span class="skeleton skeleton-text short" style="height:0.8em; width:30%;"></span>
-      <span class="skeleton skeleton-title"></span>
-      <span class="skeleton skeleton-text"></span>
-    </div>
-  </div>`;
 }
 function skeletonCards(jumlah, fn) {
   return Array(jumlah || 3).fill(0).map(fn).join("");

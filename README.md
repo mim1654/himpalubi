@@ -83,15 +83,15 @@ Ada 2 cara menambah admin baru:
 
 ### Cara 1 — Fitur "Undang Admin" di dashboard (disarankan)
 
-Perlu jalankan dulu `sql/migrasi_tahap4_undang_admin.sql` **dan** `sql/migrasi_tahap5_admin_utama.sql` di Supabase (SQL Editor, urut), dan **nyalakan kembali pendaftaran akun**:
+Perlu jalankan dulu `sql/migrasi_tahap4_undang_admin.sql`, `sql/migrasi_tahap5_admin_utama.sql`, **dan** `sql/migrasi_tahap13_keamanan_undangan_pendaftaran.sql` di Supabase (SQL Editor, urut), dan **nyalakan kembali pendaftaran akun**:
 1. Supabase → **Authentication → Providers** → provider **Email** → nyalakan lagi **"Allow new users to sign up"**
-2. Ini tetap aman: siapa pun boleh bikin akun, tapi TIDAK dapat akses admin sama sekali kecuali emailnya sudah diundang oleh admin utama.
+2. Ini tetap aman: siapa pun boleh bikin akun, tapi TIDAK dapat akses admin sama sekali kecuali email **dan kode undangannya** cocok dengan undangan dari admin utama.
 
 Menu **"Kelola Admin"** di dashboard sekarang **hanya terlihat untuk 1 akun admin utama** (default: email yang diisi di `migrasi_tahap5_admin_utama.sql`). Admin biasa sama sekali tidak melihat menu ini.
 
 Alurnya:
 1. Login sebagai admin utama → menu **Kelola Admin** → isi email teman di form "Undang Admin Baru" → **Kirim Undangan**
-2. Kirim link `admin/daftar.html` ke temanmu, minta dia daftar pakai **email yang sama persis** dengan yang diundang
+2. Setelah Kirim Undangan, muncul **kode undangan** (juga terlihat di tabel "Undangan Menunggu Klaim"). Kirim link `admin/daftar.html` **beserta kodenya** ke temanmu, minta dia daftar pakai **email yang sama persis** dengan yang diundang dan memasukkan kode itu
 3. Begitu daftar, sistem otomatis memberi akses admin **biasa** (bukan admin utama) — undangan otomatis hangus setelah dipakai
 4. Admin utama bisa **mencabut akses** atau **mereset sandi** admin biasa kapan saja lewat menu yang sama; riwayat reset sandi tercatat di bagian "Riwayat Reset Sandi" untuk transparansi
 
@@ -135,3 +135,14 @@ Form Pendaftaran saat ini sudah divalidasi formatnya (NIM angka saja, No. WhatsA
    <div class="cf-turnstile" data-sitekey="ISI_SITE_KEY_KAMU"></div>
    ```
 5. **Penting**: supaya benar-benar aman, hasil verifikasi Turnstile idealnya dicek ulang di sisi server (bukan cuma browser) sebelum data disimpan — ini butuh Edge Function tambahan (mirip pola `reset-password-admin` yang sudah kita buat) yang memanggil endpoint verifikasi Cloudflare pakai Secret Key. Kalau kamu mau fitur ini benar-benar aktif, kabari saja dan siapkan Site Key + Secret Key-nya, nanti dibantu buatkan Edge Function verifikasinya.
+
+---
+
+## Migrasi SQL tambahan (jalankan di Supabase > SQL Editor, setelah schema dan tahap 1-12)
+
+| File | Fungsi |
+|---|---|
+| `sql/cadangan_sebelum_tahap13.sql` | Salin data ke schema `cadangan` sebelum tahap 13 (opsional, disarankan) |
+| `sql/migrasi_tahap13_keamanan_undangan_pendaftaran.sql` | Kode undangan admin + batas isi formulir pendaftaran |
+| `sql/migrasi_tahap14_pembaca_dan_batas_upload.sql` | Jumlah pembaca tersimpan di server + batas upload foto (5 MB, JPEG) |
+| `sql/rollback_tahap13.sql`, `sql/rollback_tahap14.sql` | Membatalkan tahap 13 / 14 jika ada masalah |

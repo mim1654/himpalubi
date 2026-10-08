@@ -550,6 +550,20 @@
     </section>
 
     <!-- Seksi Saluran Aspirasi & Kontak -->
+    <section hidden class="w-full bg-surface-container-low py-16 sm:py-20 px-4 sm:px-6 lg:px-12" id="testimoni" aria-labelledby="judul-testimoni">
+      <div class="max-w-7xl mx-auto">
+        <div class="mb-8">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold text-label-md mb-3 uppercase tracking-wider">
+            SUARA ANGGOTA
+          </div>
+          <h2 id="judul-testimoni" class="text-headline-lg-mobile sm:text-headline-lg font-bold text-on-surface tracking-tight">
+            Kata Mereka tentang HIMPALUBI
+          </h2>
+        </div>
+        <div id="testimoni-beranda-grid" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"></div>
+      </div>
+    </section>
+
     <section class="w-full bg-surface-container-low py-16 sm:py-20 px-4 sm:px-6 lg:px-12" id="kontak">
       <div class="max-w-7xl mx-auto">
         
@@ -703,6 +717,7 @@
       if (typeof muatBeritaKartu === "function") muatBeritaKartu("berita-terbaru-grid", 3);
       if (typeof muatGaleriBeranda === "function") muatGaleriBeranda("galeri-beranda-grid", 4);
       if (typeof muatKontakRingkasBeranda === "function") muatKontakRingkasBeranda("kontak-ringkas-beranda");
+      if (typeof muatTestimoniBeranda === "function") muatTestimoniBeranda("testimoni-beranda-grid");
     });
   </script>
 </body>
