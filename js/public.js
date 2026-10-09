@@ -1530,19 +1530,58 @@ async function muatTentangRingkas(elId) {
 }
 
 // ================= BERANDA: Ringkasan Kontak =================
-async function muatKontakRingkasBeranda(elId) {
-  const el = document.getElementById(elId);
+// Alamat/email/telepon/jam layanan/media sosial: satu sumber, diubah dari Dashboard > Pengaturan.
+// Jika sebuah nilai kosong atau kolomnya belum ada di database, teks bawaan di HTML tetap dipakai.
+function hrefEmailAman(email) {
+  const e = String(email || "").trim();
+  return /^[^\s<>"'@]+@[^\s<>"'@]+$/.test(e) ? "mailto:" + e : "";
+}
+function hrefTelAman(tel) {
+  const t = String(tel || "").replace(/[^\d+]/g, "");
+  return t.length >= 6 ? "tel:" + t : "";
+}
+function pasangTautanSosial(id, url, sembunyikanJikaKosong) {
+  const el = document.getElementById(id);
   if (!el) return;
-  const { data, error } = await supabaseClient.from("pengaturan").select("alamat, email, telepon").eq("id", 1).single();
-  if (error || !data || (!data.alamat && !data.email && !data.telepon)) {
-    el.innerHTML = "";
-    return;
+  const aman = urlTautanAman(url);
+  if (aman) { el.href = aman; el.hidden = false; }
+  else if (sembunyikanJikaKosong) el.hidden = true;
+}
+
+async function muatKontakRingkasBeranda(elId) {
+  const ringkas = document.getElementById(elId);
+  if (ringkas) ringkas.innerHTML = "";
+  if (!document.getElementById("beranda-alamat")) return;
+  const { data, error } = await supabaseClient.from("pengaturan").select("*").eq("id", 1).single();
+  if (error || !data) return;
+
+  setTeksAman("beranda-alamat", data.alamat);
+
+  const email = document.getElementById("beranda-email");
+  if (email && data.email) {
+    email.textContent = data.email;
+    const href = hrefEmailAman(data.email);
+    if (href) email.href = href;
   }
-  const baris = [];
-  if (data.alamat) baris.push(`<p style="margin:0.3rem 0;">${escapeHtml(data.alamat)}</p>`);
-  if (data.email) baris.push(`<p style="margin:0.3rem 0;">${escapeHtml(data.email)}</p>`);
-  if (data.telepon) baris.push(`<p style="margin:0.3rem 0;">${escapeHtml(data.telepon)}</p>`);
-  el.innerHTML = baris.join("");
+
+  if (typeof data.jam_layanan === "string") {
+    const baris = document.getElementById("beranda-jam-baris");
+    if (baris) baris.hidden = data.jam_layanan.trim() === "";
+    setTeksAman("beranda-jam", data.jam_layanan.trim());
+  }
+
+  const barisTel = document.getElementById("beranda-telepon-baris");
+  const tel = document.getElementById("beranda-telepon");
+  if (barisTel && tel && data.telepon) {
+    tel.textContent = data.telepon;
+    const href = hrefTelAman(data.telepon);
+    if (href) tel.href = href;
+    barisTel.hidden = false;
+  }
+
+  pasangTautanSosial("beranda-instagram", data.instagram, false);
+  pasangTautanSosial("beranda-youtube", data.youtube, false);
+  pasangTautanSosial("beranda-tiktok", data.tiktok, true);
 }
 
 // ================= HALAMAN KONTAK =================
@@ -1558,6 +1597,9 @@ async function muatKontakHalaman() {
   if (ig && urlTautanAman(data.instagram)) ig.href = urlTautanAman(data.instagram);
   const yt = document.getElementById("kontak-youtube");
   if (yt && urlTautanAman(data.youtube)) yt.href = urlTautanAman(data.youtube);
+  pasangTautanSosial("kontak-tiktok", data.tiktok, true);
+  const pemisah = document.getElementById("kontak-tiktok-pemisah");
+  if (pemisah) pemisah.hidden = !urlTautanAman(data.tiktok);
 }
 
 // ================= FOOTER: isi otomatis dari Pengaturan =================
@@ -1568,13 +1610,17 @@ async function muatPengaturanFooter() {
   const d = document.getElementById("footer-deskripsi");
   if (d && data.tagline) d.textContent = data.tagline;
 
+  setTeksAman("footer-alamat", data.alamat);
   setTeksAman("footer-email", data.email);
+  const fe = document.getElementById("footer-email");
+  if (fe && data.email && hrefEmailAman(data.email)) fe.href = hrefEmailAman(data.email);
   setTeksAman("footer-telepon", data.telepon);
 
   const ig = document.getElementById("footer-instagram");
   if (ig && urlTautanAman(data.instagram)) ig.href = urlTautanAman(data.instagram);
   const yt = document.getElementById("footer-youtube");
   if (yt && urlTautanAman(data.youtube)) yt.href = urlTautanAman(data.youtube);
+  pasangTautanSosial("footer-tiktok", data.tiktok, true);
 }
 
 // ================= BERANDA: Tagline Hero (dinamis dari Pengaturan) =================

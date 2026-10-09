@@ -2772,6 +2772,17 @@ async function muatFormPengaturan() {
     input.disabled = !kolomBaruAda;
     if (!kolomBaruAda) input.placeholder = "Aktif setelah SQL tahap 15 dijalankan";
   });
+
+  // TikTok dan Jam Layanan Piket: kolom baru dari SQL tahap 16.
+  const kolomKontakAda = "jam_layanan" in data;
+  form.dataset.kolomKontak = kolomKontakAda ? "1" : "";
+  ["tiktok", "jam_layanan"].forEach((nama) => {
+    const input = form[nama];
+    if (!input) return;
+    input.value = data[nama] || "";
+    input.disabled = !kolomKontakAda;
+    if (!kolomKontakAda) input.placeholder = "Aktif setelah SQL tahap 16 dijalankan";
+  });
 }
 
 function pasangFormPengaturan(formId) {
@@ -2801,6 +2812,10 @@ function pasangFormPengaturan(formId) {
       payload.akreditasi_label = form.akreditasi_label.value.trim();
       payload.akreditasi_periode = form.akreditasi_periode.value.trim();
       payload.periode_kepengurusan = form.periode_kepengurusan.value.trim();
+    }
+    if (form.dataset.kolomKontak === "1") {
+      payload.tiktok = form.tiktok.value.trim();
+      payload.jam_layanan = form.jam_layanan.value.trim();
     }
     const { error } = await supabaseClient.from("pengaturan").update(payload).eq("id", 1);
     if (error) {

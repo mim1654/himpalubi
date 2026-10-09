@@ -101,13 +101,16 @@ footer a { color: inherit; }
 /* S7: target sentuh minimal (WCAG 2.2 AA: 24px; tombol penting 44px) — hanya untuk layar sentuh */
 @media (pointer: coarse) {
   footer a { display: inline-flex; align-items: center; min-height: 32px; }
-  footer a#footer-instagram, footer a#footer-youtube, footer a[href*="admin/login"] { min-height: 44px; }
+  footer a#footer-instagram, footer a#footer-youtube, footer a#footer-tiktok, footer a[href*="admin/login"] { min-height: 44px; }
   nav[aria-label="Breadcrumb"] a, nav[aria-label="Jejak Navigasi"] a { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; min-width: 32px; }
   main a.inline-flex.items-center, main a.flex.items-center { min-height: 32px; }
   main :not(p) > a.transition-colors, main :not(p) > a[href^="mailto:"], main :not(p) > a[href^="tel:"] { display: inline-flex; align-items: center; min-height: 32px; }
 }
 /* Label menu bawah yang aktif: kontras minimal 4.5:1 */
 .bottom-nav-item[aria-current="page"] { color: var(--primary); }
+
+/* Info kontak (alamat, email, jam) yang panjang tanpa spasi tidak boleh melebarkan halaman */
+#kontak span, #kontak a, footer span, footer a { overflow-wrap: anywhere; }
 
 /* S1: judul/teks panjang tanpa spasi tidak boleh melebarkan halaman */
 h1, h2, h3, h4, h5, p, li, figcaption, blockquote { overflow-wrap: anywhere; }

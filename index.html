@@ -638,9 +638,9 @@
                 <div class="w-10 h-10 rounded-full bg-primary-fixed text-primary-container shrink-0 flex items-center justify-center">
                   <span class="material-symbols-outlined text-[20px]" aria-hidden="true">location_on</span>
                 </div>
-                <div class="flex flex-col">
+                <div class="flex flex-col min-w-0">
                   <span class="text-title-md font-semibold text-on-surface">Alamat</span>
-                  <span class="text-body-md text-secondary mt-0.5 leading-relaxed">
+                  <span id="beranda-alamat" class="text-body-md text-secondary mt-0.5 leading-relaxed">
                     Gedung PKM Kampus 1 Universitas PGRI Argopuro Jember, Jl. Jawa No. 10, Jember, Jawa Timur
                   </span>
                 </div>
@@ -650,19 +650,29 @@
                 <div class="w-10 h-10 rounded-full bg-surface-container text-on-surface shrink-0 flex items-center justify-center">
                   <span class="material-symbols-outlined text-[20px]" aria-hidden="true">mail</span>
                 </div>
-                <div class="flex flex-col">
+                <div class="flex flex-col min-w-0">
                   <span class="text-title-md font-semibold text-on-surface">Surel Resmi</span>
-                  <a class="text-body-md text-primary-container hover:underline mt-0.5" href="mailto:himpalubi@unipar.ac.id">himpalubi@unipar.ac.id</a>
+                  <a id="beranda-email" class="text-body-md text-primary-container hover:underline mt-0.5" href="mailto:himpalubi@unipar.ac.id">himpalubi@unipar.ac.id</a>
                 </div>
               </div>
 
-              <div class="flex items-start gap-3.5">
+              <div id="beranda-jam-baris" class="flex items-start gap-3.5">
                 <div class="w-10 h-10 rounded-full bg-surface-container text-on-surface shrink-0 flex items-center justify-center">
                   <span class="material-symbols-outlined text-[20px]" aria-hidden="true">schedule</span>
                 </div>
-                <div class="flex flex-col">
+                <div class="flex flex-col min-w-0">
                   <span class="text-title-md font-semibold text-on-surface">Jam Layanan Piket</span>
-                  <span class="text-body-md text-secondary mt-0.5">Senin - Jumat: 09.00 - 17.00 WIB</span>
+                  <span id="beranda-jam" class="text-body-md text-secondary mt-0.5">Senin - Jumat: 09.00 - 17.00 WIB</span>
+                </div>
+              </div>
+
+              <div id="beranda-telepon-baris" class="flex items-start gap-3.5" hidden>
+                <div class="w-10 h-10 rounded-full bg-surface-container text-on-surface shrink-0 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px]" aria-hidden="true">call</span>
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="text-title-md font-semibold text-on-surface">Telepon / WhatsApp</span>
+                  <a id="beranda-telepon" class="text-body-md text-primary-container hover:underline mt-0.5" href="#"></a>
                 </div>
               </div>
 
@@ -678,13 +688,17 @@
                 </p>
               </div>
               <div class="grid grid-cols-2 gap-2.5">
-                <a class="flex items-center gap-2 px-3.5 py-2 rounded-full bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-label-md text-on-primary transition-colors min-h-[44px]" href="https://instagram.com" target="_blank" rel="noopener">
+                <a class="flex items-center gap-2 px-3.5 py-2 rounded-full bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-label-md text-on-primary transition-colors min-h-[44px]" id="beranda-instagram" href="https://instagram.com" target="_blank" rel="noopener">
                   <span class="material-symbols-outlined text-[18px] text-primary-fixed" aria-hidden="true">photo_camera</span>
                   <span>Instagram</span>
                 </a>
-                <a class="flex items-center gap-2 px-3.5 py-2 rounded-full bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-label-md text-on-primary transition-colors min-h-[44px]" href="https://youtube.com" target="_blank" rel="noopener">
+                <a class="flex items-center gap-2 px-3.5 py-2 rounded-full bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-label-md text-on-primary transition-colors min-h-[44px]" id="beranda-youtube" href="https://youtube.com" target="_blank" rel="noopener">
                   <span class="material-symbols-outlined text-[18px] text-primary-fixed" aria-hidden="true">smart_display</span>
                   <span>YouTube</span>
+                </a>
+                <a id="beranda-tiktok" hidden class="flex items-center gap-2 px-3.5 py-2 rounded-full bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-label-md text-on-primary transition-colors min-h-[44px]" href="#" target="_blank" rel="noopener">
+                  <span class="material-symbols-outlined text-[18px] text-primary-fixed" aria-hidden="true">music_note</span>
+                  <span>TikTok</span>
                 </a>
               </div>
             </div>
