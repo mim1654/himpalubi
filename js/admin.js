@@ -2046,6 +2046,12 @@ function pasangFormKonten(formId, kategori) {
       foto_url: fotoUrl,
       kategori,
     };
+    // Kategori kegiatan: hanya dikirim bila dipilih (atau dikosongkan saat mengedit data yang sudah punya kategori),
+    // supaya penyimpanan tetap berjalan walau SQL tahap 15 belum dijalankan.
+    if (form.jenis_kegiatan) {
+      if (form.jenis_kegiatan.value) payload.jenis_kegiatan = form.jenis_kegiatan.value;
+      else if (id && form.dataset.jenisLama) payload.jenis_kegiatan = null;
+    }
     const query = id
       ? supabaseClient.from("berita").update(payload).eq("id", id)
       : supabaseClient.from("berita").insert(payload);
@@ -2053,7 +2059,12 @@ function pasangFormKonten(formId, kategori) {
     const { error } = await query;
     tombolSimpan.disabled = false;
     tombolSimpan.textContent = "Simpan " + kategori;
-    if (error) { tampilkanToast("Gagal menyimpan data.", "gagal"); console.error(error); return; }
+    if (error) {
+      const kolomBelumAda = /jenis_kegiatan/.test(error.message || "");
+      tampilkanToast(kolomBelumAda ? "Kolom kategori kegiatan belum ada di database. Jalankan SQL tahap 15 di Supabase, atau simpan tanpa kategori." : "Gagal menyimpan data.", "gagal");
+      console.error(error);
+      return;
+    }
 
     const fotoLama = form.dataset.fotoLama;
     if (fotoLama && fotoLama !== fotoUrl) hapusFotoDariStorage(fotoLama);
@@ -2063,6 +2074,7 @@ function pasangFormKonten(formId, kategori) {
     form.tanggal.valueAsDate = new Date();
     delete form.dataset.editId;
     delete form.dataset.fotoLama;
+    delete form.dataset.jenisLama;
     document.getElementById(cfg.fotoPreviewId).innerHTML = "";
     document.getElementById(cfg.judulFormId).textContent = cfg.labelTambah;
     muatTabelKonten(kategori, cfg.tabelElId);
@@ -2079,6 +2091,10 @@ async function editKonten(id, kategori) {
   form.isi.value = data.isi;
   form.tanggal.value = data.tanggal;
   form.penulis.value = data.penulis || "";
+  if (form.jenis_kegiatan) {
+    form.jenis_kegiatan.value = data.jenis_kegiatan || "";
+    form.dataset.jenisLama = data.jenis_kegiatan || "";
+  }
   form.dataset.fotoLama = data.foto_url || "";
   tampilkanFotoLama(cfg.fotoPreviewId, data.foto_url);
   form.dataset.editId = id;
@@ -2745,6 +2761,17 @@ async function muatFormPengaturan() {
   form.telepon.value = data.telepon || "";
   form.instagram.value = data.instagram || "";
   form.youtube.value = data.youtube || "";
+
+  // Kolom label beranda baru ada setelah SQL tahap 15; sebelum itu kolomnya dinonaktifkan.
+  const kolomBaruAda = "akreditasi_label" in data;
+  form.dataset.kolomBaru = kolomBaruAda ? "1" : "";
+  ["akreditasi_label", "akreditasi_periode", "periode_kepengurusan"].forEach((nama) => {
+    const input = form[nama];
+    if (!input) return;
+    input.value = data[nama] || "";
+    input.disabled = !kolomBaruAda;
+    if (!kolomBaruAda) input.placeholder = "Aktif setelah SQL tahap 15 dijalankan";
+  });
 }
 
 function pasangFormPengaturan(formId) {
@@ -2770,6 +2797,11 @@ function pasangFormPengaturan(formId) {
       instagram: form.instagram.value.trim(),
       youtube: form.youtube.value.trim(),
     };
+    if (form.dataset.kolomBaru === "1") {
+      payload.akreditasi_label = form.akreditasi_label.value.trim();
+      payload.akreditasi_periode = form.akreditasi_periode.value.trim();
+      payload.periode_kepengurusan = form.periode_kepengurusan.value.trim();
+    }
     const { error } = await supabaseClient.from("pengaturan").update(payload).eq("id", 1);
     if (error) {
       pesanEl.className = "form-message error";

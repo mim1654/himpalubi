@@ -285,17 +285,17 @@
             </div>
             
             <!-- Floating Credential Badge -->
-            <div class="absolute bottom-4 left-4 right-4 p-3.5 sm:p-4 rounded-xl bg-surface-container-lowest/95 backdrop-blur-md shadow-md border border-surface-container flex items-center justify-between">
+            <div id="akreditasi-badge" class="absolute bottom-4 left-4 right-4 p-3.5 sm:p-4 rounded-xl bg-surface-container-lowest/95 backdrop-blur-md shadow-md border border-surface-container flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container shrink-0">
                   <span class="material-symbols-outlined text-[22px]" aria-hidden="true">workspace_premium</span>
                 </div>
                 <div class="flex flex-col">
-                  <span class="text-title-md font-bold text-on-surface">Akreditasi Unggul</span>
+                  <span id="akreditasi-label" class="text-title-md font-bold text-on-surface">Akreditasi Unggul</span>
                   <span class="text-label-sm text-secondary">Prodi Pendidikan Luar Biasa UNIPAR</span>
                 </div>
               </div>
-              <span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface text-label-sm font-semibold">2025/2026</span>
+              <span id="akreditasi-periode" class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface text-label-sm font-semibold">2025/2026</span>
             </div>
           </div>
         </div>
@@ -484,7 +484,7 @@
       <div class="max-w-7xl mx-auto">
         
         <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold text-label-md mb-3 uppercase tracking-wider">
+          <div id="label-kepengurusan" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold text-label-md mb-3 uppercase tracking-wider">
             KEPENGURUSAN 2025/2026
           </div>
           <h2 class="text-headline-lg-mobile sm:text-headline-lg font-bold text-on-surface tracking-tight mb-2.5">
@@ -718,6 +718,7 @@
       if (typeof muatGaleriBeranda === "function") muatGaleriBeranda("galeri-beranda-grid", 4);
       if (typeof muatKontakRingkasBeranda === "function") muatKontakRingkasBeranda("kontak-ringkas-beranda");
       if (typeof muatTestimoniBeranda === "function") muatTestimoniBeranda("testimoni-beranda-grid");
+      if (typeof muatLabelBeranda === "function") muatLabelBeranda();
     });
   </script>
 </body>

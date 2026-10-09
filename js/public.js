@@ -559,7 +559,7 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
           <div>
             <div class="flex flex-wrap items-center gap-2 mb-3">
               <span class="px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs font-bold">
-                Kegiatan Resmi Himpunan
+                ${escapeHtml(labelJenisKegiatan(fItem.jenis_kegiatan, "Kegiatan Resmi Himpunan"))}
               </span>
               <span class="px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-semibold">
                 ${formatTanggal(fItem.tanggal)}
@@ -618,7 +618,7 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
 
   // 2. Render Grid Kegiatan
   grid.innerHTML = data.map((item) => `
-    <article class="event-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-surface-container overflow-hidden flex flex-col justify-between group" data-category="all" data-status="${statusKegiatan(item.tanggal)}" data-period="${periodeKegiatan(item.tanggal)}">
+    <article class="event-card bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-surface-container overflow-hidden flex flex-col justify-between group" data-category="${escapeHtml(item.jenis_kegiatan || "umum")}" data-status="${statusKegiatan(item.tanggal)}" data-period="${periodeKegiatan(item.tanggal)}">
       <div>
         <div class="relative h-48 w-full overflow-hidden bg-surface-container flex items-center justify-center">
           ${item.foto_url ? `
@@ -632,7 +632,7 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
           </div>
           <div class="absolute top-3 left-3">
             <span class="px-2.5 py-1 rounded-full bg-primary-container text-on-primary text-xs font-semibold shadow-sm">
-              Kegiatan Resmi
+              ${escapeHtml(labelJenisKegiatan(item.jenis_kegiatan, "Kegiatan Resmi"))}
             </span>
           </div>
           <div class="absolute top-3 right-3 bg-surface-container-lowest/95 backdrop-blur px-2.5 py-1 rounded-lg shadow-sm text-center">
@@ -679,6 +679,7 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
 
   // Inisialisasi filter setelah card dimasukkan ke DOM
   isiOpsiPeriodeKegiatan(data);
+  siapkanPilKategoriKegiatan(data);
   inisialisasiFilterKegiatan();
 }
 
@@ -974,6 +975,30 @@ function periodeKegiatan(tgl) {
   const d = new Date(tgl);
   return isNaN(d) ? "all" : String(d.getFullYear());
 }
+// ---- Kategori kegiatan (kolom berita.jenis_kegiatan, diisi dari dashboard) ----
+const JENIS_KEGIATAN_LABEL = {
+  inklusi: "Pendidikan Inklusif & PLB",
+  seminar: "Seminar & Workshop",
+  pengabdian: "Pengabdian Masyarakat",
+  kaderisasi: "Kaderisasi & LKMM",
+  kompetisi: "Kompetisi Mahasiswa",
+};
+function labelJenisKegiatan(jenis, cadangan) {
+  return JENIS_KEGIATAN_LABEL[jenis] || cadangan;
+}
+// Tombol kategori yang belum punya kegiatan disembunyikan; jika tidak ada kegiatan berkategori sama sekali,
+// seluruh baris tombol disembunyikan agar tidak ada tombol yang tidak berfungsi.
+function siapkanPilKategoriKegiatan(data) {
+  const wadah = document.getElementById("categoryPillContainer");
+  if (!wadah) return;
+  const dipakai = new Set((data || []).map((i) => i.jenis_kegiatan).filter(Boolean));
+  wadah.querySelectorAll(".category-filter-btn").forEach((btn) => {
+    const kat = btn.dataset.category;
+    if (kat && kat !== "all") btn.classList.toggle("hidden", !dipakai.has(kat));
+  });
+  wadah.classList.toggle("hidden", dipakai.size === 0);
+}
+
 function isiOpsiPeriodeKegiatan(data) {
   const sel = document.getElementById("periodFilterSelect");
   if (!sel) return;
@@ -1698,6 +1723,28 @@ async function muatFaqHalaman(elId) {
 }
 
 // ================= BERANDA: Testimoni =================
+// Label beranda yang bisa diubah dari Dashboard > Pengaturan (kolom baru dari SQL tahap 15).
+// Jika kolomnya belum ada, teks bawaan di index.html dipakai apa adanya.
+async function muatLabelBeranda() {
+  const lencana = document.getElementById("akreditasi-badge");
+  const lKep = document.getElementById("label-kepengurusan");
+  if (!lencana && !lKep) return;
+  const { data, error } = await supabaseClient.from("pengaturan").select("*").eq("id", 1).single();
+  if (error || !data) return;
+  if (lencana && typeof data.akreditasi_label === "string") {
+    const label = data.akreditasi_label.trim();
+    const periode = (data.akreditasi_periode || "").trim();
+    lencana.hidden = label === "";
+    const elLabel = document.getElementById("akreditasi-label");
+    const elPeriode = document.getElementById("akreditasi-periode");
+    if (elLabel) elLabel.textContent = label;
+    if (elPeriode) { elPeriode.textContent = periode; elPeriode.hidden = periode === ""; }
+  }
+  if (lKep && typeof data.periode_kepengurusan === "string") {
+    lKep.textContent = ("KEPENGURUSAN " + data.periode_kepengurusan.trim()).trim();
+  }
+}
+
 async function muatTestimoniBeranda(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
