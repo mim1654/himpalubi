@@ -80,12 +80,12 @@ async function muatDetailKonten(elId, backLinkId) {
     el.innerHTML = `
       <div class="p-8 sm:p-12 text-center bg-surface-container-lowest rounded-3xl border border-surface-container">
         <div class="w-16 h-16 rounded-2xl bg-surface-container text-secondary mx-auto flex items-center justify-center mb-4">
-          <span class="material-symbols-outlined text-[32px]">article_off</span>
+          <span aria-hidden="true" class="material-symbols-outlined text-[32px]">article_off</span>
         </div>
         <h2 class="text-xl font-bold text-on-surface mb-2">Parameter Publikasi Tidak Ditemukan</h2>
         <p class="text-sm text-secondary mb-6 max-w-md mx-auto">Tautan yang Anda akses tidak memuat identitas publikasi yang valid. Silakan kembali ke katalog warta.</p>
         <a href="${isKegiatan ? 'kegiatan.html' : 'berita.html'}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-on-primary text-sm font-semibold hover:opacity-95 transition-opacity">
-          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          <span aria-hidden="true" class="material-symbols-outlined text-[18px]">arrow_back</span>
           <span>Kembali ke ${isKegiatan ? 'Kegiatan' : 'Berita'}</span>
         </a>
       </div>
@@ -98,7 +98,7 @@ async function muatDetailKonten(elId, backLinkId) {
 
   let data = null;
   try {
-    const res = await supabaseClient.from("berita").select("*").eq("id", id).single();
+    const res = await supabaseClient.from("berita").select("*").eq("id", id).maybeSingle();
     data = res.data;
   } catch (err) {
     console.warn("Info: Gagal mengambil data detail dari Supabase.", err);
@@ -108,12 +108,12 @@ async function muatDetailKonten(elId, backLinkId) {
     el.innerHTML = `
       <div class="p-8 sm:p-12 text-center bg-surface-container-lowest rounded-3xl border border-surface-container">
         <div class="w-16 h-16 rounded-2xl bg-surface-container text-primary-container mx-auto flex items-center justify-center mb-4">
-          <span class="material-symbols-outlined text-[32px]">menu_book</span>
+          <span aria-hidden="true" class="material-symbols-outlined text-[32px]">menu_book</span>
         </div>
         <h2 class="text-xl font-bold text-on-surface mb-2">Publikasi Tidak Ditemukan</h2>
         <p class="text-sm text-secondary mb-6 max-w-md mx-auto">Artikel atau dokumentasi kegiatan ini mungkin telah diarsipkan atau dipindahkan oleh pengurus redaksi.</p>
         <a href="${isKegiatan ? 'kegiatan.html' : 'berita.html'}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-on-primary text-sm font-semibold hover:opacity-95 transition-opacity">
-          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          <span aria-hidden="true" class="material-symbols-outlined text-[18px]">arrow_back</span>
           <span>Kembali ke ${isKegiatan ? 'Kegiatan' : 'Berita'}</span>
         </a>
       </div>
@@ -155,16 +155,16 @@ async function muatDetailKonten(elId, backLinkId) {
       <header class="flex flex-col gap-4 border-b border-surface-container pb-6 sm:pb-8">
         <div class="flex flex-wrap items-center gap-2.5">
           <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-primary-fixed text-primary font-bold text-xs uppercase tracking-wider shadow-xs">
-            <span class="material-symbols-outlined text-[14px]">label</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-[14px]">label</span>
             <span>${escapeHtml(kategori)}</span>
           </span>
           <span class="inline-flex items-center gap-1 text-xs font-semibold text-secondary">
-            <span class="material-symbols-outlined text-[15px] text-primary-container">schedule</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-[15px] text-primary-container">schedule</span>
             <span>${waktuBaca} Menit Baca</span>
           </span>
           <span class="opacity-40 text-secondary" aria-hidden="true">•</span>
           <span class="inline-flex items-center gap-1 text-xs font-semibold text-secondary">
-            <span class="material-symbols-outlined text-[15px] text-primary-container">visibility</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-[15px] text-primary-container">visibility</span>
             <span><span id="jumlah-pembaca-detail">${totalViews.toLocaleString("id-ID")}</span> Pembaca</span>
           </span>
         </div>
@@ -182,7 +182,7 @@ async function muatDetailKonten(elId, backLinkId) {
             <div>
               <div class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-on-surface">
                 <span>${escapeHtml(data.penulis || "Biro Media & Informasi")}</span>
-                <span class="material-symbols-outlined text-[16px] text-primary-container" title="Terverifikasi Resmi Organisasi">verified</span>
+                <span aria-hidden="true" class="material-symbols-outlined text-[16px] text-primary-container" title="Terverifikasi Resmi Organisasi">verified</span>
               </div>
               <div class="flex items-center gap-2 text-xs text-secondary">
                 <span>${formatTanggal(data.tanggal)}</span>
@@ -195,13 +195,13 @@ async function muatDetailKonten(elId, backLinkId) {
           <!-- Quick Share Buttons Desktop -->
           <div class="inline-flex items-center gap-1 p-1 rounded-full bg-surface-container-low border border-surface-container shadow-xs">
             <a href="https://api.whatsapp.com/send?text=${shareText}${shareUrl}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-primary transition-all flex items-center justify-center cursor-pointer" title="Bagikan ke WhatsApp">
-              <span class="material-symbols-outlined text-[16px]">chat</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[16px]">chat</span>
             </a>
             <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-primary transition-all flex items-center justify-center cursor-pointer" title="Bagikan ke X / Twitter">
-              <span class="material-symbols-outlined text-[16px]">share</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[16px]">share</span>
             </a>
             <button type="button" class="btn-copy-link w-8 h-8 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-primary transition-all flex items-center justify-center cursor-pointer" title="Salin Tautan">
-              <span class="material-symbols-outlined text-[16px]">link</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[16px]">link</span>
             </button>
           </div>
         </div>
@@ -213,7 +213,7 @@ async function muatDetailKonten(elId, backLinkId) {
           <div class="rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-surface-container bg-surface-container">
             <img src="${urlGambarAman(data.foto_url)}" alt="Dokumentasi ${escapeHtml(data.judul)}" class="w-full h-auto max-h-[520px] object-cover" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
             <div class="hidden w-full h-64 flex flex-col items-center justify-center bg-gradient-to-br from-surface-container to-surface-container-high text-secondary p-6 text-center">
-              <span class="material-symbols-outlined text-[48px] text-primary-container mb-2">image</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[48px] text-primary-container mb-2">image</span>
               <p class="text-sm font-bold text-on-surface">Dokumentasi Arsip HIMPALUBI UNIPAR</p>
             </div>
             <div class="py-2.5 px-4 bg-surface-container-low text-xs text-secondary flex flex-wrap items-center justify-between gap-2 border-t border-surface-container">
@@ -227,7 +227,7 @@ async function muatDetailKonten(elId, backLinkId) {
         ` : `
           <div class="rounded-2xl sm:rounded-3xl bg-gradient-to-r from-surface-container to-surface-container-low border border-surface-container p-6 sm:p-8 flex items-center gap-4">
             <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined text-[26px]">newspaper</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[26px]">newspaper</span>
             </div>
             <div>
               <h2 class="text-sm font-bold text-on-surface">Warta Publikasi Inklusif</h2>
@@ -252,22 +252,22 @@ async function muatDetailKonten(elId, backLinkId) {
         <!-- Action Cluster in a single unified pill container -->
         <div class="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl sm:rounded-full max-w-full bg-surface-container-low border border-surface-container shadow-xs">
           <a href="https://api.whatsapp.com/send?text=${shareText}${shareUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold" title="Bagikan ke WhatsApp">
-            <span class="material-symbols-outlined text-[16px] text-green-600">chat</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-[16px] text-green-600">chat</span>
             <span>WhatsApp</span>
           </a>
           <span class="w-[1px] h-4 bg-surface-container" aria-hidden="true"></span>
           <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold" title="Bagikan ke X / Twitter">
-            <span class="material-symbols-outlined text-[16px]">send</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-[16px]">send</span>
             <span>X / Twitter</span>
           </a>
           <span class="w-[1px] h-4 bg-surface-container" aria-hidden="true"></span>
           <button type="button" class="btn-copy-link inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold cursor-pointer" title="Salin Tautan Artikel">
-            <span class="material-symbols-outlined text-[16px]">link</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-[16px]">link</span>
             <span>Salin</span>
           </button>
           <span class="w-[1px] h-4 bg-surface-container" aria-hidden="true"></span>
           <button type="button" onclick="window.print()" class="w-8 h-8 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-on-surface transition-all flex items-center justify-center cursor-pointer" title="Cetak Artikel">
-            <span class="material-symbols-outlined text-[16px]">print</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-[16px]">print</span>
           </button>
         </div>
       </div>
@@ -288,12 +288,12 @@ async function muatDetailKonten(elId, backLinkId) {
           <div class="flex items-center justify-center sm:justify-start gap-4 text-xs font-semibold text-primary">
             <a href="tentang.html" class="hover:underline inline-flex items-center gap-1 hover:text-primary-container transition-colors">
               <span>Profil Organisasi</span>
-              <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[14px]">arrow_forward</span>
             </a>
             <span class="opacity-30 text-secondary">•</span>
             <a href="kontak.html" class="hover:underline inline-flex items-center gap-1 hover:text-primary-container transition-colors">
               <span>Hubungi Redaksi</span>
-              <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[14px]">arrow_forward</span>
             </a>
           </div>
         </div>
@@ -365,7 +365,7 @@ async function muatRekomendasiTerkait(currentId, kategori) {
           ` : ''}
           <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-3 text-center">
             <div class="w-8 h-8 rounded-xl bg-primary-fixed text-primary flex items-center justify-center mb-1">
-              <span class="material-symbols-outlined text-[18px]">newspaper</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[18px]">newspaper</span>
             </div>
             <span class="text-[10px] font-bold text-on-surface/70 uppercase tracking-wider">HIMPALUBI</span>
           </div>
@@ -385,12 +385,12 @@ async function muatRekomendasiTerkait(currentId, kategori) {
           </div>
           <div class="pt-3 mt-3 border-t border-surface-container flex items-center justify-between text-xs">
             <span class="flex items-center gap-1 text-secondary text-[11px]">
-              <span class="material-symbols-outlined text-[14px] text-primary-container">visibility</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[14px] text-primary-container">visibility</span>
               ${ambilJumlahKlikBerita(item.id, 1)} Pembaca
             </span>
             <a href="detail.html?id=${item.id}&kategori=${encodeURIComponent(item.kategori || 'Berita')}" class="px-3 py-1 rounded-full bg-surface-container text-on-surface hover:bg-primary-container hover:text-on-primary font-semibold text-xs transition-colors inline-flex items-center gap-1">
               <span>Baca</span>
-              <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[13px]">arrow_forward</span>
             </a>
           </div>
         </div>
@@ -431,7 +431,7 @@ async function muatKegiatanTerbaru(elId) {
           ` : ''}
           <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
             <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
-              <span class="material-symbols-outlined text-[24px]">event</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[24px]">event</span>
             </div>
             <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">HIMPALUBI UNIPAR</span>
           </div>
@@ -543,7 +543,7 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
           ` : ''}
           <div class="${fItem.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-6 text-center select-none">
             <div class="w-14 h-14 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-3 shadow-sm">
-              <span class="material-symbols-outlined text-[28px]">event</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[28px]">event</span>
             </div>
             <span class="text-xs font-bold text-on-surface/80 tracking-wider uppercase">HIMPALUBI UNIPAR</span>
           </div>
@@ -626,7 +626,7 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
           ` : ''}
           <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
             <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
-              <span class="material-symbols-outlined text-[24px]">event</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[24px]">event</span>
             </div>
             <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">HIMPALUBI UNIPAR</span>
           </div>
@@ -661,7 +661,7 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
 
           <div class="flex flex-col gap-2 bg-surface-container-low p-3 rounded-xl text-xs text-secondary">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[16px] text-primary-container shrink-0">event</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[16px] text-primary-container shrink-0">event</span>
               <span class="truncate">${formatTanggal(item.tanggal)}</span>
             </div>
           </div>
@@ -713,7 +713,7 @@ async function muatHalamanBerita(gridId = "news-grid-container", featuredId = "f
     grid.innerHTML = `
       <div class="col-span-full py-16 px-6 text-center bg-surface-container-lowest rounded-3xl border border-surface-container shadow-xs">
         <div class="w-16 h-16 mx-auto rounded-2xl bg-surface-container flex items-center justify-center text-primary-container mb-4 shadow-xs">
-          <span class="material-symbols-outlined text-[32px]">newspaper</span>
+          <span aria-hidden="true" class="material-symbols-outlined text-[32px]">newspaper</span>
         </div>
         <h3 class="text-lg font-bold text-on-surface mb-2">Belum Ada Warta Berita</h3>
         <p class="text-xs sm:text-sm text-secondary max-w-md mx-auto leading-relaxed">
@@ -757,7 +757,7 @@ async function muatHalamanBerita(gridId = "news-grid-container", featuredId = "f
           ` : ''}
           <div class="${latestItem.foto_url ? 'hidden ' : ''}absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container to-surface-container-high text-secondary p-8 text-center select-none">
             <div class="w-16 h-16 rounded-3xl bg-primary-fixed text-primary flex items-center justify-center mb-3 shadow-sm">
-              <span class="material-symbols-outlined text-[36px]">campaign</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[36px]">campaign</span>
             </div>
             <span class="text-xs font-bold text-on-surface/70 tracking-wider uppercase">Sorotan Warta HIMPALUBI</span>
           </div>
@@ -860,7 +860,7 @@ async function muatHalamanBerita(gridId = "news-grid-container", featuredId = "f
           ` : ''}
           <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
             <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
-              <span class="material-symbols-outlined text-[24px]">${item.icon || 'article'}</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[24px]">${item.icon || 'article'}</span>
             </div>
             <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">HIMPALUBI UNIPAR</span>
           </div>
@@ -869,10 +869,10 @@ async function muatHalamanBerita(gridId = "news-grid-container", featuredId = "f
           </span>
         </div>
         <div class="flex items-center gap-2 text-xs text-secondary">
-          <span class="material-symbols-outlined text-[14px]">calendar_today</span>
+          <span aria-hidden="true" class="material-symbols-outlined text-[14px]">calendar_today</span>
           <span>${formatTanggal(item.tanggal)}</span>
           <span>•</span>
-          <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary-container">visibility</span><span>${item.views.toLocaleString("id-ID")} Pembaca</span></span>
+          <span class="flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined text-[14px] text-primary-container">visibility</span><span>${item.views.toLocaleString("id-ID")} Pembaca</span></span>
         </div>
         <h3 class="text-base font-bold text-on-surface group-hover:text-primary-container transition-colors leading-snug">
           <a href="detail.html?id=${item.id}&kategori=Berita" class="hover:underline">${escapeHtml(item.judul)}</a>
@@ -885,7 +885,7 @@ async function muatHalamanBerita(gridId = "news-grid-container", featuredId = "f
         <span class="text-xs text-on-surface-variant font-medium">${escapeHtml(item.penulis || 'Redaksi')}</span>
         <a class="text-xs text-primary font-bold flex items-center gap-1 hover:underline" href="detail.html?id=${item.id}&kategori=Berita">
           <span>Baca</span>
-          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+          <span aria-hidden="true" class="material-symbols-outlined text-[16px]">arrow_forward</span>
         </a>
       </div>
     </article>
@@ -1093,7 +1093,7 @@ async function muatBeritaKartu(elId, batas) {
           ` : ''}
           <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
             <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
-              <span class="material-symbols-outlined text-[24px]">newspaper</span>
+              <span aria-hidden="true" class="material-symbols-outlined text-[24px]">newspaper</span>
             </div>
             <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">HIMPALUBI UNIPAR</span>
           </div>
@@ -1148,7 +1148,7 @@ async function muatPengurusBeranda(elId = "pengurus-beranda-grid", batas = 5) {
   try {
     const res = await supabaseClient
       .from("anggota")
-      .select("*")
+      .select("id, nama, jabatan, angkatan, foto_url, status, kategori, divisi, urutan")
       .eq("kategori", "Pengurus")
       .eq("status", "Aktif")
       .order("urutan", { ascending: true, nullsFirst: false })
@@ -1208,7 +1208,7 @@ async function muatAnggota(elId) {
   try {
     const res = await supabaseClient
       .from("anggota")
-      .select("*")
+      .select("id, nama, jabatan, angkatan, foto_url, status, kategori, divisi, urutan")
       .eq("kategori", "Anggota")
       .eq("status", "Aktif")
       .order("angkatan", { ascending: false })
@@ -1266,7 +1266,6 @@ function kartuAnggota(a) {
       </div>
       <h3 class="text-title-md font-bold text-on-surface mb-0.5 line-clamp-1" title="${escapeHtml(a.nama)}">${escapeHtml(a.nama)}</h3>
       <div class="text-label-md text-secondary font-medium">${escapeHtml(a.jabatan || "Anggota")}</div>
-      ${a.nim ? `<div class="text-label-sm text-secondary font-mono mt-1">${escapeHtml(a.nim)}</div>` : ''}
     </div>
   `;
 }
@@ -1281,7 +1280,7 @@ async function muatStruktur(elId) {
   try {
     const res = await supabaseClient
       .from("anggota")
-      .select("*")
+      .select("id, nama, jabatan, angkatan, foto_url, status, kategori, divisi, urutan")
       .eq("kategori", "Pengurus")
       .eq("status", "Aktif")
       .order("urutan", { ascending: true, nullsFirst: false })
@@ -1396,12 +1395,12 @@ function badgeStatusProgram(status) {
   if (!status) return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-surface-container text-secondary">Rencana</span>`;
   const s = status.toLowerCase();
   if (s === "selesai" || s === "terlaksana") {
-    return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="material-symbols-outlined text-[14px]">check_circle</span>Selesai</span>`;
+    return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"><span aria-hidden="true" class="material-symbols-outlined text-[14px]">check_circle</span>Selesai</span>`;
   }
   if (s === "berjalan" || s === "proses" || s === "sedang berjalan") {
-    return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200"><span class="material-symbols-outlined text-[14px]">sync</span>Sedang Berjalan</span>`;
+    return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200"><span aria-hidden="true" class="material-symbols-outlined text-[14px]">sync</span>Sedang Berjalan</span>`;
   }
-  return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-surface-container text-secondary"><span class="material-symbols-outlined text-[14px]">schedule</span>Direncanakan</span>`;
+  return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-surface-container text-secondary"><span aria-hidden="true" class="material-symbols-outlined text-[14px]">schedule</span>Direncanakan</span>`;
 }
 
 // ================= HALAMAN GALERI =================
@@ -1441,7 +1440,7 @@ async function muatGaleriHalaman(elId) {
       ` : ''}
       <div class="${g.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
         <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
-          <span class="material-symbols-outlined text-[24px]">photo_camera</span>
+          <span aria-hidden="true" class="material-symbols-outlined text-[24px]">photo_camera</span>
         </div>
         <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">Galeri HIMPALUBI</span>
       </div>
@@ -1491,7 +1490,7 @@ async function muatGaleriBeranda(elId = "galeri-beranda-grid", batas = 4) {
       ` : ''}
       <div class="${item.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
         <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
-          <span class="material-symbols-outlined text-[24px]">photo_camera</span>
+          <span aria-hidden="true" class="material-symbols-outlined text-[24px]">photo_camera</span>
         </div>
         <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">Galeri HIMPALUBI</span>
       </div>
@@ -1510,7 +1509,7 @@ async function muatTentangHalaman(elId) {
   if (!el) return;
   el.innerHTML = skeletonParagraf(4);
 
-  const { data, error } = await supabaseClient.from("pengaturan").select("*").eq("id", 1).single();
+  const { data, error } = await ambilPengaturan();
   if (error || !data) {
     el.innerHTML = `<p>Informasi belum tersedia.</p>`;
     return;
@@ -1524,7 +1523,7 @@ async function muatTentangRingkas(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
   el.innerHTML = skeletonParagraf(2);
-  const { data, error } = await supabaseClient.from("pengaturan").select("tentang").eq("id", 1).single();
+  const { data, error } = await ambilPengaturan();
   if (error || !data) return;
   el.textContent = ringkas(data.tentang || "", 260);
 }
@@ -1552,7 +1551,7 @@ async function muatKontakRingkasBeranda(elId) {
   const ringkas = document.getElementById(elId);
   if (ringkas) ringkas.innerHTML = "";
   if (!document.getElementById("beranda-alamat")) return;
-  const { data, error } = await supabaseClient.from("pengaturan").select("*").eq("id", 1).single();
+  const { data, error } = await ambilPengaturan();
   if (error || !data) return;
 
   setTeksAman("beranda-alamat", data.alamat);
@@ -1586,7 +1585,7 @@ async function muatKontakRingkasBeranda(elId) {
 
 // ================= HALAMAN KONTAK =================
 async function muatKontakHalaman() {
-  const { data, error } = await supabaseClient.from("pengaturan").select("*").eq("id", 1).single();
+  const { data, error } = await ambilPengaturan();
   if (error || !data) return;
 
   setTeksAman("kontak-alamat", data.alamat);
@@ -1604,7 +1603,7 @@ async function muatKontakHalaman() {
 
 // ================= FOOTER: isi otomatis dari Pengaturan =================
 async function muatPengaturanFooter() {
-  const { data, error } = await supabaseClient.from("pengaturan").select("*").eq("id", 1).single();
+  const { data, error } = await ambilPengaturan();
   if (error || !data) return;
 
   const d = document.getElementById("footer-deskripsi");
@@ -1627,7 +1626,7 @@ async function muatPengaturanFooter() {
 async function muatTaglineHero(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
-  const { data } = await supabaseClient.from("pengaturan").select("tagline_hero").eq("id", 1).single();
+  const { data } = await ambilPengaturan();
   if (data?.tagline_hero) el.textContent = data.tagline_hero;
 }
 
@@ -1638,7 +1637,7 @@ async function muatStatistikBeranda(elId) {
 
   try {
     const [pengaturanRes, anggotaRes, programRes, pengurusRes] = await Promise.all([
-      supabaseClient.from("pengaturan").select("tahun_berdiri").eq("id", 1).maybeSingle(),
+      ambilPengaturan(),
       supabaseClient.from("anggota").select("id", { count: "exact", head: true }).eq("kategori", "Anggota").eq("status", "Aktif"),
       supabaseClient.from("program_kerja").select("id", { count: "exact", head: true }),
       supabaseClient.from("anggota").select("divisi").eq("kategori", "Pengurus").eq("status", "Aktif"),
@@ -1706,7 +1705,7 @@ async function muatSejarahTujuan(sejarahElId, tujuanElId) {
   const elTujuan = document.getElementById(tujuanElId);
   if (!elSejarah && !elTujuan) return;
 
-  const { data, error } = await supabaseClient.from("pengaturan").select("sejarah, tujuan").eq("id", 1).single();
+  const { data, error } = await ambilPengaturan();
   if (error || !data) return;
 
   if (elSejarah) {
@@ -1732,7 +1731,7 @@ async function muatSejarahTujuan(sejarahElId, tujuanElId) {
 async function muatVisiMisi(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
-  const { data, error } = await supabaseClient.from("pengaturan").select("visi, misi").eq("id", 1).single();
+  const { data, error } = await ambilPengaturan();
   if (error || !data || (!data.visi && !data.misi)) {
     el.innerHTML = "";
     return;
@@ -1775,7 +1774,7 @@ async function muatLabelBeranda() {
   const lencana = document.getElementById("akreditasi-badge");
   const lKep = document.getElementById("label-kepengurusan");
   if (!lencana && !lKep) return;
-  const { data, error } = await supabaseClient.from("pengaturan").select("*").eq("id", 1).single();
+  const { data, error } = await ambilPengaturan();
   if (error || !data) return;
   if (lencana && typeof data.akreditasi_label === "string") {
     const label = data.akreditasi_label.trim();
@@ -1832,7 +1831,7 @@ async function muatTickerBerjalan() {
 
   try {
     const [pengaturanRes, beritaRes, kegiatanRes] = await Promise.all([
-      supabaseClient.from("pengaturan").select("teks_berjalan").eq("id", 1).maybeSingle(),
+      ambilPengaturan(),
       supabaseClient.from("berita").select("judul").eq("kategori", "Berita").order("tanggal", { ascending: false }).limit(3),
       supabaseClient.from("berita").select("judul").eq("kategori", "Kegiatan").order("tanggal", { ascending: false }).limit(3),
     ]);
@@ -1851,6 +1850,51 @@ async function muatTickerBerjalan() {
     track.innerHTML = `${blok} <span class="pemisah text-primary-container font-bold shrink-0">&bull;</span> ${blok}`;
     bar.hidden = false;
   }
+}
+
+// ================= FORM ASPIRASI (index.html) — tersimpan ke tabel `aspirasi` =================
+function pasangFormAspirasi(formId) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+  const pesanEl = document.getElementById("pesan-aspirasi");
+  const tampil = (jenis, teks) => {
+    if (!pesanEl) return;
+    pesanEl.className = "form-message " + jenis;
+    pesanEl.textContent = teks;
+    pesanEl.setAttribute("role", jenis === "error" ? "alert" : "status");
+  };
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+
+    // Honeypot anti-bot
+    const hp = document.getElementById("aspirasi-situs");
+    if (hp && hp.value.trim() !== "") { tampil("success", "Terima kasih! Pesan Anda sudah kami terima."); form.reset(); return; }
+
+    const tombol = form.querySelector("button[type=submit]");
+    const labelAsli = tombol.innerHTML;
+    tombol.disabled = true;
+    tombol.textContent = "Mengirim...";
+
+    const { error } = await supabaseClient.from("aspirasi").insert({
+      nama: document.getElementById("aspirasi-nama").value.trim(),
+      email: document.getElementById("aspirasi-email").value.trim(),
+      kategori: document.getElementById("aspirasi-kategori").value,
+      pesan: document.getElementById("aspirasi-pesan").value.trim(),
+    });
+
+    tombol.disabled = false;
+    tombol.innerHTML = labelAsli;
+
+    if (error) {
+      console.error(error);
+      tampil("error", "Pesan belum terkirim. Coba lagi sebentar lagi, atau hubungi kami lewat surel di samping.");
+      return;
+    }
+    tampil("success", "Terima kasih! Pesan aspirasi Anda sudah tersimpan dan akan ditindaklanjuti pengurus.");
+    form.reset();
+  });
 }
 
 // ================= FORM PENDAFTARAN (pendaftaran.html) =================
@@ -1947,6 +1991,17 @@ function pasangFormPendaftaran(formId) {
   });
 }
 
+// ================= PENGATURAN: diambil sekali, dipakai ulang =================
+let _pengaturanPromise = null;
+function ambilPengaturan() {
+  if (!_pengaturanPromise) {
+    _pengaturanPromise = Promise.resolve(
+      supabaseClient.from("pengaturan").select("*").eq("id", 1).maybeSingle()
+    );
+  }
+  return _pengaturanPromise;
+}
+
 // ================= UTIL =================
 function setTeksAman(id, teks) {
   const el = document.getElementById(id);
@@ -1969,12 +2024,13 @@ function ringkas(teks, panjang = 200) {
   return sub + "...";
 }
 function initial(nama) {
+  const bersih = (t) => String(t).replace(/[^\p{L}\p{N}]/gu, "");
   if (!nama) return "?";
   const parts = nama.trim().split(/\s+/);
   if (parts.length >= 2) {
-    return (parts[0][0] + parts[1][0]).toUpperCase();
+    return bersih(parts[0][0] + parts[1][0]).toUpperCase() || "?";
   }
-  return nama.trim().slice(0, 2).toUpperCase();
+  return bersih(nama.trim().slice(0, 2)).toUpperCase() || "?";
 }
 // ================= SKELETON LOADING: placeholder shimmer sebelum data siap =================
 function skeletonListItem() {
@@ -2032,7 +2088,7 @@ function emptyState(judul, deskripsi, options = {}) {
   return `
     <div class="col-span-full w-full py-10 px-6 sm:px-8 rounded-2xl bg-surface-container-lowest border border-surface-container text-center flex flex-col items-center justify-center shadow-sm my-2">
       <div class="w-14 h-14 rounded-2xl bg-primary-fixed/60 text-primary-container flex items-center justify-center mb-3.5 shadow-sm">
-        <span class="material-symbols-outlined text-[28px]">${escapeHtml(icon)}</span>
+        <span aria-hidden="true" class="material-symbols-outlined text-[28px]">${escapeHtml(icon)}</span>
       </div>
       <h4 class="text-base sm:text-lg font-bold text-on-surface mb-1.5 tracking-tight">${escapeHtml(judul)}</h4>
       <p class="text-xs sm:text-sm text-secondary max-w-md mx-auto leading-relaxed ${btnText ? 'mb-4' : 'mb-0'}">${escapeHtml(deskripsi)}</p>
@@ -2247,9 +2303,12 @@ function pasangLightbox(containerId) {
     overlay.innerHTML = `
       <button class="lightbox-tutup" aria-label="Tutup">&times;</button>
       ${gambar.length > 1 ? `<button class="lightbox-prev" aria-label="Sebelumnya">&larr;</button>` : ""}
-      <img src="${gambar[indeks].src}" alt="${gambar[indeks].alt || ""}">
+      <img alt="">
       ${gambar.length > 1 ? `<button class="lightbox-next" aria-label="Berikutnya">&rarr;</button>` : ""}
     `;
+    const imgBesar = overlay.querySelector("img");
+    imgBesar.src = gambar[indeks].src;
+    imgBesar.alt = gambar[indeks].alt || "";
     document.body.appendChild(overlay);
 
     overlay.querySelector(".lightbox-tutup").addEventListener("click", tutupLightbox);
