@@ -1281,6 +1281,13 @@ const adminSidebarTemplate = `
             <span>Pendaftaran</span>
           </a>
         </li>
+        <li>
+          <a href="#kelola-aspirasi" data-section="kelola-aspirasi" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined nav-icon text-[20px] text-secondary" aria-hidden="true">forum</span>
+            <span class="flex-1">Aspirasi</span>
+            <span id="badge-aspirasi" hidden class="min-w-[20px] h-5 px-1.5 rounded-full bg-primary text-on-primary text-[11px] font-bold flex items-center justify-center" aria-label="pesan belum dibaca"></span>
+          </a>
+        </li>
       </ul>
     </div>
 
@@ -1777,6 +1784,7 @@ const judulSeksiAdmin = {
   "kelola-anggota": "Manajemen Data Anggota",
   "kelola-struktur": "Struktur Pengurus Organisasi",
   "kelola-pendaftaran": "Pendaftaran Calon Anggota",
+  "kelola-aspirasi": "Aspirasi & Pesan Masuk",
   "kelola-faq": "Tanya Jawab (FAQ)",
   "kelola-testimoni": "Testimoni Sivitas",
   "kelola-pengaturan": "Pengaturan Umum Website",
@@ -2513,6 +2521,189 @@ async function ubahStatusPendaftaran(id, status) {
   muatTabelPendaftaran();
   muatTabelOrang("Anggota", "tabel-anggota");
   muatRingkasan();
+}
+
+// ================= ASPIRASI MASUK (formulir beranda -> tabel `aspirasi`) =================
+const LABEL_KATEGORI_ASPIRASI = {
+  advokasi: "Advokasi & Fasilitas",
+  kegiatan: "Program Kerja",
+  kolaborasi: "Kolaborasi",
+  umum: "Saran Umum",
+};
+let _filterAspirasi = "semua";
+
+function badgeAspirasi(dibaca) {
+  return dibaca
+    ? '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-container text-secondary">Dibaca</span>'
+    : '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-fixed text-on-primary-fixed-variant">Baru</span>';
+}
+
+async function perbaruiBadgeAspirasi() {
+  const { count, error } = await supabaseClient
+    .from("aspirasi").select("id", { count: "exact", head: true }).eq("dibaca", false);
+  const el = document.getElementById("badge-aspirasi");
+  if (!el || error) return;
+  el.textContent = count > 99 ? "99+" : String(count || 0);
+  el.hidden = !count;
+}
+
+async function muatTabelAspirasi(page) {
+  const el = document.getElementById("tabel-aspirasi");
+  if (!el) return;
+  if (!page) page = ambilHalamanTabel("tabel-aspirasi");
+  aturHalamanTabel("tabel-aspirasi", page);
+
+  el.innerHTML = skeletonBarisTabel(5, 3);
+  let q = supabaseClient.from("aspirasi").select("*").order("created_at", { ascending: false });
+  if (_filterAspirasi === "baru") q = q.eq("dibaca", false);
+  const { data, error } = await q;
+  if (error) {
+    el.innerHTML = `<tr><td colspan="6" class="py-4 px-4 text-center text-error text-xs">Gagal memuat aspirasi. Pastikan SQL tahap 17 sudah dijalankan.</td></tr>`;
+    console.error(error);
+    return;
+  }
+
+  const total = data ? data.length : 0;
+  perbaruiBadgeAspirasi();
+  if (!total) {
+    el.innerHTML = `<tr><td colspan="6">${emptyState(_filterAspirasi === "baru" ? "Tidak ada pesan baru" : "Belum ada aspirasi", "Pesan dari formulir beranda akan muncul di sini.", { icon: "forum" })}</td></tr>`;
+    renderBarisPaginasi("tabel-aspirasi", 0, 1, () => {});
+    return;
+  }
+
+  const offset = (page - 1) * BATAS_PER_HALAMAN;
+  const paged = data.slice(offset, offset + BATAS_PER_HALAMAN);
+
+  el.innerHTML = paged.map(a => `
+    <tr class="hover:bg-surface-container-low/70 transition-colors border-b border-surface-container/60 last:border-b-0 ${a.dibaca ? "" : "bg-primary-fixed/20"}">
+      <td class="py-3.5 px-4">
+        <div class="${a.dibaca ? "font-medium" : "font-bold"} text-on-surface">${escapeHtml(a.nama)}</div>
+        <div class="text-[11px] text-secondary">${escapeHtml(a.email)}</div>
+      </td>
+      <td class="py-3.5 px-4 text-secondary text-xs whitespace-nowrap">${escapeHtml(LABEL_KATEGORI_ASPIRASI[a.kategori] || a.kategori)}</td>
+      <td class="py-3.5 px-4 text-secondary text-xs"><div class="line-clamp-2 max-w-sm">${escapeHtml(a.pesan)}</div></td>
+      <td class="py-3.5 px-4 text-secondary text-xs whitespace-nowrap">${formatTanggal(a.created_at)}</td>
+      <td class="py-3.5 px-4">${badgeAspirasi(a.dibaca)}</td>
+      <td class="py-3.5 px-4 text-right">
+        <div class="inline-flex items-center gap-1.5 justify-end">
+          <button type="button" onclick="bukaModalAspirasi('${a.id}')" title="Baca pesan" aria-label="Baca pesan" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">visibility</span>
+          </button>
+          <button type="button" onclick="hapusAspirasi('${a.id}')" title="Hapus pesan" aria-label="Hapus pesan" class="w-8 h-8 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+
+  renderBarisPaginasi("tabel-aspirasi", total, page, (hal) => muatTabelAspirasi(hal));
+}
+
+function pasangFilterAspirasi() {
+  document.querySelectorAll("[data-filter-aspirasi]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      _filterAspirasi = btn.dataset.filterAspirasi;
+      document.querySelectorAll("[data-filter-aspirasi]").forEach(b => {
+        const aktif = b === btn;
+        b.setAttribute("aria-pressed", aktif ? "true" : "false");
+        b.classList.toggle("bg-primary", aktif);
+        b.classList.toggle("text-on-primary", aktif);
+        b.classList.toggle("bg-surface-container-lowest", !aktif);
+        b.classList.toggle("text-secondary", !aktif);
+      });
+      aturHalamanTabel("tabel-aspirasi", 1);
+      muatTabelAspirasi(1);
+    });
+  });
+  const unduh = document.getElementById("tombol-unduh-excel-aspirasi");
+  if (unduh) unduh.addEventListener("click", unduhAspirasiExcel);
+}
+
+async function bukaModalAspirasi(id) {
+  const { data, error } = await supabaseClient.from("aspirasi").select("*").eq("id", id).maybeSingle();
+  if (error || !data) { tampilkanToast("Gagal memuat pesan.", "gagal"); return; }
+
+  const href = (typeof hrefEmailAman === "function") ? hrefEmailAman(data.email) : "";
+  const subjek = encodeURIComponent("Tanggapan aspirasi HIMPALUBI");
+
+  const overlay = document.createElement("div");
+  overlay.className = "fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/50 backdrop-blur-xs";
+  overlay.id = "modal-aspirasi";
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-labelledby", "judul-modal-aspirasi");
+  overlay.innerHTML = `
+    <div class="w-full max-w-lg bg-surface-container-lowest rounded-2xl p-6 sm:p-8 shadow-2xl border border-surface-container max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between gap-3 mb-5 pb-4 border-b border-surface-container">
+        <div class="min-w-0">
+          <h3 id="judul-modal-aspirasi" class="text-lg font-bold text-on-surface truncate">${escapeHtml(data.nama)}</h3>
+          <p class="text-xs text-secondary">${escapeHtml(LABEL_KATEGORI_ASPIRASI[data.kategori] || data.kategori)} &middot; ${formatTanggal(data.created_at)}</p>
+        </div>
+        <button type="button" id="tutup-modal-aspirasi" class="w-9 h-9 rounded-xl hover:bg-surface-container-low text-secondary hover:text-on-surface flex items-center justify-center cursor-pointer" aria-label="Tutup">
+          <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
+        </button>
+      </div>
+      <p class="text-xs text-secondary mb-1">Email pengirim</p>
+      <p class="text-sm font-semibold text-on-surface mb-4 break-all">${escapeHtml(data.email)}</p>
+      <div class="p-4 rounded-xl bg-surface-container-low border border-surface-container">
+        <p class="text-sm text-on-surface leading-relaxed whitespace-pre-line">${escapeHtml(data.pesan)}</p>
+      </div>
+      <div class="mt-6 pt-4 border-t border-surface-container flex flex-wrap items-center justify-end gap-2">
+        ${href ? `<a href="${escapeHtml(href)}?subject=${subjek}" class="px-5 py-2.5 rounded-full bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold min-h-[40px] inline-flex items-center">Balas lewat email</a>` : ""}
+        <button type="button" id="tutup-modal-aspirasi-bawah" class="px-5 py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-xs font-semibold text-on-surface min-h-[40px] cursor-pointer">Tutup</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  const tutup = () => { overlay.remove(); document.removeEventListener("keydown", esc); };
+  const esc = (e) => { if (e.key === "Escape") tutup(); };
+  document.addEventListener("keydown", esc);
+  document.getElementById("tutup-modal-aspirasi")?.focus();
+  document.getElementById("tutup-modal-aspirasi")?.addEventListener("click", tutup);
+  document.getElementById("tutup-modal-aspirasi-bawah")?.addEventListener("click", tutup);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) tutup(); });
+
+  // Membuka pesan = menandai sudah dibaca
+  if (!data.dibaca) {
+    const { error: errUbah } = await supabaseClient.from("aspirasi").update({ dibaca: true }).eq("id", id);
+    if (!errUbah) muatTabelAspirasi();
+  }
+}
+
+function hapusAspirasi(id) {
+  tampilkanModalKonfirmasi({
+    judul: "Hapus pesan aspirasi?",
+    pesan: "Pesan ini akan dihapus permanen dan tidak bisa dipulihkan.",
+    teksKonfirmasi: "Ya, Hapus",
+    teksBatal: "Batal",
+    tipe: "danger",
+    ikon: "delete",
+    onKonfirmasi: async () => {
+      const { error } = await supabaseClient.from("aspirasi").delete().eq("id", id);
+      if (error) { tampilkanToast("Gagal menghapus pesan: " + error.message, "gagal"); console.error(error); return; }
+      tampilkanToast("Pesan aspirasi dihapus.", "sukses");
+      muatTabelAspirasi();
+    }
+  });
+}
+
+async function unduhAspirasiExcel() {
+  const { data, error } = await supabaseClient.from("aspirasi").select("*").order("created_at", { ascending: false });
+  if (error || !data || !data.length) { tampilkanToast("Tidak ada aspirasi untuk diunduh.", "gagal"); return; }
+  if (typeof XLSX === "undefined") { tampilkanToast("Pustaka Excel belum termuat. Muat ulang halaman.", "gagal"); return; }
+  const rows = data.map(a => ({
+    Tanggal: new Date(a.created_at).toISOString().slice(0, 10),
+    Nama: a.nama,
+    Email: a.email,
+    Kategori: LABEL_KATEGORI_ASPIRASI[a.kategori] || a.kategori,
+    Pesan: a.pesan,
+    Status: a.dibaca ? "Dibaca" : "Baru",
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Aspirasi");
+  XLSX.writeFile(wb, `aspirasi-himpalubi-${new Date().toISOString().slice(0, 10)}.xlsx`);
 }
 
 // ================= GALERI =================
