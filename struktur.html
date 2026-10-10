@@ -86,7 +86,7 @@
     }
   };
 </script>
-<link rel="stylesheet" href="css/style.css?v=3.0">
+<link rel="stylesheet" href="css/style.css?v=4.0">
 </head>
 <body data-page="struktur" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
@@ -95,43 +95,24 @@
 
 <main id="konten" class="w-full bg-surface">
   <!-- Title Section -->
-  <section class="w-full bg-surface-container-lowest border-b border-surface-container shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-8 pb-10">
-      
-      <!-- Breadcrumb -->
-      <nav aria-label="Breadcrumb" class="flex items-center gap-2 mb-4 text-xs font-semibold text-secondary">
-        <a class="hover:text-primary-container transition-colors flex items-center gap-1" href="index.html">
-          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">home</span>
-          <span>Beranda</span>
-        </a>
+  <section class="page-hero">
+    <div class="page-hero__inner">
+      <nav class="page-hero__crumb" aria-label="Jejak navigasi">
+        <a href="index.html"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">home</span><span>Beranda</span></a>
         <span class="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_right</span>
-        <span class="text-primary-container font-semibold">Struktur Organisasi</span>
+        <span aria-current="page">Struktur Organisasi</span>
       </nav>
-
-      <!-- Section Title & Lead -->
-      <div class="max-w-3xl">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs uppercase font-bold tracking-wider mb-3">
-          <span class="material-symbols-outlined text-[15px]" aria-hidden="true">account_tree</span>
-          <span>Dewan Pengurus</span>
-        </div>
-        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-on-surface tracking-tight mb-3">
-          Struktur Organisasi HIMPALUBI
-        </h1>
-        <p class="text-sm sm:text-base lg:text-lg text-secondary leading-relaxed">
-          Susunan Badan Pengurus Harian (BPH) dan divisi fungsionaris HIMPALUBI UNIPAR Jember.
-        </p>
+      <div>
+        <h1 class="page-hero__title">Struktur Organisasi HIMPALUBI</h1>
+        <p class="page-hero__lead">Susunan Badan Pengurus Harian (BPH) dan divisi fungsionaris HIMPALUBI UNIPAR Jember.</p>
       </div>
-
+      <figure class="braille" data-braille="struktur"></figure>
     </div>
   </section>
 
-  <!-- Content Section -->
-  <section class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12">
-    <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container p-4 sm:p-6 lg:p-8" id="struktur-konten" aria-live="polite">
-      <div class="py-8 flex flex-col items-center justify-center text-center">
-        <div class="w-10 h-10 border-4 border-primary-container border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p class="text-sm font-medium text-secondary">Memuat susunan pengurus...</p>
-      </div>
+  <section class="page-body">
+    <div id="struktur-konten" aria-live="polite">
+      <p class="text-sm font-medium text-secondary py-8">Memuat susunan pengurus...</p>
     </div>
   </section>
 </main>
@@ -140,8 +121,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabaseClient.js?v=3.0"></script>
-<script src="js/public.js?v=3.0"></script>
-<script src="js/components.js?v=3.0"></script>
+<script src="js/public.js?v=4.0"></script>
+<script src="js/components.js?v=4.0"></script>
 <script>
   muatStruktur("struktur-konten");
 </script>

@@ -120,7 +120,7 @@
     }
   };
 </script>
-<link rel="stylesheet" href="css/style.css?v=3.0">
+<link rel="stylesheet" href="css/style.css?v=4.0">
 </head>
 <body data-page="kegiatan" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
@@ -130,34 +130,22 @@
 
 <main id="konten" class="w-full bg-surface">
 
-  <!-- Title & Filter Bar Section -->
-  <section class="w-full bg-surface-container-lowest border-b border-surface-container shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-8 pb-10">
-      
-      <!-- Breadcrumb -->
-      <nav aria-label="Breadcrumb" class="flex items-center gap-2 mb-4 text-xs font-semibold text-secondary">
-        <a class="hover:text-primary-container transition-colors flex items-center gap-1" href="index.html">
-          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">home</span>
-          <span>Beranda</span>
-        </a>
+  <section class="page-hero">
+    <div class="page-hero__inner">
+      <nav class="page-hero__crumb" aria-label="Jejak navigasi">
+        <a href="index.html"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">home</span><span>Beranda</span></a>
         <span class="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_right</span>
-        <span class="text-primary-container font-semibold">Kegiatan &amp; Agenda Himpunan</span>
+        <span aria-current="page">Kegiatan dan Agenda</span>
       </nav>
-
-      <!-- Section Title & Lead -->
-      <div class="max-w-3xl mb-8">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs uppercase font-bold tracking-wider mb-3">
-          <span class="material-symbols-outlined text-[15px]" aria-hidden="true">event_available</span>
-          <span>Kalender Agenda Akademik &amp; Kemahasiswaan</span>
-        </div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-on-surface tracking-tight mb-3">
-          Agenda, Program Kerja &amp; Kegiatan Mahasiswa
-        </h1>
-        <p class="text-base sm:text-lg text-secondary leading-relaxed">
-          Eksplorasi rangkaian seminar nasional, advokasi pendidikan inklusif, pelatihan kompetensi disabilitas, bakti sosial, dan pengembangan kapasitas mahasiswa HIMPALUBI UNIPAR Jember.
-        </p>
+      <div>
+        <h1 class="page-hero__title">Agenda dan Kegiatan Mahasiswa</h1>
+        <p class="page-hero__lead">Seminar, advokasi pendidikan inklusif, pelatihan, bakti sosial, dan pengembangan kapasitas mahasiswa HIMPALUBI UNIPAR Jember.</p>
       </div>
+      <figure class="braille" data-braille="kegiatan"></figure>
+    </div>
+  </section>
 
+  <div class="hero-panel-wrap">
       <!-- Search & Filters Container -->
       <div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low shadow-sm flex flex-col gap-4">
         
@@ -211,9 +199,7 @@
           </button>
         </div>
       </div>
-
-    </div>
-  </section>
+  </div>
 
   <!-- Featured Event Section (High Impact Card) -->
   <section id="featured-event-section" class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12" style="display:none;">
@@ -383,8 +369,8 @@
 <!-- Core Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabaseClient.js?v=3.0"></script>
-<script src="js/public.js?v=3.0"></script>
-<script src="js/components.js?v=3.0"></script>
+<script src="js/public.js?v=4.0"></script>
+<script src="js/components.js?v=4.0"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {

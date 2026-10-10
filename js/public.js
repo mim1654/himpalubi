@@ -1240,33 +1240,33 @@ async function muatAnggota(elId) {
   el.innerHTML = Object.keys(kelompok)
     .sort((a, b) => b.localeCompare(a, "id", { numeric: true }))
     .map(angkatan => `
-      <div class="mb-10 last:mb-0">
-        <div class="flex items-center gap-2 pb-3 mb-6 border-b border-surface-container">
-          <span class="w-2.5 h-6 rounded-full bg-primary-container" aria-hidden="true"></span>
-          <h2 class="text-xl sm:text-2xl font-bold text-on-surface">Angkatan ${escapeHtml(angkatan)}</h2>
-          <span class="ml-auto text-xs px-2.5 py-0.5 rounded-full bg-surface-container text-secondary font-medium">${kelompok[angkatan].length} Mahasiswa</span>
+      <section class="group-block" aria-label="Angkatan ${escapeHtml(angkatan)}">
+        <div class="group-head">
+          <h2>Angkatan ${escapeHtml(angkatan)}</h2>
+          <span class="group-head__meta">${kelompok[angkatan].length} mahasiswa</span>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          ${kelompok[angkatan].map(kartuAnggota).join("")}
+        <div class="people-grid">
+          ${kelompok[angkatan].map(a => kartuAnggota(a)).join("")}
         </div>
-      </div>
+      </section>
     `).join("");
 }
 
-function kartuAnggota(a) {
+function kartuAnggota(a, unggulan) {
   const initialName = initial(a.nama);
+  const fallback = `<span aria-hidden="true">${initialName}</span>`;
   const photoHtml = a.foto_url
-    ? `<img src="${urlGambarAman(a.foto_url)}" alt="Foto ${escapeHtml(a.nama)}" class="w-full h-full object-cover rounded-full" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-lg\\'>${initialName}</div>'">`
-    : `<div class="w-full h-full rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-lg">${initialName}</div>`;
+    ? `<img src="${urlGambarAman(a.foto_url)}" alt="Foto ${escapeHtml(a.nama)}" loading="lazy" onerror="this.outerHTML='${fallback.replace(/'/g, "&#39;")}'">`
+    : fallback;
 
   return `
-    <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-surface-container text-center flex flex-col items-center hover:border-primary/20 hover:shadow-md transition-all">
-      <div class="w-20 h-20 rounded-full overflow-hidden p-1 bg-surface-container shadow-sm mb-3">
-        ${photoHtml}
+    <article class="person${unggulan ? " person--lead" : ""}">
+      <div class="person__photo">${photoHtml}</div>
+      <div class="person__body">
+        <h3 class="person__name">${escapeHtml(a.nama)}</h3>
+        <p class="person__role">${escapeHtml(a.jabatan || "Anggota")}</p>
       </div>
-      <h3 class="text-title-md font-bold text-on-surface mb-0.5 line-clamp-1" title="${escapeHtml(a.nama)}">${escapeHtml(a.nama)}</h3>
-      <div class="text-label-md text-secondary font-medium">${escapeHtml(a.jabatan || "Anggota")}</div>
-    </div>
+    </article>
   `;
 }
 
@@ -1310,16 +1310,15 @@ async function muatStruktur(elId) {
   });
 
   el.innerHTML = urutkanDivisi(Object.keys(kelompok)).map(divisi => `
-    <div class="mb-10 last:mb-0">
-      <div class="flex items-center gap-2 pb-3 mb-6 border-b border-surface-container">
-        <span class="w-2.5 h-6 rounded-full bg-primary-container" aria-hidden="true"></span>
-        <h2 class="text-xl sm:text-2xl font-bold text-on-surface">${escapeHtml(divisi)}</h2>
-        <span class="ml-auto text-xs px-2.5 py-0.5 rounded-full bg-surface-container text-secondary font-medium">${kelompok[divisi].length} Fungsionaris</span>
+    <section class="group-block" aria-label="${escapeHtml(divisi)}">
+      <div class="group-head">
+        <h2>${escapeHtml(divisi)}</h2>
+        <span class="group-head__meta">${kelompok[divisi].length} fungsionaris</span>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-        ${kelompok[divisi].map(kartuAnggota).join("")}
+      <div class="people-grid${divisi === "BPH" ? " people-grid--lead" : ""}">
+        ${kelompok[divisi].map(a => kartuAnggota(a, divisi === "BPH")).join("")}
       </div>
-    </div>
+    </section>
   `).join("");
 }
 
@@ -1359,27 +1358,25 @@ async function muatProgramKerja(elId) {
     (kelompok[div] = kelompok[div] || []).push(p);
   });
 
+  const selesai = (p) => ["selesai", "terlaksana"].includes(String(p.status || "").toLowerCase());
   el.innerHTML = urutkanDivisi(Object.keys(kelompok)).map(divisi => `
-    <div class="mb-10 last:mb-0">
-      <div class="flex items-center gap-2 pb-3 mb-6 border-b border-surface-container">
-        <span class="w-2.5 h-6 rounded-full bg-primary-container" aria-hidden="true"></span>
-        <h2 class="text-xl sm:text-2xl font-bold text-on-surface">${escapeHtml(divisi)}</h2>
-        <span class="ml-auto text-xs px-2.5 py-0.5 rounded-full bg-surface-container text-secondary font-medium">${kelompok[divisi].length} Program</span>
+    <section class="group-block" aria-label="${escapeHtml(divisi)}">
+      <div class="group-head">
+        <h2>${escapeHtml(divisi)}</h2>
+        <span class="group-head__meta">${kelompok[divisi].length} program &middot; ${kelompok[divisi].filter(selesai).length} selesai</span>
       </div>
-      <div class="flex flex-col gap-3">
+      <ul class="program-list">
         ${kelompok[divisi].map(p => `
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-surface-container-lowest border border-surface-container shadow-sm hover:border-primary/20 transition-all">
-            <div class="flex-1">
-              <h3 class="text-base font-bold text-on-surface mb-1">${escapeHtml(p.nama_program)}</h3>
-              ${p.deskripsi ? `<p class="text-xs text-secondary leading-relaxed">${escapeHtml(p.deskripsi)}</p>` : ""}
+          <li class="program-row">
+            <div>
+              <h3>${escapeHtml(p.nama_program)}</h3>
+              ${p.deskripsi ? `<p>${escapeHtml(p.deskripsi)}</p>` : ""}
             </div>
-            <div class="shrink-0">
-              ${badgeStatusProgram(p.status)}
-            </div>
-          </div>
+            <div class="program-row__status">${badgeStatusProgram(p.status)}</div>
+          </li>
         `).join("")}
-      </div>
-    </div>
+      </ul>
+    </section>
   `).join("");
 }
 
@@ -1392,15 +1389,14 @@ function urutkanDivisi(daftar) {
 }
 
 function badgeStatusProgram(status) {
-  if (!status) return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-surface-container text-secondary">Rencana</span>`;
-  const s = status.toLowerCase();
+  const s = String(status || "").toLowerCase();
   if (s === "selesai" || s === "terlaksana") {
-    return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"><span aria-hidden="true" class="material-symbols-outlined text-[14px]">check_circle</span>Selesai</span>`;
+    return `<span class="status-chip status-chip--selesai"><span aria-hidden="true" class="material-symbols-outlined">check_circle</span>Selesai</span>`;
   }
   if (s === "berjalan" || s === "proses" || s === "sedang berjalan") {
-    return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200"><span aria-hidden="true" class="material-symbols-outlined text-[14px]">sync</span>Sedang Berjalan</span>`;
+    return `<span class="status-chip status-chip--berjalan"><span aria-hidden="true" class="material-symbols-outlined">sync</span>Sedang berjalan</span>`;
   }
-  return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-surface-container text-secondary"><span aria-hidden="true" class="material-symbols-outlined text-[14px]">schedule</span>Direncanakan</span>`;
+  return `<span class="status-chip status-chip--rencana"><span aria-hidden="true" class="material-symbols-outlined">schedule</span>${status ? "Direncanakan" : "Rencana"}</span>`;
 }
 
 // ================= HALAMAN GALERI =================
@@ -1433,21 +1429,17 @@ async function muatGaleriHalaman(elId) {
     return;
   }
 
-  el.innerHTML = data.map(g => `
-    <div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-surface-container h-64 border border-surface-container cursor-pointer flex items-center justify-center">
-      ${g.foto_url ? `
-        <img src="${urlGambarAman(g.foto_url)}" alt="${escapeHtml(g.judul || 'Foto Galeri')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
-      ` : ''}
-      <div class="${g.foto_url ? 'hidden ' : ''}w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container text-secondary p-4 text-center select-none">
-        <div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center mb-2 shadow-xs">
-          <span aria-hidden="true" class="material-symbols-outlined text-[24px]">photo_camera</span>
-        </div>
-        <span class="text-xs font-bold text-on-surface/70 tracking-wide uppercase">Galeri HIMPALUBI</span>
+  el.innerHTML = data.map((g, i) => `
+    <div class="galeri-tile${data.length >= 5 && i === 0 ? " galeri-tile--wide" : ""}" tabindex="${g.foto_url ? 0 : -1}"${g.foto_url ? ` role="button" aria-label="Perbesar foto: ${escapeHtml(g.judul || "Galeri")}"` : ""}>
+      ${g.foto_url ? `<img src="${urlGambarAman(g.foto_url)}" alt="${escapeHtml(g.judul || "Foto galeri")}" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">` : ""}
+      <div class="galeri-tile__kosong"${g.foto_url ? " hidden" : ""}>
+        <span aria-hidden="true" class="material-symbols-outlined">photo_camera</span>
+        <span>Foto belum tersedia</span>
       </div>
-      <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/20 to-transparent flex flex-col justify-end p-4 text-on-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <h3 aria-level="2" class="text-sm font-bold text-on-primary leading-snug line-clamp-2">${escapeHtml(g.judul || '')}</h3>
-        ${g.keterangan ? `<p class="text-xs text-secondary-fixed-dim mt-0.5 line-clamp-1">${escapeHtml(g.keterangan)}</p>` : ''}
-      </div>
+      ${g.judul || g.keterangan ? `<div class="galeri-tile__caption">
+        ${g.judul ? `<h3>${escapeHtml(g.judul)}</h3>` : ""}
+        ${g.keterangan ? `<p>${escapeHtml(ringkas(g.keterangan, 80))}</p>` : ""}
+      </div>` : ""}
     </div>
   `).join("");
 }
@@ -1591,11 +1583,19 @@ async function muatKontakHalaman() {
   setTeksAman("kontak-alamat", data.alamat);
   setTeksAman("kontak-email", data.email);
   setTeksAman("kontak-telepon", data.telepon);
+  const aEmail = document.getElementById("kontak-email");
+  if (aEmail && aEmail.tagName === "A") {
+    const h = hrefEmailAman(data.email);
+    if (h) aEmail.href = h; else { aEmail.removeAttribute("href"); if (!data.email) aEmail.textContent = "Belum tersedia"; }
+  }
+  const aTel = document.getElementById("kontak-telepon");
+  if (aTel && aTel.tagName === "A") {
+    const h = hrefTelAman(data.telepon);
+    if (h) aTel.href = h; else { aTel.removeAttribute("href"); if (!data.telepon) aTel.textContent = "Belum tersedia"; }
+  }
 
-  const ig = document.getElementById("kontak-instagram");
-  if (ig && urlTautanAman(data.instagram)) ig.href = urlTautanAman(data.instagram);
-  const yt = document.getElementById("kontak-youtube");
-  if (yt && urlTautanAman(data.youtube)) yt.href = urlTautanAman(data.youtube);
+  pasangTautanSosial("kontak-instagram", data.instagram, true);
+  pasangTautanSosial("kontak-youtube", data.youtube, true);
   pasangTautanSosial("kontak-tiktok", data.tiktok, true);
   const pemisah = document.getElementById("kontak-tiktok-pemisah");
   if (pemisah) pemisah.hidden = !urlTautanAman(data.tiktok);
@@ -1706,21 +1706,28 @@ async function muatSejarahTujuan(sejarahElId, tujuanElId) {
   if (!elSejarah && !elTujuan) return;
 
   const { data, error } = await ambilPengaturan();
-  if (error || !data) return;
+  if (error || !data) {
+    [elSejarah, elTujuan].forEach(e => { const b = e && e.closest("section"); if (b) b.hidden = true; });
+    return;
+  }
 
   if (elSejarah) {
     if (data.sejarah) {
       const paragraf = data.sejarah.split(/\n+/).filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join("");
-      elSejarah.innerHTML = `<h2>Sejarah</h2>${paragraf}`;
+      elSejarah.innerHTML = paragraf;
     } else {
       elSejarah.innerHTML = "";
+      const bagian = elSejarah.closest("section");
+      if (bagian) bagian.hidden = true;
     }
   }
 
   if (elTujuan) {
     if (data.tujuan) {
       const poin = data.tujuan.split(/\n+/).filter(Boolean).map(t => `<li>${escapeHtml(t)}</li>`).join("");
-      elTujuan.innerHTML = `<h2>Tujuan</h2><ul style="line-height:1.9;">${poin}</ul>`;
+      elTujuan.innerHTML = `<ul>${poin}</ul>`;
+      const bagian = elTujuan.closest("section");
+      if (bagian) bagian.hidden = false;
     } else {
       elTujuan.innerHTML = "";
     }
@@ -1731,23 +1738,30 @@ async function muatSejarahTujuan(sejarahElId, tujuanElId) {
 async function muatVisiMisi(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
+  const bagian = el.closest("section");
   const { data, error } = await ambilPengaturan();
   if (error || !data || (!data.visi && !data.misi)) {
     el.innerHTML = "";
+    if (bagian) bagian.hidden = true;
     return;
   }
+  const butirMisi = String(data.misi || "").split(/\n+/).map(t => t.trim()).filter(Boolean);
+  const misiHtml = butirMisi.length > 1
+    ? `<ol class="misi-list">${butirMisi.map(t => `<li><span>${escapeHtml(t.replace(/^\s*(\d+[.)]|[-•*])\s*/, ""))}</span></li>`).join("")}</ol>`
+    : `<p class="prose-himp" style="margin:0">${escapeHtml(butirMisi[0] || "Belum diisi.")}</p>`;
   el.innerHTML = `
-    <div class="visi-misi-grid">
-      <div class="visi-misi-card">
-        <h3>Visi</h3>
-        <p>${escapeHtml(data.visi || "Belum diisi.")}</p>
+    <div class="visimisi">
+      <div>
+        <h2>Visi</h2>
+        <p class="visimisi__visi">${escapeHtml(data.visi || "Belum diisi.")}</p>
       </div>
-      <div class="visi-misi-card">
-        <h3>Misi</h3>
-        <p>${escapeHtml(data.misi || "Belum diisi.").replace(/\n/g, "<br>")}</p>
+      <div>
+        <h2>Misi</h2>
+        ${misiHtml}
       </div>
     </div>
   `;
+  if (bagian) bagian.hidden = false;
 }
 
 // ================= HALAMAN TENTANG: FAQ =================
@@ -1755,10 +1769,13 @@ async function muatFaqHalaman(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
   const { data, error } = await supabaseClient.from("faq").select("*").order("urutan", { ascending: true, nullsFirst: false });
+  const bagianFaq = el.closest("section");
   if (error || !data || data.length === 0) {
     el.innerHTML = "";
+    if (bagianFaq) bagianFaq.hidden = true;
     return;
   }
+  if (bagianFaq) bagianFaq.hidden = false;
   el.innerHTML = data.map((f, i) => `
     <details class="faq-item"${i === 0 ? " open" : ""}>
       <summary>${escapeHtml(f.pertanyaan)}</summary>
@@ -2086,18 +2103,11 @@ function emptyState(judul, deskripsi, options = {}) {
   const btnHref = typeof options === "object" ? options.btnHref : "";
 
   return `
-    <div class="col-span-full w-full py-10 px-6 sm:px-8 rounded-2xl bg-surface-container-lowest border border-surface-container text-center flex flex-col items-center justify-center shadow-sm my-2">
-      <div class="w-14 h-14 rounded-2xl bg-primary-fixed/60 text-primary-container flex items-center justify-center mb-3.5 shadow-sm">
-        <span aria-hidden="true" class="material-symbols-outlined text-[28px]">${escapeHtml(icon)}</span>
-      </div>
-      <h4 class="text-base sm:text-lg font-bold text-on-surface mb-1.5 tracking-tight">${escapeHtml(judul)}</h4>
-      <p class="text-xs sm:text-sm text-secondary max-w-md mx-auto leading-relaxed ${btnText ? 'mb-4' : 'mb-0'}">${escapeHtml(deskripsi)}</p>
-      ${btnText && btnHref ? `
-        <a href="${escapeHtml(btnHref)}" class="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-primary-container hover:bg-primary text-on-primary text-xs font-semibold transition-all shadow-sm min-h-[40px]">
-          <span>${escapeHtml(btnText)}</span>
-          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
-        </a>
-      ` : ""}
+    <div class="empty-note">
+      <div class="empty-note__icon"><span aria-hidden="true" class="material-symbols-outlined">${escapeHtml(icon)}</span></div>
+      <h4>${escapeHtml(judul)}</h4>
+      <p>${escapeHtml(deskripsi)}</p>
+      ${btnText && btnHref ? `<a href="${escapeHtml(btnHref)}" class="empty-note__aksi"><span>${escapeHtml(btnText)}</span></a>` : ""}
     </div>
   `;
 }
@@ -2338,5 +2348,11 @@ function pasangLightbox(containerId) {
     document.removeEventListener("keydown", tombolKeyboard);
   }
 
-  gambar.forEach((img, i) => img.addEventListener("click", () => bukaLightbox(i)));
+  gambar.forEach((img, i) => {
+    img.addEventListener("click", () => bukaLightbox(i));
+    const tile = img.closest("[role='button']");
+    if (tile) tile.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); bukaLightbox(i); }
+    });
+  });
 }

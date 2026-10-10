@@ -86,7 +86,7 @@
     }
   };
 </script>
-<link rel="stylesheet" href="css/style.css?v=3.0">
+<link rel="stylesheet" href="css/style.css?v=4.0">
 </head>
 <body data-page="kontak" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
@@ -94,44 +94,67 @@
 <div id="site-header-slot"></div>
 
 <main id="konten">
-  <section class="hero" style="padding:3rem 0; background:var(--sage-100); color:var(--ink-900); text-align:left;">
-    <div class="container" style="max-width:1080px;">
-      <h1 style="color:var(--ink-900);">Kontak</h1>
-      <p class="lead" style="color:var(--ink-600); margin:0;">Hubungi HIMPALUBI melalui informasi berikut.</p>
-    </div>
-  </section>
-
-  <section>
-    <div class="container" style="max-width:560px;">
-      <div class="card-panel">
-        <h3 aria-level="2">Alamat</h3>
-        <p id="kontak-alamat">Universitas PGRI Argopuro Jember</p>
-
-        <h3 aria-level="2">Email</h3>
-        <p id="kontak-email">himpalubi@kampus.ac.id</p>
-
-        <h3 aria-level="2">Telepon / WhatsApp</h3>
-        <p id="kontak-telepon">+62 812-0000-0000</p>
-
-        <h3>Media Sosial</h3>
-        <p>
-          <a href="#" id="kontak-instagram">Instagram</a>
-          &nbsp;&middot;&nbsp;
-          <a href="#" id="kontak-youtube">YouTube</a>
-          <span id="kontak-tiktok-pemisah" hidden>&nbsp;&middot;&nbsp;</span>
-          <a href="#" id="kontak-tiktok" hidden target="_blank" rel="noopener">TikTok</a>
-        </p>
+  <section class="page-hero">
+    <div class="page-hero__inner">
+      <nav class="page-hero__crumb" aria-label="Jejak navigasi">
+        <a href="index.html"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">home</span><span>Beranda</span></a>
+        <span class="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_right</span>
+        <span aria-current="page">Kontak</span>
+      </nav>
+      <div>
+        <h1 class="page-hero__title">Hubungi HIMPALUBI</h1>
+        <p class="page-hero__lead">Sampaikan pertanyaan, ajakan kerja sama, atau aspirasi Anda. Pengurus akan membalas melalui kanal di bawah ini.</p>
       </div>
+      <figure class="braille" data-braille="kontak"></figure>
     </div>
   </section>
+
+  <div class="page-body">
+    <div class="kontak-grid">
+      <ul class="kontak-list">
+        <li class="kontak-item">
+          <span class="kontak-item__ikon"><span class="material-symbols-outlined" aria-hidden="true">location_on</span></span>
+          <div>
+            <h2>Alamat</h2>
+            <p class="kontak-item__nilai" id="kontak-alamat">Universitas PGRI Argopuro Jember</p>
+          </div>
+        </li>
+        <li class="kontak-item">
+          <span class="kontak-item__ikon"><span class="material-symbols-outlined" aria-hidden="true">mail</span></span>
+          <div>
+            <h2>Email</h2>
+            <a class="kontak-item__nilai" id="kontak-email" href="#">Memuat...</a>
+          </div>
+        </li>
+        <li class="kontak-item">
+          <span class="kontak-item__ikon"><span class="material-symbols-outlined" aria-hidden="true">call</span></span>
+          <div>
+            <h2>Telepon / WhatsApp</h2>
+            <a class="kontak-item__nilai" id="kontak-telepon" href="#">Memuat...</a>
+          </div>
+        </li>
+      </ul>
+
+      <aside class="kontak-side" aria-labelledby="h-sosial">
+        <h2 id="h-sosial">Media sosial</h2>
+        <p>Ikuti kabar dan dokumentasi kegiatan terbaru.</p>
+        <ul class="sosial-list">
+          <li><a href="#" id="kontak-instagram" target="_blank" rel="noopener"><span>Instagram</span><span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_outward</span></a></li>
+          <li><a href="#" id="kontak-youtube" target="_blank" rel="noopener"><span>YouTube</span><span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_outward</span></a></li>
+          <li><span id="kontak-tiktok-pemisah" hidden></span><a href="#" id="kontak-tiktok" hidden target="_blank" rel="noopener"><span>TikTok</span><span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_outward</span></a></li>
+        </ul>
+        <p class="kontak-side__link">Ingin menyampaikan aspirasi atau bergabung? <a href="pendaftaran.html">Buka halaman pendaftaran</a>.</p>
+      </aside>
+    </div>
+  </div>
 </main>
 
 <div id="site-footer-slot"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabaseClient.js?v=3.0"></script>
-<script src="js/public.js?v=3.0"></script>
-<script src="js/components.js?v=3.0"></script>
+<script src="js/public.js?v=4.0"></script>
+<script src="js/components.js?v=4.0"></script>
 <script>
   muatKontakHalaman();
 </script>

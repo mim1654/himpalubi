@@ -129,7 +129,7 @@
     }
   };
 </script>
-<link rel="stylesheet" href="css/style.css?v=3.0">
+<link rel="stylesheet" href="css/style.css?v=4.0">
 </head>
 <body data-page="berita" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col transition-all">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
@@ -139,53 +139,25 @@
 
 <main id="konten" class="w-full bg-surface">
   
-  <!-- Editorial Header & Breadcrumb -->
-  <section class="w-full px-4 sm:px-6 lg:px-12 pt-8 pb-10">
-    <div class="max-w-7xl mx-auto flex flex-col gap-6">
-      
-      <!-- Breadcrumb -->
-      <nav aria-label="Jejak Navigasi" class="flex items-center gap-2 text-xs font-semibold text-secondary">
-        <a class="hover:text-primary-container transition-colors flex items-center gap-1" href="index.html">
-          <span aria-hidden="true" class="material-symbols-outlined text-[16px]">home</span>
-          <span>Beranda</span>
-        </a>
-        <span class="material-symbols-outlined text-[14px] text-outline" aria-hidden="true">chevron_right</span>
-        <span class="text-primary-container font-semibold">Warta &amp; Publikasi</span>
+  <section class="page-hero">
+    <div class="page-hero__inner">
+      <nav class="page-hero__crumb" aria-label="Jejak navigasi">
+        <a href="index.html"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">home</span><span>Beranda</span></a>
+        <span class="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_right</span>
+        <span aria-current="page">Warta dan Publikasi</span>
       </nav>
-
-      <!-- Title Lockup & Metrics -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
-        <div class="lg:col-span-8 flex flex-col gap-3">
-          <div class="inline-flex items-center gap-2 self-start px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed text-xs font-bold uppercase tracking-wider">
-            <span class="material-symbols-outlined text-[14px]" aria-hidden="true">verified</span>
-            <span>Warta Resmi &amp; Jurnal Mahasiswa</span>
-          </div>
-          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-on-surface tracking-tight leading-tight">
-            Warta &amp; Berita <span class="text-primary-container">HIMPALUBI</span> UNIPAR
-          </h1>
-          <p class="text-sm sm:text-base text-secondary max-w-3xl leading-relaxed">
-            Pusat informasi resmi, kabar advokasi inklusif, karya tulis ilmiah mahasiswa, rekam jejak prestasi, dan warta terkini seputar dinamika Pendidikan Luar Biasa Universitas PGRI Argopuro Jember.
-          </p>
-        </div>
-
-        <div class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 lg:items-end justify-end">
-          <div class="p-4 rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container flex items-center gap-4 w-full max-w-sm">
-            <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary-container shrink-0">
-              <span class="material-symbols-outlined text-[28px]" aria-hidden="true">article</span>
-            </div>
-            <div class="flex flex-col min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="text-lg font-bold text-on-surface" id="totalPubCount">0</span>
-                <span class="text-[11px] px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-semibold">Semua Arsip</span>
-              </div>
-              <span class="text-xs text-secondary truncate">Karya &amp; Publikasi Terdokumentasi</span>
-            </div>
-          </div>
-        </div>
+      <div>
+        <h1 class="page-hero__title">Warta dan Berita HIMPALUBI</h1>
+        <p class="page-hero__lead">Kabar advokasi inklusif, karya tulis mahasiswa, prestasi, dan informasi terkini seputar Pendidikan Luar Biasa di Universitas PGRI Argopuro Jember.</p>
+        <p class="hero-stat" style="margin-top:1.5rem"><strong id="totalPubCount">0</strong><span>publikasi terdokumentasi</span></p>
       </div>
+      <figure class="braille" data-braille="berita"></figure>
+    </div>
+  </section>
 
+  <div class="hero-panel-wrap">
       <!-- Search & Category Filtering Bar -->
-      <div class="mt-4 p-3 rounded-2xl bg-surface-container-lowest shadow-sm border border-surface-container flex flex-col gap-4">
+      <div class="p-3 rounded-2xl bg-surface-container-lowest shadow-sm border border-surface-container flex flex-col gap-4">
         <!-- Search Input -->
         <div class="relative w-full">
           <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[22px]" aria-hidden="true">search</span>
@@ -218,9 +190,7 @@
           </button>
         </div>
       </div>
-
-    </div>
-  </section>
+  </div>
 
   <!-- Headline Featured Story (Dinamis dari Supabase) -->
   <section class="w-full px-4 sm:px-6 lg:px-12 py-6 hidden" id="featured-news-section">
@@ -300,8 +270,8 @@
 <!-- Core Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabaseClient.js?v=3.0"></script>
-<script src="js/public.js?v=3.0"></script>
-<script src="js/components.js?v=3.0"></script>
+<script src="js/public.js?v=4.0"></script>
+<script src="js/components.js?v=4.0"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {

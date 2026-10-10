@@ -181,3 +181,38 @@ if (document.readyState === "loading") {
 } else {
   muatKomponen();
 }
+
+// ================= Hero halaman: nama halaman dalam huruf Braille =================
+// Dekorasi pelengkap: tanpa JS, hero tetap utuh. Titik dirender dari atribut data-braille.
+(function pasangBrailleHero() {
+  const POLA = {
+    a: [1], b: [1, 2], c: [1, 4], d: [1, 4, 5], e: [1, 5], f: [1, 2, 4], g: [1, 2, 4, 5],
+    h: [1, 2, 5], i: [2, 4], j: [2, 4, 5], k: [1, 3], l: [1, 2, 3], m: [1, 3, 4],
+    n: [1, 3, 4, 5], o: [1, 3, 5], p: [1, 2, 3, 4], q: [1, 2, 3, 4, 5], r: [1, 2, 3, 5],
+    s: [2, 3, 4], t: [2, 3, 4, 5], u: [1, 3, 6], v: [1, 2, 3, 6], w: [2, 4, 5, 6],
+    x: [1, 3, 4, 6], y: [1, 3, 4, 5, 6], z: [1, 3, 5, 6]
+  };
+  function render() {
+    document.querySelectorAll("[data-braille]").forEach((el) => {
+      const kata = (el.getAttribute("data-braille") || "").toLowerCase().replace(/[^a-z]/g, "");
+      if (!kata || el.querySelector(".braille__cells")) return;
+      let urut = 0;
+      const sel = kata.split("").map((huruf) => {
+        const aktif = POLA[huruf] || [];
+        let dots = "";
+        // grid mengalir per kolom: titik 1,2,3 (kiri) lalu 4,5,6 (kanan)
+        for (let d = 1; d <= 6; d++) {
+          const on = aktif.indexOf(d) !== -1;
+          dots += `<span class="braille__dot${on ? " is-on" : ""}"${on ? ` style="--i:${urut++}"` : ""}></span>`;
+        }
+        return `<span class="braille__cell">${dots}</span>`;
+      }).join("");
+      el.setAttribute("role", "img");
+      el.setAttribute("aria-label", `Kata "${kata}" dalam huruf Braille`);
+      el.innerHTML = `<div class="braille__cells" aria-hidden="true">${sel}</div>` +
+        `<figcaption class="braille__caption" aria-hidden="true">Ditulis dalam huruf Braille: <strong>${kata}</strong></figcaption>`;
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", render);
+  else render();
+})();
