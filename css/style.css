@@ -1844,6 +1844,15 @@ tr:last-child td { border-bottom: none; }
   .galeri-tile__caption { opacity: 0; transition: opacity 0.2s ease; }
   .galeri-tile:hover .galeri-tile__caption, .galeri-tile:focus-visible .galeri-tile__caption { opacity: 1; }
 }
+.galeri-tile--tautan { display: block; cursor: pointer; text-decoration: none; }
+.galeri-tile__lencana {
+  position: absolute; top: 0.6rem; left: 0.6rem; z-index: 1;
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  padding: 0.25rem 0.6rem 0.25rem 0.4rem; border-radius: 9999px;
+  background: color-mix(in srgb, var(--on-surface) 85%, transparent); color: var(--on-primary);
+  font-size: 0.6875rem; line-height: 0.875rem; font-weight: 600; letter-spacing: 0.02em;
+}
+.galeri-tile__lencana .material-symbols-outlined { font-size: 16px; }
 .galeri-tile__kosong {
   width: 100%; height: 100%;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem;
@@ -2077,6 +2086,7 @@ body[data-page="kampus"] main section + section { border-top: 0; }
 .lokasi--halaman { margin-top: 0; padding-top: 0; border-top: 0; }
 .kampus-blok { margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1px solid var(--surface-container-high); }
 .kampus-blok[hidden], #kampus-kosong[hidden] { display: none; }
+.page-body > .kampus-blok:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .kampus-blok h2 { margin: 0 0 0.35rem; font-size: 1.375rem; line-height: 1.75rem; font-weight: 700; color: var(--on-surface); letter-spacing: -0.01em; }
 .jaringan__ukm--besar { grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); gap: 1.5rem 1rem; }
 .jaringan__ukm--besar .ukm-logo { width: 5rem; height: 5rem; font-size: 1.375rem; }

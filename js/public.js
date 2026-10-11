@@ -1433,6 +1433,34 @@ function badgeStatusProgram(status) {
   return `<span class="status-chip status-chip--rencana"><span aria-hidden="true" class="material-symbols-outlined">schedule</span>${status ? "Direncanakan" : "Rencana"}</span>`;
 }
 
+// ================= TAUTAN SOSIAL (YouTube / Instagram / TikTok / lainnya) =================
+// Mengenali platform dari alamat tautan. YouTube punya gambar sampul otomatis; platform lain memakai foto sampul unggahan pengurus.
+function infoTautanSosial(url) {
+  const s = String(url === null || url === undefined ? "" : url).trim();
+  let u;
+  try { u = new URL(s); } catch (e) { return null; }
+  if (u.protocol !== "http:" && u.protocol !== "https:") return null;
+  const h = u.hostname.replace(/^(www|m)\./i, "").toLowerCase();
+  const adaDi = (d) => h === d || h.endsWith("." + d);
+  if (h === "youtu.be" || adaDi("youtube.com")) {
+    let id = null;
+    if (h === "youtu.be") id = u.pathname.slice(1).split("/")[0];
+    else if (u.pathname === "/watch") id = u.searchParams.get("v");
+    else { const m = u.pathname.match(/^\/(shorts|embed|live|v)\/([^/?]+)/); if (m) id = m[2]; }
+    const sah = id && /^[A-Za-z0-9_-]{11}$/.test(id);
+    return { platform: "YouTube", ikon: "play_circle", thumb: sah ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null, url: s };
+  }
+  if (adaDi("instagram.com") || h === "instagr.am") return { platform: "Instagram", ikon: "photo_camera", thumb: null, url: s };
+  if (adaDi("tiktok.com")) return { platform: "TikTok", ikon: "music_note", thumb: null, url: s };
+  if (adaDi("facebook.com") || h === "fb.watch") return { platform: "Facebook", ikon: "thumb_up", thumb: null, url: s };
+  if (h === "x.com" || adaDi("twitter.com")) return { platform: "X", ikon: "tag", thumb: null, url: s };
+  return { platform: h, ikon: "link", thumb: null, url: s };
+}
+
+function htmlLencanaTautan(info) {
+  return `<span class="galeri-tile__lencana"><span class="material-symbols-outlined" aria-hidden="true">${info.ikon}</span>${escapeHtml(info.platform)}</span>`;
+}
+
 // ================= HALAMAN GALERI =================
 async function muatGaleriHalaman(elId) {
   const el = document.getElementById(elId);
@@ -1463,19 +1491,36 @@ async function muatGaleriHalaman(elId) {
     return;
   }
 
-  el.innerHTML = data.map((g, i) => `
-    <div class="galeri-tile${data.length >= 5 && i === 0 ? " galeri-tile--wide" : ""}" tabindex="${g.foto_url ? 0 : -1}"${g.foto_url ? ` role="button" aria-label="Perbesar foto: ${escapeHtml(g.judul || "Galeri")}"` : ""}>
-      ${g.foto_url ? `<img src="${urlGambarAman(g.foto_url)}" alt="${escapeHtml(g.judul || "Foto galeri")}" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">` : ""}
-      <div class="galeri-tile__kosong"${g.foto_url ? " hidden" : ""}>
+  el.innerHTML = data.map((g, i) => {
+    const wide = data.length >= 5 && i === 0 ? " galeri-tile--wide" : "";
+    const judul = g.judul || "";
+    const gambar = g.foto_url ? `<img src="${urlGambarAman(g.foto_url)}" alt="${escapeHtml(judul || "Foto galeri")}" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">` : "";
+    const kosong = `<div class="galeri-tile__kosong"${g.foto_url ? " hidden" : ""}>
         <span aria-hidden="true" class="material-symbols-outlined">photo_camera</span>
         <span>Foto belum tersedia</span>
-      </div>
-      ${g.judul || g.keterangan ? `<div class="galeri-tile__caption">
+      </div>`;
+    const caption = g.judul || g.keterangan ? `<div class="galeri-tile__caption">
         ${g.judul ? `<h3>${escapeHtml(g.judul)}</h3>` : ""}
         ${g.keterangan ? `<p>${escapeHtml(ringkas(g.keterangan, 80))}</p>` : ""}
-      </div>` : ""}
-    </div>
-  `).join("");
+      </div>` : "";
+    const href = urlTautanAman(g.tautan_url);
+    const info = href ? infoTautanSosial(href) : null;
+    if (info) {
+      return `
+    <a class="galeri-tile galeri-tile--tautan${wide}" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" aria-label="Buka di ${escapeHtml(info.platform)}: ${escapeHtml(judul || "tautan galeri")} (tab baru)">
+      ${gambar}
+      ${kosong}
+      ${htmlLencanaTautan(info)}
+      ${caption}
+    </a>`;
+    }
+    return `
+    <div class="galeri-tile${wide}" tabindex="${g.foto_url ? 0 : -1}"${g.foto_url ? ` role="button" aria-label="Perbesar foto: ${escapeHtml(judul || "Galeri")}"` : ""}>
+      ${gambar}
+      ${kosong}
+      ${caption}
+    </div>`;
+  }).join("");
 }
 
 // ================= BERANDA: Galeri Momen Kegiatan (4 foto) =================
@@ -1510,8 +1555,15 @@ async function muatGaleriBeranda(elId = "galeri-beranda-grid", batas = 4) {
     return;
   }
 
-  el.innerHTML = data.map((item) => `
-    <div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-surface-container h-64 border border-surface-container cursor-pointer flex items-center justify-center">
+  el.innerHTML = data.map((item) => {
+    const hrefTautan = urlTautanAman(item.tautan_url);
+    const infoTautan = hrefTautan ? infoTautanSosial(hrefTautan) : null;
+    const buka = infoTautan
+      ? `<a href="${escapeHtml(hrefTautan)}" target="_blank" rel="noopener noreferrer" aria-label="Buka di ${escapeHtml(infoTautan.platform)}: ${escapeHtml(item.judul || 'Dokumentasi Kegiatan')} (tab baru)" class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-surface-container h-64 border border-surface-container cursor-pointer flex items-center justify-center">`
+      : `<div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-surface-container h-64 border border-surface-container cursor-pointer flex items-center justify-center">`;
+    return `
+    ${buka}
+    ${infoTautan ? htmlLencanaTautan(infoTautan) : ''}
       ${item.foto_url ? `
         <img src="${urlGambarAman(item.foto_url)}" alt="${escapeHtml(item.judul || 'Dokumentasi Kegiatan')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
       ` : ''}
@@ -1526,8 +1578,9 @@ async function muatGaleriBeranda(elId = "galeri-beranda-grid", batas = 4) {
         <h3 class="text-sm sm:text-base font-bold text-on-primary leading-snug line-clamp-2 group-hover:text-primary-fixed-dim transition-colors">${escapeHtml(item.judul || 'Dokumentasi Kegiatan')}</h3>
         ${item.keterangan ? `<p class="text-xs text-secondary-fixed-dim mt-0.5 line-clamp-1">${escapeHtml(item.keterangan)}</p>` : ''}
       </div>
-    </div>
-  `).join("");
+    ${infoTautan ? '</a>' : '</div>'}
+  `;
+  }).join("");
 }
 
 // ================= HALAMAN TENTANG =================
@@ -2478,7 +2531,7 @@ function pasangLightbox(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  const gambar = Array.from(container.querySelectorAll("img"));
+  const gambar = Array.from(container.querySelectorAll("img")).filter(im => !im.closest("a[href]"));
   if (!gambar.length) return;
 
   let indeks = 0;
@@ -2631,38 +2684,24 @@ function htmlUkmKampus(daftar) {
   }).join("");
 }
 
+// Tautan situs kampus ditaruh di footer, pada daftar "Tautan Cepat" (diisi dari Dashboard > Mitra & Lokasi).
 async function muatJaringanKampus() {
-  const band = document.getElementById("jaringan-kampus");
-  if (!band) return;
-  const [tautan, ukm] = await Promise.all([ambilMitra("tautan"), ambilMitra("ukm")]);
-
-  const tautanAman = tautan.filter(t => urlTautanAman(t.url));
-  if (tautanAman.length) {
-    document.getElementById("jaringan-tautan-daftar").innerHTML = htmlTautanKampus(tautanAman);
-    document.getElementById("jaringan-tautan").hidden = false;
-  }
-  if (ukm.length) {
-    document.getElementById("jaringan-ukm-daftar").innerHTML = htmlUkmKampus(ukm);
-    document.getElementById("jaringan-ukm").hidden = false;
-  }
-  band.hidden = !(tautanAman.length || ukm.length);
+  const daftar = document.getElementById("footer-tautan-cepat");
+  if (!daftar) return;
+  const tautan = (await ambilMitra("tautan")).filter(t => urlTautanAman(t.url));
+  if (!tautan.length) return;
+  daftar.insertAdjacentHTML("beforeend", tautan.map(t => `
+          <li><a class="inline-flex items-center gap-1 hover:text-primary-fixed transition-colors" href="${escapeHtml(urlTautanAman(t.url))}" target="_blank" rel="noopener noreferrer"><span>${escapeHtml(t.nama)}</span><span class="material-symbols-outlined text-[14px]" aria-hidden="true">arrow_outward</span><span class="sr-only">(buka di tab baru)</span></a></li>`).join(""));
 }
 
-// Halaman Jaringan Kampus (kampus.html): peta, kisi UKM, dan tautan resmi. Pita footer disembunyikan lewat CSS di halaman ini.
+// Halaman Jaringan Kampus (kampus.html): hanya daftar UKM. Peta ada di halaman Kontak, tautan situs kampus ada di footer.
 async function muatHalamanKampus() {
-  muatLokasiKampus();
-  const [tautan, ukm] = await Promise.all([ambilMitra("tautan"), ambilMitra("ukm")]);
-  const tautanAman = tautan.filter(t => urlTautanAman(t.url));
-  const secT = document.getElementById("kampus-tautan"), secU = document.getElementById("kampus-ukm");
-  if (tautanAman.length && secT) {
-    document.getElementById("kampus-tautan-daftar").innerHTML = htmlTautanKampus(tautanAman);
-    secT.hidden = false;
-  }
+  const ukm = await ambilMitra("ukm");
+  const secU = document.getElementById("kampus-ukm");
   if (ukm.length && secU) {
     document.getElementById("kampus-ukm-daftar").innerHTML = htmlUkmKampus(ukm);
     secU.hidden = false;
   }
   const kosong = document.getElementById("kampus-kosong");
-  const adaPeta = document.getElementById("sec-lokasi") && !document.getElementById("sec-lokasi").hidden;
-  if (kosong) kosong.hidden = !!(adaPeta || tautanAman.length || ukm.length);
+  if (kosong) kosong.hidden = ukm.length > 0;
 }

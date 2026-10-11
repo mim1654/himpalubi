@@ -2784,6 +2784,30 @@ async function unduhAspirasiExcel() {
 }
 
 // ================= GALERI =================
+// ================= TAUTAN SOSIAL (YouTube / Instagram / TikTok / lainnya) =================
+// Mengenali platform dari alamat tautan. YouTube punya gambar sampul otomatis; platform lain memakai foto sampul unggahan pengurus.
+function infoTautanSosial(url) {
+  const s = String(url === null || url === undefined ? "" : url).trim();
+  let u;
+  try { u = new URL(s); } catch (e) { return null; }
+  if (u.protocol !== "http:" && u.protocol !== "https:") return null;
+  const h = u.hostname.replace(/^(www|m)\./i, "").toLowerCase();
+  const adaDi = (d) => h === d || h.endsWith("." + d);
+  if (h === "youtu.be" || adaDi("youtube.com")) {
+    let id = null;
+    if (h === "youtu.be") id = u.pathname.slice(1).split("/")[0];
+    else if (u.pathname === "/watch") id = u.searchParams.get("v");
+    else { const m = u.pathname.match(/^\/(shorts|embed|live|v)\/([^/?]+)/); if (m) id = m[2]; }
+    const sah = id && /^[A-Za-z0-9_-]{11}$/.test(id);
+    return { platform: "YouTube", ikon: "play_circle", thumb: sah ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null, url: s };
+  }
+  if (adaDi("instagram.com") || h === "instagr.am") return { platform: "Instagram", ikon: "photo_camera", thumb: null, url: s };
+  if (adaDi("tiktok.com")) return { platform: "TikTok", ikon: "music_note", thumb: null, url: s };
+  if (adaDi("facebook.com") || h === "fb.watch") return { platform: "Facebook", ikon: "thumb_up", thumb: null, url: s };
+  if (h === "x.com" || adaDi("twitter.com")) return { platform: "X", ikon: "tag", thumb: null, url: s };
+  return { platform: h, ikon: "link", thumb: null, url: s };
+}
+
 async function muatTabelGaleri(page) {
   const el = document.getElementById("tabel-galeri");
   if (!el) return;
@@ -2811,7 +2835,7 @@ async function muatTabelGaleri(page) {
           ? `<img src="${urlGambarAman(g.foto_url)}" alt="Dokumentasi" loading="lazy" class="w-16 h-12 rounded-lg object-cover border border-surface-container shadow-xs">` 
           : '<span class="text-xs text-secondary">-</span>'}
       </td>
-      <td class="py-3.5 px-4 font-semibold text-on-surface">${escapeHtml(g.judul || "-")}</td>
+      <td class="py-3.5 px-4 font-semibold text-on-surface">${escapeHtml(g.judul || "-")}${(() => { const t = g.tautan_url ? infoTautanSosial(g.tautan_url) : null; return t ? `<span class="flex items-center gap-1 text-[11px] font-medium text-secondary mt-0.5"><span class="material-symbols-outlined text-[14px]" aria-hidden="true">${t.ikon}</span>Tautan ${escapeHtml(t.platform)}</span>` : ""; })()}</td>
       <td class="py-3.5 px-4 text-secondary text-xs whitespace-nowrap">${formatTanggal(g.tanggal)}</td>
       <td class="py-3.5 px-4 text-right">
         <button type="button" onclick="hapusGaleri('${g.id}')" title="Hapus Foto Galeri" aria-label="Hapus Foto Galeri" class="w-11 h-11 rounded-lg inline-flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
@@ -2829,9 +2853,37 @@ function pasangFormGaleri(formId) {
   if (!form) return;
   pasangPratinjauFoto("foto_url-galeri", "preview-foto_url-galeri");
 
+  // Tautan YouTube: tampilkan gambar sampul otomatis sebagai pratinjau bila belum ada foto yang dipilih
+  const inputTautan = document.getElementById("tautan-galeri");
+  if (inputTautan) {
+    inputTautan.addEventListener("input", () => {
+      const prev = document.getElementById("preview-foto_url-galeri");
+      const fileDipilih = document.getElementById("foto_url-galeri")?.files?.length;
+      if (!prev || fileDipilih) return;
+      const info = inputTautan.value.trim() ? infoTautanSosial(inputTautan.value) : null;
+      prev.innerHTML = info && info.thumb
+        ? `<img src="${escapeHtml(info.thumb)}" alt="Gambar sampul YouTube (otomatis)" class="w-40 h-24 object-cover rounded-lg border border-surface-container">`
+        : "";
+    });
+  }
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const tombolSimpan = form.querySelector("button[type=submit]");
+    const pulihkanTombol = () => { tombolSimpan.disabled = false; tombolSimpan.textContent = "Tambah ke Galeri"; };
+
+    // Periksa tautan dulu supaya tidak ada foto terunggah sia-sia
+    const tautanMentah = (form.tautan_url?.value || "").trim();
+    let infoTautan = null;
+    if (tautanMentah) {
+      infoTautan = infoTautanSosial(tautanMentah);
+      if (!infoTautan) {
+        tampilkanToast("Tautan tidak valid. Tempel alamat lengkap yang diawali https://", "gagal");
+        form.tautan_url.focus();
+        return;
+      }
+    }
+
     tombolSimpan.disabled = true;
     tombolSimpan.innerHTML = `
       <span class="inline-block animate-spin material-symbols-outlined text-[16px]">progress_activity</span>
@@ -2839,18 +2891,21 @@ function pasangFormGaleri(formId) {
     `;
 
     let fotoUrl;
+    let fotoBaruDiunggah = false;
     try {
       fotoUrl = await unggahFotoJikaAda("foto_url-galeri", null);
+      fotoBaruDiunggah = !!fotoUrl;
     } catch (err) {
       tampilkanToast(err.message, "gagal");
-      tombolSimpan.disabled = false;
-      tombolSimpan.textContent = "Tambah ke Galeri";
+      pulihkanTombol();
       return;
     }
+    if (!fotoUrl && infoTautan && infoTautan.thumb) fotoUrl = infoTautan.thumb;
     if (!fotoUrl) {
-      tampilkanToast("Silakan pilih berkas foto terlebih dahulu.", "gagal");
-      tombolSimpan.disabled = false;
-      tombolSimpan.textContent = "Tambah ke Galeri";
+      tampilkanToast(infoTautan
+        ? `Tautan ${infoTautan.platform} tidak punya gambar otomatis. Silakan pilih foto sampul.`
+        : "Silakan pilih berkas foto terlebih dahulu.", "gagal");
+      pulihkanTombol();
       return;
     }
 
@@ -2859,10 +2914,18 @@ function pasangFormGaleri(formId) {
       tanggal: form.tanggal.value,
       foto_url: fotoUrl,
     };
+    if (infoTautan) payload.tautan_url = infoTautan.url;
     const { error } = await supabaseClient.from("galeri").insert(payload);
-    tombolSimpan.disabled = false;
-    tombolSimpan.textContent = "Tambah ke Galeri";
-    if (error) { tampilkanToast("Gagal menambahkan foto.", "gagal"); console.error(error); return; }
+    pulihkanTombol();
+    if (error) {
+      if (fotoBaruDiunggah) hapusFotoDariStorage(fotoUrl);
+      const kolomBelumAda = infoTautan && (error.code === "PGRST204" || error.code === "42703" || /tautan_url/i.test(error.message || ""));
+      tampilkanToast(kolomBelumAda
+        ? "Fitur tautan belum aktif. Jalankan SQL tahap 21 di Supabase dulu."
+        : "Gagal menambahkan foto.", "gagal");
+      console.error(error);
+      return;
+    }
     tampilkanToast("Foto berhasil ditambahkan ke galeri.", "sukses");
     form.reset();
     form.tanggal.valueAsDate = new Date();
@@ -3441,7 +3504,7 @@ const JENIS_MITRA = {
     label: "Tautan kampus",
     nama: "Contoh: SIAKAD UNIPAR",
     keteranganLabel: "Penjelasan singkat (opsional)",
-    keteranganHint: "Tampil di bawah nama tautan. Contoh: Sistem informasi akademik mahasiswa.",
+    keteranganHint: "Catatan untuk pengurus saja. Footer menampilkan nama tautannya. Contoh: Sistem informasi akademik mahasiswa.",
     urlLabel: "Alamat situs",
     urlPlaceholder: "https://...",
     urlHint: "Tempel alamat lengkap situsnya.",
