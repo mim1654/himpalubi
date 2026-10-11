@@ -2545,3 +2545,124 @@ function pasangLightbox(containerId) {
     });
   });
 }
+
+// ================= MITRA & LOKASI (tahap 20) =================
+// Data dari tabel mitra_tautan (diisi di Dashboard > Mitra & Lokasi). Jika tabel belum ada / kosong,
+// bagian terkait tetap tersembunyi dan halaman berjalan normal.
+async function ambilMitra(jenis) {
+  try {
+    const { data, error } = await supabaseClient.from("mitra_tautan").select("*")
+      .eq("jenis", jenis).eq("aktif", true)
+      .order("urutan", { ascending: true, nullsFirst: false }).order("created_at", { ascending: true });
+    return error || !data ? [] : data;
+  } catch (e) { return []; }
+}
+
+function kueriPeta(l) {
+  return (l.keterangan || "").trim() || (l.nama + " Universitas PGRI Argopuro Jember");
+}
+
+async function muatLokasiKampus() {
+  const sec = document.getElementById("sec-lokasi");
+  if (!sec) return;
+  const daftar = await ambilMitra("lokasi");
+  if (!daftar.length) return;
+
+  const tabs = document.getElementById("lokasi-tabs");
+  const iframe = document.getElementById("lokasi-peta");
+  const pilih = (i) => {
+    const l = daftar[i];
+    tabs.querySelectorAll("[role=tab]").forEach((b, n) => {
+      b.setAttribute("aria-selected", n === i ? "true" : "false");
+      b.tabIndex = n === i ? 0 : -1;
+    });
+    const q = encodeURIComponent(kueriPeta(l));
+    iframe.src = `https://www.google.com/maps?q=${q}&output=embed`;
+    iframe.title = "Peta lokasi " + l.nama;
+    document.getElementById("lokasi-nama").textContent = l.nama;
+    document.getElementById("lokasi-alamat").textContent = l.keterangan || "";
+    const rute = document.getElementById("lokasi-rute");
+    rute.href = urlTautanAman(l.url) || `https://www.google.com/maps/dir/?api=1&destination=${q}`;
+  };
+  tabs.innerHTML = daftar.map((l, i) =>
+    `<button type="button" role="tab" class="lokasi__tab" id="lokasi-tab-${i}" aria-controls="lokasi-panel" aria-selected="false" tabindex="-1">${escapeHtml(l.nama)}</button>`
+  ).join("");
+  tabs.addEventListener("click", (e) => {
+    const b = e.target.closest("[role=tab]");
+    if (b) pilih([...tabs.children].indexOf(b));
+  });
+  tabs.addEventListener("keydown", (e) => {
+    const n = daftar.length, cur = [...tabs.children].findIndex(b => b.getAttribute("aria-selected") === "true");
+    let to = -1;
+    if (e.key === "ArrowRight") to = (cur + 1) % n;
+    else if (e.key === "ArrowLeft") to = (cur - 1 + n) % n;
+    else if (e.key === "Home") to = 0;
+    else if (e.key === "End") to = n - 1;
+    if (to < 0) return;
+    e.preventDefault(); pilih(to); tabs.children[to].focus();
+  });
+  if (daftar.length === 1) tabs.hidden = true;
+  sec.hidden = false;
+  pilih(0);
+}
+
+function inisialNama(nama) {
+  const kata = String(nama || "").replace(/^ukm\s+/i, "").trim().split(/\s+/).filter(Boolean);
+  return ((kata[0] || "?")[0] + (kata[1] ? kata[1][0] : "")).toUpperCase();
+}
+
+function htmlTautanKampus(daftar) {
+  return daftar.map(t => `
+      <li><a href="${escapeHtml(urlTautanAman(t.url))}" target="_blank" rel="noopener noreferrer">
+        <span><strong>${escapeHtml(t.nama)}</strong>${t.keterangan ? `<small>${escapeHtml(t.keterangan)}</small>` : ""}</span>
+        <span class="material-symbols-outlined" aria-hidden="true">arrow_outward</span>
+        <span class="sr-only">(buka di tab baru)</span>
+      </a></li>`).join("");
+}
+
+function htmlUkmKampus(daftar) {
+  return daftar.map(u => {
+    const logo = urlGambarAman(u.logo_url);
+    const isi = `<span class="ukm-logo">${logo ? `<img src="${escapeHtml(logo)}" alt="" loading="lazy" width="64" height="64">` : escapeHtml(inisialNama(u.nama))}</span><span class="ukm-nama">${escapeHtml(u.nama)}</span>`;
+    const href = urlTautanAman(u.url);
+    return href
+      ? `<li><a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(u.nama)}, buka Instagram di tab baru">${isi}</a></li>`
+      : `<li><span class="ukm-statis">${isi}</span></li>`;
+  }).join("");
+}
+
+async function muatJaringanKampus() {
+  const band = document.getElementById("jaringan-kampus");
+  if (!band) return;
+  const [tautan, ukm] = await Promise.all([ambilMitra("tautan"), ambilMitra("ukm")]);
+
+  const tautanAman = tautan.filter(t => urlTautanAman(t.url));
+  if (tautanAman.length) {
+    document.getElementById("jaringan-tautan-daftar").innerHTML = htmlTautanKampus(tautanAman);
+    document.getElementById("jaringan-tautan").hidden = false;
+  }
+  if (ukm.length) {
+    document.getElementById("jaringan-ukm-daftar").innerHTML = htmlUkmKampus(ukm);
+    document.getElementById("jaringan-ukm").hidden = false;
+  }
+  band.hidden = !(tautanAman.length || ukm.length);
+}
+
+// Halaman Jaringan Kampus (kampus.html): peta, kisi UKM, dan tautan resmi. Pita footer disembunyikan lewat CSS di halaman ini.
+async function muatHalamanKampus() {
+  muatLokasiKampus();
+  const [tautan, ukm] = await Promise.all([ambilMitra("tautan"), ambilMitra("ukm")]);
+  const tautanAman = tautan.filter(t => urlTautanAman(t.url));
+  const secT = document.getElementById("kampus-tautan"), secU = document.getElementById("kampus-ukm");
+  if (tautanAman.length && secT) {
+    document.getElementById("kampus-tautan-daftar").innerHTML = htmlTautanKampus(tautanAman);
+    secT.hidden = false;
+  }
+  if (ukm.length && secU) {
+    document.getElementById("kampus-ukm-daftar").innerHTML = htmlUkmKampus(ukm);
+    secU.hidden = false;
+  }
+  const kosong = document.getElementById("kampus-kosong");
+  const adaPeta = document.getElementById("sec-lokasi") && !document.getElementById("sec-lokasi").hidden;
+  if (kosong) kosong.hidden = !!(adaPeta || tautanAman.length || ukm.length);
+}

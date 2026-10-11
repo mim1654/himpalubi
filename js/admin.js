@@ -922,7 +922,10 @@ function kompresGambar(file, maxDimensi = 1200, kualitas = 0.8) {
       const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
-      canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#FFFFFF"; // logo PNG transparan tidak menjadi hitam setelah diubah ke JPEG
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
       canvas.toBlob((blob) => resolve(blob), "image/jpeg", kualitas);
     };
     img.onerror = reject;
@@ -1363,6 +1366,12 @@ const adminSidebarTemplate = `
           <a href="#kelola-testimoni" data-section="kelola-testimoni" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
             <span class="material-symbols-outlined nav-icon text-[20px] text-secondary">format_quote</span>
             <span>Testimoni</span>
+          </a>
+        </li>
+        <li>
+          <a href="#kelola-mitra" data-section="kelola-mitra" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined nav-icon text-[20px] text-secondary">handshake</span>
+            <span>Mitra &amp; Lokasi</span>
           </a>
         </li>
         <li>
@@ -1843,6 +1852,7 @@ const judulSeksiAdmin = {
   "kelola-aspirasi": "Aspirasi & Pesan Masuk",
   "kelola-faq": "Tanya Jawab (FAQ)",
   "kelola-testimoni": "Testimoni Sivitas",
+  "kelola-mitra": "Mitra & Lokasi",
   "kelola-pengaturan": "Pengaturan Umum Website",
   "kelola-admin": "Kelola Hak Akses Admin"
 };
@@ -3406,3 +3416,213 @@ document.addEventListener("click", (e) => {
   else if (tombol.dataset.aksiAdmin === "reset") bukaModalResetSandi(tombol.dataset.id, email);
   else if (tombol.dataset.aksiAdmin === "cabut") cabutAksesAdmin(tombol.dataset.id, email);
 });
+
+// ================= MITRA & LOKASI (lokasi kampus, UKM, tautan situs kampus) =================
+const JENIS_MITRA = {
+  lokasi: {
+    label: "Lokasi kampus",
+    nama: "Contoh: Kampus 1 (Pusat)",
+    keteranganLabel: "Alamat lengkap (dipakai untuk peta)",
+    keteranganHint: "Tulis selengkap mungkin agar titik di peta tepat. Contoh: Jl. Jawa No. 10, Sumbersari, Jember.",
+    urlLabel: "Tautan Google Maps (opsional)",
+    urlPlaceholder: "https://maps.app.goo.gl/...",
+    urlHint: "Boleh dikosongkan. Kalau diisi, tombol \"Buka rute\" memakai tautan ini (salin dari tombol Bagikan di Google Maps).",
+    logo: false, keterangan: true,
+  },
+  ukm: {
+    label: "UKM",
+    nama: "Contoh: UKM Seni Tari",
+    urlLabel: "Instagram UKM",
+    urlPlaceholder: "@namaakun",
+    urlHint: "Cukup tulis nama akun, misalnya @ukmseni, atau tempel tautan lengkapnya.",
+    logo: true, keterangan: false,
+  },
+  tautan: {
+    label: "Tautan kampus",
+    nama: "Contoh: SIAKAD UNIPAR",
+    keteranganLabel: "Penjelasan singkat (opsional)",
+    keteranganHint: "Tampil di bawah nama tautan. Contoh: Sistem informasi akademik mahasiswa.",
+    urlLabel: "Alamat situs",
+    urlPlaceholder: "https://...",
+    urlHint: "Tempel alamat lengkap situsnya.",
+    logo: false, keterangan: true,
+  },
+};
+
+function normalisasiUrlMitra(jenis, nilai) {
+  let v = String(nilai || "").trim();
+  if (!v) return null;
+  if (jenis === "ukm" && !/^https?:\/\//i.test(v)) {
+    const akun = v.replace(/^@/, "").replace(/^(https?:\/\/)?(www\.)?instagram\.com\//i, "").replace(/[/?#].*$/, "");
+    if (!/^[A-Za-z0-9._]{1,30}$/.test(akun)) return undefined;
+    return `https://www.instagram.com/${akun}/`;
+  }
+  if (!/^https?:\/\//i.test(v)) v = "https://" + v;
+  try { new URL(v); } catch { return undefined; }
+  return v;
+}
+
+function aturBentukFormMitra() {
+  const jenis = document.getElementById("jenis-mitra")?.value || "lokasi";
+  const c = JENIS_MITRA[jenis];
+  const set = (id, teks) => { const el = document.getElementById(id); if (el) el.textContent = teks || ""; };
+  document.getElementById("nama-mitra").placeholder = c.nama;
+  document.getElementById("baris-keterangan-mitra").hidden = !c.keterangan;
+  document.getElementById("baris-logo-mitra").hidden = !c.logo;
+  set("label-keterangan-mitra", c.keteranganLabel);
+  set("hint-keterangan-mitra", c.keteranganHint);
+  set("label-url-mitra", c.urlLabel);
+  set("hint-url-mitra", c.urlHint);
+  document.getElementById("url-mitra").placeholder = c.urlPlaceholder;
+}
+
+function resetFormMitra() {
+  const form = document.getElementById("form-mitra");
+  if (!form) return;
+  form.reset();
+  delete form.dataset.editId;
+  delete form.dataset.logoLama;
+  const pv = document.getElementById("preview-logo-mitra");
+  if (pv) pv.innerHTML = "";
+  document.getElementById("judul-form-mitra").textContent = "Tambah data baru";
+  document.getElementById("batal-mitra")?.classList.add("hidden");
+  aturBentukFormMitra();
+}
+
+async function muatTabelMitra(page) {
+  const el = document.getElementById("tabel-mitra");
+  if (!el) return;
+  if (!page) page = ambilHalamanTabel("tabel-mitra");
+  aturHalamanTabel("tabel-mitra", page);
+
+  el.innerHTML = skeletonBarisTabel(4, 6);
+  const { data, error } = await supabaseClient.from("mitra_tautan").select("*")
+    .order("jenis", { ascending: true }).order("urutan", { ascending: true, nullsFirst: false });
+  const infoSql = document.getElementById("mitra-info-sql");
+  if (error) {
+    const belumAda = error.code === "42P01" || /mitra_tautan/i.test(error.message || "");
+    infoSql?.classList.toggle("hidden", !belumAda);
+    document.querySelectorAll("#form-mitra input, #form-mitra select, #form-mitra button").forEach(x => { x.disabled = belumAda; });
+    el.innerHTML = `<tr><td colspan="6" class="py-4 px-4 text-center text-secondary text-xs">${belumAda ? "Belum aktif. Jalankan SQL tahap 20 terlebih dahulu." : "Gagal memuat data."}</td></tr>`;
+    return;
+  }
+  infoSql?.classList.add("hidden");
+
+  const filter = document.getElementById("filter-jenis-mitra")?.value || "";
+  const semua = (data || []).filter(r => !filter || r.jenis === filter);
+  const total = semua.length;
+  if (!total) {
+    el.innerHTML = `<tr><td colspan="6">${emptyState("Belum ada data", "Tambahkan lokasi kampus, UKM, atau tautan kampus lewat formulir di atas.", { icon: "handshake" })}</td></tr>`;
+    renderBarisPaginasi("tabel-mitra", 0, 1, () => {});
+    return;
+  }
+  const offset = (page - 1) * BATAS_PER_HALAMAN;
+  el.innerHTML = semua.slice(offset, offset + BATAS_PER_HALAMAN).map(r => `
+    <tr class="hover:bg-surface-container-low/70 transition-colors border-b border-surface-container/60 last:border-b-0">
+      <td class="py-3.5 px-4 text-xs text-secondary">${escapeHtml(JENIS_MITRA[r.jenis]?.label || r.jenis)}</td>
+      <td class="py-3.5 px-4 font-semibold text-on-surface">${escapeHtml(r.nama)}</td>
+      <td class="py-3.5 px-4 text-xs text-secondary max-w-[16rem] truncate">${r.url ? `<a class="underline" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.url.replace(/^https?:\/\/(www\.)?/, ""))}</a>` : "-"}</td>
+      <td class="py-3.5 px-4 text-xs text-secondary">${r.urutan ?? "-"}</td>
+      <td class="py-3.5 px-4 text-xs">${r.aktif ? '<span class="px-2 py-1 rounded-full bg-emerald-50 text-emerald-800 font-semibold">Tampil</span>' : '<span class="px-2 py-1 rounded-full bg-surface-container text-secondary font-semibold">Disembunyikan</span>'}</td>
+      <td class="py-3.5 px-4 text-right">
+        <div class="inline-flex items-center gap-1.5 justify-end">
+          <button type="button" onclick="editMitra('${r.id}')" title="Ubah" aria-label="Ubah ${escapeHtml(r.nama)}" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 cursor-pointer"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+          <button type="button" onclick="hapusMitra('${r.id}')" title="Hapus" aria-label="Hapus ${escapeHtml(r.nama)}" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 cursor-pointer"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+        </div>
+      </td>
+    </tr>`).join("");
+  renderBarisPaginasi("tabel-mitra", total, page, (hal) => muatTabelMitra(hal));
+}
+
+function pasangFormMitra(formId) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+  pasangPratinjauFoto("logo-mitra", "preview-logo-mitra");
+  aturBentukFormMitra();
+  document.getElementById("jenis-mitra").addEventListener("change", aturBentukFormMitra);
+  document.getElementById("filter-jenis-mitra")?.addEventListener("change", () => { aturHalamanTabel("tabel-mitra", 1); muatTabelMitra(1); });
+  document.getElementById("batal-mitra")?.addEventListener("click", resetFormMitra);
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = form.dataset.editId;
+    const jenis = form.jenis.value;
+    const c = JENIS_MITRA[jenis];
+    const url = normalisasiUrlMitra(jenis, form.url.value);
+    if (url === undefined) {
+      tampilkanToast(jenis === "ukm" ? "Nama akun Instagram tidak valid. Contoh: @ukmseni" : "Alamat situs tidak valid. Contoh: https://unipar.ac.id", "gagal");
+      return;
+    }
+    if ((jenis === "tautan") && !url) { tampilkanToast("Alamat situs wajib diisi.", "gagal"); return; }
+    if (jenis === "lokasi" && !form.keterangan.value.trim() && !url) { tampilkanToast("Isi alamat lengkap atau tautan Google Maps.", "gagal"); return; }
+
+    const tombol = form.querySelector("button[type=submit]");
+    tombol.disabled = true; tombol.textContent = "Menyimpan...";
+    let logoUrl = form.dataset.logoLama || null;
+    try {
+      if (c.logo) logoUrl = await unggahFotoJikaAda("logo-mitra", form.dataset.logoLama || null, 400);
+      else logoUrl = null;
+    } catch (err) {
+      tampilkanToast(err.message, "gagal");
+      tombol.disabled = false; tombol.textContent = "Simpan";
+      return;
+    }
+    const payload = {
+      jenis,
+      nama: form.nama.value.trim(),
+      url,
+      keterangan: c.keterangan ? (form.keterangan.value.trim() || null) : null,
+      logo_url: logoUrl || null,
+      urutan: form.urutan.value ? parseInt(form.urutan.value, 10) : null,
+      aktif: form.aktif.checked,
+    };
+    const { error } = id
+      ? await supabaseClient.from("mitra_tautan").update(payload).eq("id", id)
+      : await supabaseClient.from("mitra_tautan").insert(payload);
+    tombol.disabled = false; tombol.textContent = "Simpan";
+    if (error) { tampilkanToast("Gagal menyimpan data.", "gagal"); console.error(error); return; }
+    const lama = form.dataset.logoLama;
+    if (lama && lama !== payload.logo_url) hapusFotoDariStorage(lama);
+    tampilkanToast(id ? "Perubahan disimpan." : "Data baru berhasil ditambahkan.", "sukses");
+    resetFormMitra();
+    muatTabelMitra();
+  });
+}
+
+async function editMitra(id) {
+  const { data } = await supabaseClient.from("mitra_tautan").select("*").eq("id", id).single();
+  if (!data) return;
+  const form = document.getElementById("form-mitra");
+  form.jenis.value = data.jenis;
+  aturBentukFormMitra();
+  form.nama.value = data.nama;
+  form.keterangan.value = data.keterangan || "";
+  form.url.value = data.url || "";
+  form.urutan.value = data.urutan ?? "";
+  form.aktif.checked = !!data.aktif;
+  form.dataset.logoLama = data.logo_url || "";
+  tampilkanFotoLama("preview-logo-mitra", data.logo_url);
+  form.dataset.editId = id;
+  document.getElementById("judul-form-mitra").textContent = "Ubah data";
+  document.getElementById("batal-mitra")?.classList.remove("hidden");
+  form.scrollIntoView({ behavior: "smooth" });
+}
+
+function hapusMitra(id) {
+  tampilkanModalKonfirmasi({
+    judul: "Hapus data ini?",
+    pesan: "Data ini akan hilang dari website. Kalau hanya ingin menyembunyikan sementara, pilih Ubah lalu matikan \"Tampilkan di website\".",
+    teksKonfirmasi: "Ya, Hapus",
+    teksBatal: "Batal",
+    tipe: "danger",
+    ikon: "delete",
+    onKonfirmasi: async () => {
+      const { data } = await supabaseClient.from("mitra_tautan").select("logo_url").eq("id", id).single();
+      const { error } = await supabaseClient.from("mitra_tautan").delete().eq("id", id);
+      if (error) { tampilkanToast("Gagal menghapus data: " + error.message, "gagal"); console.error(error); return; }
+      if (data?.logo_url) hapusFotoDariStorage(data.logo_url);
+      muatTabelMitra();
+      tampilkanToast("Data berhasil dihapus.", "sukses");
+    },
+  });
+}

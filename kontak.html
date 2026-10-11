@@ -87,7 +87,7 @@
     }
   };
 </script>
-<link rel="stylesheet" href="css/style.css?v=5.1">
+<link rel="stylesheet" href="css/style.css?v=5.2">
 </head>
 <body data-page="kontak" class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col">
 <a href="#konten" class="skip-link">Langsung ke konten</a>
@@ -147,17 +147,32 @@
         <p class="kontak-side__link">Ingin menyampaikan aspirasi atau bergabung? <a href="pendaftaran.html">Buka halaman pendaftaran</a>.</p>
       </aside>
     </div>
+
+    <div class="lokasi" id="sec-lokasi" hidden>
+      <h2 id="h-lokasi">Lokasi kampus</h2>
+      <p class="lokasi__lead">Pilih kampus untuk melihat petanya, lalu buka rute dari lokasi Anda.</p>
+      <div class="lokasi__tabs" role="tablist" aria-label="Pilih kampus" id="lokasi-tabs"></div>
+      <div class="lokasi__panel" id="lokasi-panel" role="tabpanel" aria-live="polite">
+        <div class="lokasi__peta"><iframe id="lokasi-peta" title="Peta lokasi kampus" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+        <div class="lokasi__info">
+          <h3 id="lokasi-nama"></h3>
+          <p id="lokasi-alamat"></p>
+          <a id="lokasi-rute" class="lokasi__rute" href="#" target="_blank" rel="noopener noreferrer"><span class="material-symbols-outlined" aria-hidden="true">directions</span><span>Buka rute di Google Maps</span></a>
+        </div>
+      </div>
+    </div>
   </div>
 </main>
 
 <div id="site-footer-slot"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
-<script src="js/supabaseClient.js?v=5.1"></script>
-<script src="js/public.js?v=5.1"></script>
-<script src="js/components.js?v=5.1"></script>
+<script src="js/supabaseClient.js?v=5.2"></script>
+<script src="js/public.js?v=5.2"></script>
+<script src="js/components.js?v=5.2"></script>
 <script>
   muatKontakHalaman();
+  muatLokasiKampus();
 </script>
 </body>
 </html>

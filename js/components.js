@@ -48,6 +48,7 @@ async function muatKomponen() {
         const elTahun = document.getElementById("tahun");
         if (elTahun) elTahun.textContent = new Date().getFullYear();
         if (typeof muatPengaturanFooter === "function") muatPengaturanFooter();
+        if (typeof muatJaringanKampus === "function") muatJaringanKampus();
       }
     } catch (e) {
       console.error("Gagal memuat footer", e);
@@ -68,7 +69,7 @@ function tandaiMenuAktif() {
   }
 
   // Jika halaman adalah submenu Tentang (profil/struktur/program-kerja)
-  if (["tentang", "struktur", "program-kerja"].includes(halaman)) {
+  if (["tentang", "struktur", "program-kerja", "kampus"].includes(halaman)) {
     const btnTentang = document.getElementById("btn-dropdown-tentang");
     if (btnTentang) {
       btnTentang.classList.remove("text-secondary");

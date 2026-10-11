@@ -1341,6 +1341,100 @@
 
       </section>
 
+      <section id="kelola-mitra" class="admin-section">
+
+        <div class="mb-5">
+          <h1 class="text-2xl sm:text-3xl font-bold text-on-surface tracking-tight">Mitra &amp; Lokasi</h1>
+          <p class="text-sm text-secondary mt-1">Peta lokasi kampus di halaman Kontak, logo UKM dengan tautan Instagram, dan tautan situs kampus. Semuanya tampil di bagian bawah website.</p>
+        </div>
+
+        <div id="mitra-info-sql" class="hidden mb-5 p-4 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-900" role="status">
+          Menu ini aktif setelah SQL tahap 20 dijalankan di Supabase (file <code>sql/migrasi_tahap20_mitra_dan_lokasi.sql</code>).
+        </div>
+
+        <div class="set-card" style="margin-bottom:1.25rem">
+          <div class="set-legend">
+            <span class="set-ico"><span class="material-symbols-outlined" aria-hidden="true">add_circle</span></span>
+            <span><span id="judul-form-mitra" class="set-title">Tambah data baru</span><span class="set-desc">Pilih jenisnya dulu; isian di bawah menyesuaikan.</span></span>
+          </div>
+          <form id="form-mitra" class="set-grid">
+            <div>
+              <label for="jenis-mitra" class="set-label">Jenis</label>
+              <select id="jenis-mitra" name="jenis" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                <option value="lokasi">Lokasi kampus (peta)</option>
+                <option value="ukm">UKM (logo + Instagram)</option>
+                <option value="tautan">Tautan situs kampus</option>
+              </select>
+            </div>
+            <div>
+              <label for="nama-mitra" class="set-label">Nama</label>
+              <input type="text" id="nama-mitra" name="nama" required maxlength="120" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+              <p class="set-hint" id="hint-nama-mitra"></p>
+            </div>
+            <div class="md:col-span-2" id="baris-keterangan-mitra">
+              <label for="keterangan-mitra" class="set-label" id="label-keterangan-mitra">Alamat lengkap</label>
+              <input type="text" id="keterangan-mitra" name="keterangan" maxlength="300" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+              <p class="set-hint" id="hint-keterangan-mitra"></p>
+            </div>
+            <div class="md:col-span-2">
+              <label for="url-mitra" class="set-label" id="label-url-mitra">Tautan</label>
+              <input type="text" id="url-mitra" name="url" maxlength="300" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+              <p class="set-hint" id="hint-url-mitra"></p>
+            </div>
+            <div id="baris-logo-mitra">
+              <label for="logo-mitra" class="set-label">Logo (opsional)</label>
+              <input type="file" id="logo-mitra" accept="image/*">
+              <p class="set-hint">JPG, PNG, atau WEBP, maksimal 5 MB. Gambar persegi paling rapi.</p>
+              <div id="preview-logo-mitra" class="mt-3"></div>
+            </div>
+            <div>
+              <label for="urutan-mitra" class="set-label">Urutan tampil (opsional)</label>
+              <input type="number" id="urutan-mitra" name="urutan" min="1" placeholder="1" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+              <label class="flex items-center gap-2 mt-3 text-sm text-on-surface min-h-[44px]">
+                <input type="checkbox" id="aktif-mitra" name="aktif" checked class="w-5 h-5 accent-[#9E001F]">
+                Tampilkan di website
+              </label>
+            </div>
+            <div class="md:col-span-2 flex items-center gap-3 pt-1">
+              <button type="submit" class="px-6 py-2.5 rounded-full bg-primary hover:bg-primary-container text-on-primary text-sm font-semibold shadow-sm hover:shadow-md transition-all active:scale-[0.98] min-h-[44px]">Simpan</button>
+              <button type="button" id="batal-mitra" class="hidden px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface text-sm font-semibold min-h-[44px]">Batal ubah</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl border border-surface-container overflow-hidden shadow-sm">
+          <div class="p-4 bg-surface-container-low border-b border-surface-container flex flex-wrap items-center justify-between gap-3">
+            <h3 class="text-sm font-bold text-on-surface">Daftar data</h3>
+            <label class="flex items-center gap-2 text-sm text-secondary">Tampilkan
+              <select id="filter-jenis-mitra" class="px-3 py-2 bg-surface rounded-lg border border-surface-container text-sm text-on-surface min-h-[44px]">
+                <option value="">Semua jenis</option>
+                <option value="lokasi">Lokasi kampus</option>
+                <option value="ukm">UKM</option>
+                <option value="tautan">Tautan kampus</option>
+              </select>
+            </label>
+          </div>
+          <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabel mitra dan lokasi">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
+                  <th scope="col" class="py-3 px-4">Jenis</th>
+                  <th scope="col" class="py-3 px-4">Nama</th>
+                  <th scope="col" class="py-3 px-4">Tautan</th>
+                  <th scope="col" class="py-3 px-4">Urutan</th>
+                  <th scope="col" class="py-3 px-4">Status</th>
+                  <th scope="col" class="py-3 px-4 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tabel-mitra" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
+                <tr><td colspan="6" class="py-4 px-4 text-center text-secondary text-xs">Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
       <!-- ================= 10. KELOLA ADMIN (Slot Dinamis Khusus Admin Utama) ================= -->
       <div id="kelola-admin-slot"></div>
 
@@ -1354,9 +1448,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js" integrity="sha384-BWcjm9OdFth9TbhCxZPdm+gAOUMAzQy9nmTs12ioXdCcbVnJaPMn+fMUoQCLt60R" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js" integrity="sha384-TtrQp5nveof/QP1+f/OLiEHL3GuOIRyl3IfsGxu5X45VO2vHeT4HRNmQuTR3Ea3w" crossorigin="anonymous"></script>
-  <script src="../js/supabaseClient.js?v=5.1"></script>
-  <script src="../js/public.js?v=5.1"></script>
-  <script src="../js/admin.js?v=5.1"></script>
+  <script src="../js/supabaseClient.js?v=5.2"></script>
+  <script src="../js/public.js?v=5.2"></script>
+  <script src="../js/admin.js?v=5.2"></script>
   <script>
     (async () => {
       // 1. Muat modular Sidebar & Top Navbar
@@ -1441,6 +1535,11 @@
       try {
         muatTabelTestimoni();
         pasangFormTestimoni("form-testimoni");
+      } catch (e) { console.error(e); }
+
+      try {
+        muatTabelMitra();
+        pasangFormMitra("form-mitra");
       } catch (e) { console.error(e); }
 
       try {

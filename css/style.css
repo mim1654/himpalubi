@@ -2011,3 +2011,74 @@ body:is([data-page="tentang"],[data-page="kontak"]) .about-row + .about-row { bo
 body[data-page="berita"] main > section > .max-w-7xl { max-width: calc(80rem - 6rem); }
 @media (max-width: 1023px) { body[data-page="berita"] main > section > .max-w-7xl { max-width: none; } }
 .galeri-grid { grid-auto-flow: dense; }
+
+/* ===== Lokasi kampus (halaman Kontak) ===== */
+.lokasi { margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1px solid var(--surface-container-high); }
+.lokasi[hidden] { display: none; }
+.lokasi h2 { margin: 0 0 0.35rem; font-size: 1.375rem; line-height: 1.75rem; font-weight: 700; color: var(--on-surface); letter-spacing: -0.01em; }
+.lokasi__lead { margin: 0 0 1.25rem; max-width: 40rem; font-size: 0.9375rem; line-height: 1.6; color: var(--ink-600); }
+.lokasi__tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.lokasi__tab {
+  min-height: 44px; padding: 0 1.1rem; border-radius: 9999px; cursor: pointer;
+  border: 1px solid var(--surface-container-high); background: var(--surface-container-lowest);
+  color: var(--on-surface); font: inherit; font-size: 0.9375rem; font-weight: 600;
+}
+.lokasi__tab:hover { border-color: var(--primary-container); }
+.lokasi__tab[aria-selected="true"] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.lokasi__tab:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.lokasi__panel { display: grid; gap: 1.25rem; }
+@media (min-width: 900px) { .lokasi__panel { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); align-items: stretch; } }
+.lokasi__peta { position: relative; min-height: 18rem; border-radius: 1rem; overflow: hidden; border: 1px solid var(--surface-container-high); background: var(--surface-container); }
+.lokasi__peta iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.lokasi__info { display: flex; flex-direction: column; justify-content: center; gap: 0.75rem; padding: 0.25rem 0; }
+.lokasi__info h3 { margin: 0; font-size: 1.125rem; font-weight: 700; color: var(--on-surface); }
+.lokasi__info p { margin: 0; font-size: 0.9375rem; line-height: 1.65; color: var(--ink-600); }
+.lokasi__rute {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 44px; padding: 0 1.25rem;
+  border-radius: 9999px; background: var(--primary); color: var(--on-primary); font-size: 0.9375rem; font-weight: 600; text-decoration: none;
+}
+.lokasi__rute:hover { background: var(--primary-container); color: var(--on-primary); }
+.lokasi__rute:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+
+/* ===== Pita jaringan kampus (di atas footer, semua halaman) ===== */
+.jaringan { background: var(--surface-container-lowest); border-top: 1px solid var(--surface-container-high); }
+.jaringan[hidden] { display: none; }
+.jaringan__inner { max-width: 80rem; margin: 0 auto; padding: 2.5rem 1rem; display: grid; gap: 2.25rem; }
+@media (min-width: 640px) { .jaringan__inner { padding: 2.75rem 1.5rem; } }
+@media (min-width: 1024px) { .jaringan__inner { padding: 3rem 3rem; } }
+.jaringan__blok[hidden] { display: none; }
+.jaringan h2 { margin: 0 0 0.25rem; font-size: 1.0625rem; line-height: 1.5rem; font-weight: 700; color: var(--on-surface); }
+.jaringan__lead { margin: 0 0 1rem; font-size: 0.875rem; line-height: 1.55; color: var(--ink-600); max-width: 38rem; }
+.jaringan__tautan { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+.jaringan__tautan a {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; min-height: 56px; padding: 0.6rem 1rem;
+  border: 1px solid var(--surface-container-high); border-radius: 0.75rem; background: var(--surface); text-decoration: none; color: var(--on-surface);
+}
+.jaringan__tautan a:hover { border-color: var(--primary-container); }
+.jaringan__tautan a:focus-visible, .jaringan__ukm a:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.jaringan__tautan strong { display: block; font-size: 0.9375rem; font-weight: 600; }
+.jaringan__tautan small { display: block; font-size: 0.8125rem; line-height: 1.35; color: var(--ink-600); }
+.jaringan__tautan .material-symbols-outlined { color: var(--primary); font-size: 20px; flex: 0 0 auto; }
+.jaringan__ukm { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem 0.75rem; grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr)); }
+.jaringan__ukm li { min-width: 0; }
+.jaringan__ukm a, .jaringan__ukm .ukm-statis { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; text-decoration: none; color: var(--on-surface); text-align: center; }
+.ukm-logo {
+  width: 4rem; height: 4rem; border-radius: 9999px; overflow: hidden; display: grid; place-items: center;
+  background: var(--surface-container-lowest); border: 1px solid var(--surface-container-high);
+  font-size: 1.125rem; font-weight: 700; color: var(--primary); transition: border-color .15s ease;
+}
+.ukm-logo img { width: 100%; height: 100%; object-fit: contain; }
+.jaringan__ukm a:hover .ukm-logo { border-color: var(--primary-container); }
+.ukm-nama { font-size: 0.8125rem; line-height: 1.3; font-weight: 600; overflow-wrap: anywhere; }
+
+/* ===== Halaman Jaringan Kampus ===== */
+body[data-page="kampus"] .jaringan { display: none; }
+body[data-page="kampus"] main section + section { border-top: 0; }
+.lokasi--halaman { margin-top: 0; padding-top: 0; border-top: 0; }
+.kampus-blok { margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1px solid var(--surface-container-high); }
+.kampus-blok[hidden], #kampus-kosong[hidden] { display: none; }
+.kampus-blok h2 { margin: 0 0 0.35rem; font-size: 1.375rem; line-height: 1.75rem; font-weight: 700; color: var(--on-surface); letter-spacing: -0.01em; }
+.jaringan__ukm--besar { grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); gap: 1.5rem 1rem; }
+.jaringan__ukm--besar .ukm-logo { width: 5rem; height: 5rem; font-size: 1.375rem; }
+.jaringan__semua { margin: 1rem 0 0; font-size: 0.875rem; }
+.jaringan__semua a { color: var(--primary); font-weight: 600; }
