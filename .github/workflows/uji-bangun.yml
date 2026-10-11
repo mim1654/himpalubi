@@ -1,0 +1,30 @@
+# Uji coba SAJA: membuat halaman statis lalu menyimpannya sebagai berkas unduhan.
+# TIDAK mengubah situs yang sedang tayang. Dijalankan manual dari tab Actions.
+name: Uji bangun halaman (tanpa deploy)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bangun:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Bangun halaman statis
+        run: node scripts/bangun-halaman.mjs
+        env:
+          # Boleh kosong: skrip membaca js/supabaseClient.js bila rahasia ini belum dibuat.
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      - name: Simpan hasil untuk diunduh
+        uses: actions/upload-artifact@v4
+        with:
+          name: hasil-bangun
+          path: _site
+          retention-days: 7
