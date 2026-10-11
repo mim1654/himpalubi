@@ -3266,3 +3266,32 @@ function badgeStatusAnggota(status) {
   }
   return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-container-high text-secondary border border-surface-container"><span class="material-symbols-outlined text-[14px]">remove_circle_outline</span>Nonaktif</span>`;
 }
+
+
+// ================= TABEL RESPONSIF: beri data-label dari judul kolom =================
+// Dipakai CSS di layar kecil agar tiap baris tampil sebagai kartu (Status dan Aksi tidak tersembunyi).
+function labelTabelResponsif() {
+  const main = document.querySelector("main");
+  if (!main) return;
+  const terapkan = () => {
+    main.querySelectorAll("table").forEach((tabel) => {
+      const judul = Array.from(tabel.querySelectorAll("thead th")).map((th) => th.textContent.trim());
+      tabel.querySelectorAll("tbody tr").forEach((tr) => {
+        Array.from(tr.children).forEach((td, i) => {
+          if (td.colSpan > 1 || !judul[i]) return;
+          if (td.getAttribute("data-label") !== judul[i]) td.setAttribute("data-label", judul[i]);
+        });
+      });
+    });
+  };
+  let jadwal = 0;
+  new MutationObserver(() => {
+    cancelAnimationFrame(jadwal);
+    jadwal = requestAnimationFrame(terapkan);
+  }).observe(main, { childList: true, subtree: true });
+  terapkan();
+}
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", labelTabelResponsif);
+  else labelTabelResponsif();
+}
