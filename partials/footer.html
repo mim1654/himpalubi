@@ -1,7 +1,7 @@
 <!-- Desktop & Tablet Footer -->
 <footer class="w-full bg-inverse-surface text-surface-bright border-t border-surface-container-lowest/10">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-12 pb-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+    <div class="footer-grid grid grid-cols-1 gap-8 mb-10">
       
       <!-- Column 1: Identity -->
       <div class="flex flex-col gap-3">
@@ -18,12 +18,19 @@
         <p id="footer-deskripsi" class="text-body-md text-secondary-fixed-dim leading-relaxed">
           Himpunan Mahasiswa Pendidikan Luar Biasa Universitas PGRI Argopuro Jember — bergerak untuk peradaban pendidikan yang inklusif dan aksesibel bagi semua.
         </p>
+        <p class="text-label-md font-semibold text-on-primary mt-1">Media sosial</p>
+        <div class="flex flex-wrap gap-2">
+          <a id="footer-instagram" hidden class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/10 text-on-primary hover:bg-primary-container text-label-sm font-semibold transition-colors" href="#">Instagram</a>
+          <a id="footer-youtube" hidden class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/10 text-on-primary hover:bg-primary-container text-label-sm font-semibold transition-colors" href="#">YouTube</a>
+          <a id="footer-tiktok" hidden class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/10 text-on-primary hover:bg-primary-container text-label-sm font-semibold transition-colors" href="#" target="_blank" rel="noopener">TikTok</a>
+          <a class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/10 text-on-primary hover:bg-primary-container text-label-sm font-semibold transition-colors" href="admin/login.html">Portal Admin</a>
+        </div>
       </div>
 
       <!-- Column 2: Tautan Cepat -->
       <div class="flex flex-col gap-3">
         <h3 aria-level="2" class="text-title-md text-on-primary font-bold tracking-tight">Tautan Cepat</h3>
-        <ul id="footer-tautan-cepat" class="flex flex-col gap-2 text-body-md text-secondary-fixed-dim">
+        <ul class="flex flex-col gap-2 text-body-md text-secondary-fixed-dim">
           <li><a class="hover:text-primary-fixed transition-colors" href="index.html">Beranda</a></li>
           <li><a class="hover:text-primary-fixed transition-colors" href="tentang.html">Profil Organisasi</a></li>
           <li><a class="hover:text-primary-fixed transition-colors" href="kegiatan.html">Agenda Kegiatan</a></li>
@@ -34,7 +41,13 @@
         </ul>
       </div>
 
-      <!-- Column 3: Kontak -->
+      <!-- Column 3: Layanan Akademik (diisi dari Dashboard > Mitra & Lokasi; tersembunyi bila kosong) -->
+      <div id="footer-layanan" class="flex flex-col gap-3" hidden>
+        <h3 aria-level="2" class="text-title-md text-on-primary font-bold tracking-tight">Layanan Akademik</h3>
+        <ul id="footer-layanan-daftar" class="flex flex-col gap-2 text-body-md text-secondary-fixed-dim"></ul>
+      </div>
+
+      <!-- Column 4: Kontak -->
       <div class="flex flex-col gap-3">
         <h3 aria-level="2" class="text-title-md text-on-primary font-bold tracking-tight">Kontak Sekretariat</h3>
         <ul class="flex flex-col gap-2.5 text-body-md text-secondary-fixed-dim">
@@ -51,18 +64,6 @@
             <span id="footer-telepon"></span>
           </li>
         </ul>
-      </div>
-
-      <!-- Column 4: Media Sosial -->
-      <div class="flex flex-col gap-3">
-        <h3 aria-level="2" class="text-title-md text-on-primary font-bold tracking-tight">Media Sosial</h3>
-        <p class="text-body-md text-secondary-fixed-dim">Ikuti publikasi resmi kegiatan mahasiswa:</p>
-        <div class="flex flex-wrap gap-2">
-          <a id="footer-instagram" hidden class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/10 text-on-primary hover:bg-primary-container text-label-sm font-semibold transition-colors" href="#">Instagram</a>
-          <a id="footer-youtube" hidden class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/10 text-on-primary hover:bg-primary-container text-label-sm font-semibold transition-colors" href="#">YouTube</a>
-          <a id="footer-tiktok" hidden class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/10 text-on-primary hover:bg-primary-container text-label-sm font-semibold transition-colors" href="#" target="_blank" rel="noopener">TikTok</a>
-          <a class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/10 text-on-primary hover:bg-primary-container text-label-sm font-semibold transition-colors" href="admin/login.html">Portal Admin</a>
-        </div>
       </div>
 
     </div>

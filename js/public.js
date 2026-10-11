@@ -2684,14 +2684,17 @@ function htmlUkmKampus(daftar) {
   }).join("");
 }
 
-// Tautan situs kampus ditaruh di footer, pada daftar "Tautan Cepat" (diisi dari Dashboard > Mitra & Lokasi).
+// Tautan situs kampus tampil di footer, di kolom sendiri "Layanan Akademik" (diisi dari Dashboard > Mitra & Lokasi).
+// Kolom tersembunyi selama belum ada tautan, sehingga footer tetap rapi.
 async function muatJaringanKampus() {
-  const daftar = document.getElementById("footer-tautan-cepat");
-  if (!daftar) return;
+  const kolom = document.getElementById("footer-layanan");
+  const daftar = document.getElementById("footer-layanan-daftar");
+  if (!kolom || !daftar) return;
   const tautan = (await ambilMitra("tautan")).filter(t => urlTautanAman(t.url));
   if (!tautan.length) return;
-  daftar.insertAdjacentHTML("beforeend", tautan.map(t => `
-          <li><a class="inline-flex items-center gap-1 hover:text-primary-fixed transition-colors" href="${escapeHtml(urlTautanAman(t.url))}" target="_blank" rel="noopener noreferrer"><span>${escapeHtml(t.nama)}</span><span class="material-symbols-outlined text-[14px]" aria-hidden="true">arrow_outward</span><span class="sr-only">(buka di tab baru)</span></a></li>`).join(""));
+  daftar.innerHTML = tautan.map(t => `
+          <li><a class="inline-flex items-center gap-1 hover:text-primary-fixed transition-colors" href="${escapeHtml(urlTautanAman(t.url))}" target="_blank" rel="noopener noreferrer"><span>${escapeHtml(t.nama)}</span><span class="material-symbols-outlined text-[14px]" aria-hidden="true">arrow_outward</span><span class="sr-only">(buka di tab baru)</span></a></li>`).join("");
+  kolom.hidden = false;
 }
 
 // Halaman Jaringan Kampus (kampus.html): hanya daftar UKM. Peta ada di halaman Kontak, tautan situs kampus ada di footer.

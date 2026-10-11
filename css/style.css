@@ -2092,3 +2092,8 @@ body[data-page="kampus"] main section + section { border-top: 0; }
 .jaringan__ukm--besar .ukm-logo { width: 5rem; height: 5rem; font-size: 1.375rem; }
 .jaringan__semua { margin: 1rem 0 0; font-size: 0.875rem; }
 .jaringan__semua a { color: var(--primary); font-weight: 600; }
+
+/* Footer: kolom menyesuaikan jumlah isi (kolom Layanan Akademik tersembunyi bila belum ada tautan) */
+.footer-grid[class] { grid-template-columns: 1fr; }
+@media (min-width: 768px) { .footer-grid[class] { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .footer-grid[class] { grid-template-columns: minmax(0, 1.25fr) repeat(auto-fit, minmax(11rem, 1fr)); } }
