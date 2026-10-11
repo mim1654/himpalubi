@@ -233,12 +233,29 @@
 
 
     /* ===== Pengaturan: kartu per kelompok ===== */
-    .set-nav { display:flex; gap:.5rem; overflow-x:auto; padding-bottom:.25rem; margin-bottom:1.25rem; -webkit-overflow-scrolling:touch; }
+    .admin-section, .set-layout { min-width:0; }
+    .set-layout { display:block; }
+    .set-main { min-width:0; }
+    .set-nav { position:sticky; top:4rem; z-index:20; display:flex; gap:.5rem; overflow-x:auto; margin:0 0 1rem; padding:.6rem 0; background:rgba(249,249,255,.94); backdrop-filter:blur(6px); border-bottom:1px solid #E5EEFF; scrollbar-width:none; }
+    .set-nav::-webkit-scrollbar { display:none; }
     .set-chip { display:inline-flex; align-items:center; gap:.4rem; flex:0 0 auto; min-height:44px; padding:0 .9rem; border:1px solid #DFE9FA; border-radius:9999px; background:#fff; color:#121C28; font-size:.8125rem; font-weight:600; text-decoration:none; }
     .set-chip:hover { border-color:#C8102E; }
     .set-chip .material-symbols-outlined { font-size:18px; color:#9E001F; }
+    .set-chip-text { display:flex; flex-direction:column; }
+    .set-chip-d { display:none; font-weight:400; font-size:.75rem; line-height:1rem; color:#5C5E66; }
+    .set-chip[aria-current="true"] { background:#9E001F; border-color:#9E001F; color:#fff; }
+    .set-chip[aria-current="true"] .material-symbols-outlined, .set-chip[aria-current="true"] .set-chip-d { color:#fff; }
+    @media (min-width:1024px) {
+      .set-layout { display:grid; grid-template-columns:15.5rem minmax(0,1fr); gap:1.75rem; align-items:start; }
+      .set-nav { top:5.5rem; flex-direction:column; gap:.25rem; margin:0; padding:.5rem; overflow:visible; background:#fff; border:1px solid #E5EEFF; border-radius:1rem; backdrop-filter:none; }
+      .set-chip { align-items:flex-start; gap:.7rem; min-height:56px; padding:.6rem .75rem; border:0; border-radius:.75rem; background:transparent; }
+      .set-chip:hover { background:#F1F4FA; }
+      .set-chip .material-symbols-outlined { margin-top:.1rem; }
+      .set-chip-d { display:block; }
+      .set-chip[aria-current="true"]:hover { background:#9E001F; }
+    }
     .set-form { display:flex; flex-direction:column; gap:1.25rem; }
-    .set-card { margin:0; min-width:0; padding:1.5rem; background:#fff; border:1px solid #E5EEFF; border-radius:1rem; scroll-margin-top:6rem; }
+    .set-card { margin:0; min-width:0; padding:1.5rem; background:#fff; border:1px solid #E5EEFF; border-radius:1rem; scroll-margin-top:9rem; }
     .set-legend { float:left; width:100%; display:flex; gap:.85rem; align-items:flex-start; padding:0; margin-bottom:1.25rem; }
     .set-legend + * { clear:both; }
     .set-ico { flex:0 0 auto; display:grid; place-items:center; width:2.5rem; height:2.5rem; border-radius:.75rem; background:#FFDAD8; color:#92001C; }
@@ -681,6 +698,7 @@
               </button>
             </div>
           </form>
+        </div>
         </div>
 
         <div class="bg-surface-container-lowest rounded-2xl border border-surface-container overflow-hidden shadow-sm">
@@ -1133,8 +1151,11 @@
           <p class="text-sm text-secondary mt-1">Isian di sini langsung dipakai di beranda, halaman Tentang, Kegiatan, Kontak, dan footer setelah disimpan.</p>
         </div>
 
-        <nav class="set-nav" aria-label="Lompat ke kelompok pengaturan"><a href="#set-identitas" class="set-chip" data-set-jump="set-identitas"><span class="material-symbols-outlined" aria-hidden="true">badge</span>Identitas organisasi</a><a href="#set-beranda" class="set-chip" data-set-jump="set-beranda"><span class="material-symbols-outlined" aria-hidden="true">home</span>Tampilan beranda</a><a href="#set-tentang" class="set-chip" data-set-jump="set-tentang"><span class="material-symbols-outlined" aria-hidden="true">info</span>Halaman Tentang</a><a href="#set-layanan" class="set-chip" data-set-jump="set-layanan"><span class="material-symbols-outlined" aria-hidden="true">accessible</span>Layanan inklusi</a><a href="#set-kontak" class="set-chip" data-set-jump="set-kontak"><span class="material-symbols-outlined" aria-hidden="true">contact_mail</span>Kontak dan media sosial</a></nav>
+        
 
+        <div class="set-layout">
+        <nav class="set-nav" aria-label="Kelompok pengaturan"><a href="#set-identitas" class="set-chip" data-set-jump="set-identitas"><span class="material-symbols-outlined" aria-hidden="true">badge</span><span class="set-chip-text"><span class="set-chip-t">Identitas</span><span class="set-chip-d">Nama dan tahun berdiri</span></span></a><a href="#set-beranda" class="set-chip" data-set-jump="set-beranda"><span class="material-symbols-outlined" aria-hidden="true">home</span><span class="set-chip-text"><span class="set-chip-t">Beranda</span><span class="set-chip-d">Lencana, slogan, teks berjalan</span></span></a><a href="#set-tentang" class="set-chip" data-set-jump="set-tentang"><span class="material-symbols-outlined" aria-hidden="true">info</span><span class="set-chip-text"><span class="set-chip-t">Halaman Tentang</span><span class="set-chip-d">Profil, sejarah, visi, misi</span></span></a><a href="#set-layanan" class="set-chip" data-set-jump="set-layanan"><span class="material-symbols-outlined" aria-hidden="true">accessible</span><span class="set-chip-text"><span class="set-chip-t">Layanan inklusi</span><span class="set-chip-d">Kotak di halaman Kegiatan</span></span></a><a href="#set-kontak" class="set-chip" data-set-jump="set-kontak"><span class="material-symbols-outlined" aria-hidden="true">contact_mail</span><span class="set-chip-text"><span class="set-chip-t">Kontak & sosial</span><span class="set-chip-d">Alamat, telepon, tautan</span></span></a></nav>
+        <div class="set-main">
         <div id="pesan-pengaturan" aria-live="polite"></div>
 
         <form id="form-pengaturan" class="set-form">
@@ -1316,6 +1337,7 @@
             </button>
           </div>
         </form>
+        </div>
 
       </section>
 
@@ -1427,5 +1449,43 @@
       } catch (e) { console.error(e); }
     })();
   </script>
+<script>
+/* Navigasi Pengaturan: lompat halus + penanda bagian yang sedang dibuka (tanpa mengubah hash URL) */
+(function () {
+  var nav = document.querySelector(".set-nav");
+  if (!nav) return;
+  var links = [].slice.call(nav.querySelectorAll("[data-set-jump]"));
+  var cards = links.map(function (a) { return document.getElementById(a.dataset.setJump); }).filter(Boolean);
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function tandai(id) {
+    links.forEach(function (a) {
+      if (a.dataset.setJump === id) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+    });
+    var aktif = nav.querySelector('[aria-current="true"]');
+    if (aktif && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: aktif.offsetLeft - 16, behavior: reduce ? "auto" : "smooth" });
+  }
+  links.forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      var el = document.getElementById(a.dataset.setJump);
+      if (el) { el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); tandai(a.dataset.setJump); kunci = Date.now() + 800; setTimeout(cek, 850); }
+    });
+  });
+  var kunci = 0;
+  function cek() {
+    if (Date.now() < kunci) return;
+    var batas = 160, aktif = cards[0];
+    cards.forEach(function (c) { if (c.getBoundingClientRect().top <= batas) aktif = c; });
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) aktif = cards[cards.length - 1];
+    if (aktif) tandai(aktif.id);
+  }
+  var tunggu = false;
+  window.addEventListener("scroll", function () {
+    if (tunggu) return; tunggu = true;
+    requestAnimationFrame(function () { tunggu = false; cek(); });
+  }, { passive: true });
+  cek();
+})();
+</script>
 </body>
 </html>
