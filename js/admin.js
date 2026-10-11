@@ -131,7 +131,8 @@ function pasangFormLogin(formId) {
 }
 
 // Mengembalikan true jika pengguna adalah admin. Bila bukan admin: logout lalu arahkan ke login.
-// Jika pengecekan gagal karena jaringan/server, pengguna TIDAK dikeluarkan (RLS tetap melindungi data).
+// Jika pengecekan gagal karena jaringan/server, pengguna TIDAK dikeluarkan, tetapi dasbor tidak ditampilkan
+// (muncul layar "tidak bisa memverifikasi" dengan tombol coba lagi). RLS tetap melindungi data.
 async function wajibLogin() {
   const { data } = await supabaseClient.auth.getSession();
   if (!data.session) {
@@ -145,7 +146,8 @@ async function wajibLogin() {
     .limit(1);
   if (error) {
     console.warn("Gagal memverifikasi peran admin:", error.message);
-    return true;
+    tampilkanLayarGagalVerifikasi();
+    return false;
   }
   if (!baris || baris.length === 0) {
     await supabaseClient.auth.signOut();
@@ -153,6 +155,46 @@ async function wajibLogin() {
     return false;
   }
   return true;
+}
+
+// Modal admin: Tab berputar di dalam modal dan fokus kembali ke tombol pemicu saat modal ditutup (cara apa pun).
+function pasangFokusModalAdmin(overlay) {
+  const pemicu = document.activeElement;
+  const sel = 'a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])';
+  overlay.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+    const f = Array.from(overlay.querySelectorAll(sel)).filter(x => x.offsetParent !== null);
+    if (!f.length) { e.preventDefault(); return; }
+    const a = f[0], z = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
+    else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
+  });
+  const obs = new MutationObserver(() => {
+    if (!document.contains(overlay)) {
+      obs.disconnect();
+      if (pemicu && typeof pemicu.focus === "function" && document.contains(pemicu)) pemicu.focus();
+    }
+  });
+  obs.observe(document.body, { childList: true });
+  if (!overlay.contains(document.activeElement)) {
+    const f = overlay.querySelector(sel);
+    if (f) f.focus();
+  }
+}
+
+function tampilkanLayarGagalVerifikasi() {
+  if (document.getElementById("layar-gagal-verifikasi")) return;
+  const d = document.createElement("div");
+  d.id = "layar-gagal-verifikasi";
+  d.setAttribute("role", "alert");
+  d.className = "fixed inset-0 z-[100] bg-surface flex items-center justify-center p-6";
+  d.innerHTML = `
+    <div class="max-w-md text-center bg-surface-container-lowest border border-surface-container rounded-2xl p-8 shadow-sm">
+      <h1 class="text-xl font-bold text-on-surface mb-2">Akses belum bisa diverifikasi</h1>
+      <p class="text-sm text-secondary mb-5">Koneksi ke server bermasalah, jadi kami belum bisa memastikan akun Anda adalah admin. Periksa internet Anda lalu coba lagi.</p>
+      <button type="button" onclick="location.reload()" class="inline-flex items-center justify-center min-h-[44px] px-6 rounded-full bg-primary-container hover:bg-primary text-on-primary text-sm font-semibold">Coba lagi</button>
+    </div>`;
+  document.body.appendChild(d);
 }
 
 // ================= MODAL KONFIRMASI UNIVERSAL (POPUP) =================
@@ -206,6 +248,7 @@ function tampilkanModalKonfirmasi({
   `;
 
   document.body.appendChild(overlay);
+  pasangFokusModalAdmin(overlay);
 
   const tutup = () => {
     overlay.remove();
@@ -595,7 +638,7 @@ async function muatUndanganAdmin(page) {
       <td class="py-3.5 px-4 font-semibold text-on-surface">${escapeHtml(u.email)}${u.kode ? `<div class="mt-0.5 text-[11px] font-normal text-secondary">Kode undangan: <span class="font-mono font-semibold text-on-surface select-all">${escapeHtml(u.kode)}</span></div>` : ""}</td>
       <td class="py-3.5 px-4 text-secondary text-xs">${formatTanggal(u.dibuat_pada)}</td>
       <td class="py-3.5 px-4 text-right">
-        <button type="button" onclick="batalkanUndangan('${u.email.replace(/'/g, "\\'")}')" title="Batalkan Undangan" aria-label="Batalkan Undangan" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
+        <button type="button" data-aksi-undang="batalkan" data-email="${escapeHtml(u.email)}" title="Batalkan Undangan" aria-label="Batalkan Undangan" class="w-11 h-11 rounded-lg inline-flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
           <span class="material-symbols-outlined text-[18px]">cancel</span>
         </button>
       </td>
@@ -686,10 +729,10 @@ async function muatDaftarAdminAktifUtama(page) {
       <td class="py-3.5 px-4 text-right">
         ${a.peran === "utama" ? '<span class="text-xs text-secondary">-</span>' : `
           <div class="inline-flex items-center gap-1.5 justify-end">
-            <button type="button" onclick="bukaModalResetSandi('${a.id}','${a.email.replace(/'/g, "\\'")}')" title="Reset Kata Sandi" aria-label="Reset Kata Sandi" class="w-8 h-8 rounded-lg flex items-center justify-center text-amber-700 bg-amber-50 hover:bg-amber-100 transition-all active:scale-95 focus:ring-2 focus:ring-amber-500/20 cursor-pointer">
+            <button type="button" data-aksi-admin="reset" data-id="${escapeHtml(a.id)}" data-email="${escapeHtml(a.email)}" title="Reset Kata Sandi" aria-label="Reset Kata Sandi" class="w-11 h-11 rounded-lg flex items-center justify-center text-amber-700 bg-amber-50 hover:bg-amber-100 transition-all active:scale-95 focus:ring-2 focus:ring-amber-500/20 cursor-pointer">
               <span class="material-symbols-outlined text-[18px]">lock_reset</span>
             </button>
-            <button type="button" onclick="cabutAksesAdmin('${a.id}','${a.email.replace(/'/g, "\\'")}')" title="Cabut Akses Admin" aria-label="Cabut Akses Admin" class="w-8 h-8 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
+            <button type="button" data-aksi-admin="cabut" data-id="${escapeHtml(a.id)}" data-email="${escapeHtml(a.email)}" title="Cabut Akses Admin" aria-label="Cabut Akses Admin" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
               <span class="material-symbols-outlined text-[18px]">person_remove</span>
             </button>
           </div>
@@ -752,6 +795,7 @@ function bukaModalResetSandi(userId, email) {
     </div>
   `;
   document.body.appendChild(overlay);
+  pasangFokusModalAdmin(overlay);
 
   const input = document.getElementById("input-sandi-baru");
   if (input) input.focus();
@@ -1009,9 +1053,23 @@ function pasangImportExportAnggota() {
             nim: r.NIM || r.nim ? String(r.NIM || r.nim).trim() : null,
             jabatan: r.Jabatan || r.jabatan ? String(r.Jabatan || r.jabatan).trim() : null,
             angkatan: r.Angkatan || r.angkatan ? String(r.Angkatan || r.angkatan).trim() : null,
-            status: (r.Status || r.status || "Aktif").trim(),
+            status: ["Aktif", "Nonaktif"].includes(String(r.Status || r.status || "").trim()) ? String(r.Status || r.status).trim() : "Aktif",
             kategori: "Anggota",
           }));
+
+        if (payload.length > 500) {
+          pesanEl.className = "form-message error";
+          pesanEl.textContent = `Terlalu banyak baris (${payload.length}). Impor maksimal 500 baris per berkas.`;
+          return;
+        }
+        const nimSama = new Set();
+        const nimDobel = [];
+        payload.forEach(x => { if (x.nim) { if (nimSama.has(x.nim)) nimDobel.push(x.nim); nimSama.add(x.nim); } });
+        if (nimDobel.length) {
+          pesanEl.className = "form-message error";
+          pesanEl.textContent = `Ada NIM ganda di dalam berkas: ${nimDobel.slice(0, 5).join(", ")}. Perbaiki lalu impor ulang.`;
+          return;
+        }
 
         if (!payload.length) {
           pesanEl.className = "form-message error";
@@ -1053,7 +1111,7 @@ function pasangImportExportAnggota() {
         Angkatan: a.angkatan || "",
         Status: a.status,
       }));
-      const ws = XLSX.utils.json_to_sheet(rows);
+      const ws = XLSX.utils.json_to_sheet(amankanBarisExcel(rows));
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Anggota");
       XLSX.writeFile(wb, `data-anggota-himpalubi-${new Date().toISOString().slice(0, 10)}.xlsx`);
@@ -1467,7 +1525,7 @@ async function bukaModalEditProfil() {
           <button 
             type="button" 
             id="btn-tutup-modal-profil" 
-            class="w-8 h-8 rounded-lg flex items-center justify-center text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors cursor-pointer" 
+            class="w-11 h-11 rounded-lg flex items-center justify-center text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors cursor-pointer" 
             aria-label="Tutup modal profil">
             <span class="material-symbols-outlined text-[20px]">close</span>
           </button>
@@ -1743,8 +1801,7 @@ async function muatKomponenAdmin() {
 
   if (sidebarSlot && !sidebarSlot.hasChildNodes()) {
     try {
-      let res = await fetch("partials/sidebar.html");
-      if (!res.ok) res = await fetch("admin/partials/sidebar.html");
+      const res = await fetch("partials/sidebar.html");
       if (res.ok) {
         sidebarSlot.innerHTML = await res.text();
       } else {
@@ -1757,8 +1814,7 @@ async function muatKomponenAdmin() {
 
   if (navbarSlot && !navbarSlot.hasChildNodes()) {
     try {
-      let res = await fetch("partials/navbar.html");
-      if (!res.ok) res = await fetch("admin/partials/navbar.html");
+      const res = await fetch("partials/navbar.html");
       if (res.ok) {
         navbarSlot.innerHTML = await res.text();
       } else {
@@ -2003,13 +2059,13 @@ async function muatTabelKonten(kategori, tabelElId, page) {
       <td class="py-3.5 px-4 text-secondary text-xs">${escapeHtml(b.penulis || "-")}</td>
       <td class="py-3.5 px-4 text-right">
         <div class="inline-flex items-center gap-1.5 justify-end">
-          <button type="button" onclick="editKonten('${b.id}','${kategori}')" title="Edit ${kategori}" aria-label="Edit ${kategori}" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
+          <button type="button" onclick="editKonten('${b.id}','${kategori}')" title="Edit ${kategori}" aria-label="Edit ${kategori}" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
             <span class="material-symbols-outlined text-[18px]">edit</span>
           </button>
-          <button type="button" onclick="unduhSatuKonten('${b.id}','${kategori}')" title="Unduh Dokumen Word" aria-label="Unduh Dokumen Word" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
+          <button type="button" onclick="unduhSatuKonten('${b.id}','${kategori}')" title="Unduh Dokumen Word" aria-label="Unduh Dokumen Word" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
             <span class="material-symbols-outlined text-[18px]">download</span>
           </button>
-          <button type="button" onclick="hapusKonten('${b.id}','${kategori}')" title="Hapus ${kategori}" aria-label="Hapus ${kategori}" class="w-8 h-8 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
+          <button type="button" onclick="hapusKonten('${b.id}','${kategori}')" title="Hapus ${kategori}" aria-label="Hapus ${kategori}" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
             <span class="material-symbols-outlined text-[18px]">delete</span>
           </button>
         </div>
@@ -2170,10 +2226,10 @@ async function muatTabelOrang(kategori, tabelElId, page) {
         <td class="py-3.5 px-4 text-secondary text-xs">${escapeHtml(a.divisi || "-")}</td>
         <td class="py-3.5 px-4 text-right">
           <div class="inline-flex items-center gap-1.5 justify-end">
-            <button type="button" onclick="editOrang('${a.id}','Pengurus')" title="Edit Pengurus" aria-label="Edit Pengurus" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
+            <button type="button" onclick="editOrang('${a.id}','Pengurus')" title="Edit Pengurus" aria-label="Edit Pengurus" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
               <span class="material-symbols-outlined text-[18px]">edit</span>
             </button>
-            <button type="button" onclick="hapusOrang('${a.id}','Pengurus')" title="Hapus Pengurus" aria-label="Hapus Pengurus" class="w-8 h-8 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
+            <button type="button" onclick="hapusOrang('${a.id}','Pengurus')" title="Hapus Pengurus" aria-label="Hapus Pengurus" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
               <span class="material-symbols-outlined text-[18px]">delete</span>
             </button>
           </div>
@@ -2188,10 +2244,10 @@ async function muatTabelOrang(kategori, tabelElId, page) {
         <td class="py-3.5 px-4">${badgeStatusAnggota(a.status)}</td>
         <td class="py-3.5 px-4 text-right">
           <div class="inline-flex items-center gap-1.5 justify-end">
-            <button type="button" onclick="editOrang('${a.id}','Anggota')" title="Edit Anggota" aria-label="Edit Anggota" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
+            <button type="button" onclick="editOrang('${a.id}','Anggota')" title="Edit Anggota" aria-label="Edit Anggota" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
               <span class="material-symbols-outlined text-[18px]">edit</span>
             </button>
-            <button type="button" onclick="hapusOrang('${a.id}','Anggota')" title="Hapus Anggota" aria-label="Hapus Anggota" class="w-8 h-8 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
+            <button type="button" onclick="hapusOrang('${a.id}','Anggota')" title="Hapus Anggota" aria-label="Hapus Anggota" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
               <span class="material-symbols-outlined text-[18px]">delete</span>
             </button>
           </div>
@@ -2341,10 +2397,10 @@ async function muatTabelPendaftaran(page) {
   el.innerHTML = paged.map(p => {
     const isMenunggu = p.status === "Menunggu";
     const tombolAksi = isMenunggu ? `
-      <button type="button" onclick="konfirmasiStatusPendaftaran('${p.id}','Diterima')" title="Terima Pendaftaran" aria-label="Terima Pendaftaran" class="w-8 h-8 rounded-lg flex items-center justify-center text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-all active:scale-95 focus:ring-2 focus:ring-emerald-500/20 cursor-pointer">
+      <button type="button" onclick="konfirmasiStatusPendaftaran('${p.id}','Diterima')" title="Terima Pendaftaran" aria-label="Terima Pendaftaran" class="w-11 h-11 rounded-lg flex items-center justify-center text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-all active:scale-95 focus:ring-2 focus:ring-emerald-500/20 cursor-pointer">
         <span class="material-symbols-outlined text-[18px]">check</span>
       </button>
-      <button type="button" onclick="konfirmasiStatusPendaftaran('${p.id}','Ditolak')" title="Tolak Pendaftaran" aria-label="Tolak Pendaftaran" class="w-8 h-8 rounded-lg flex items-center justify-center text-rose-700 bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-rose-500/20 cursor-pointer">
+      <button type="button" onclick="konfirmasiStatusPendaftaran('${p.id}','Ditolak')" title="Tolak Pendaftaran" aria-label="Tolak Pendaftaran" class="w-11 h-11 rounded-lg flex items-center justify-center text-rose-700 bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-rose-500/20 cursor-pointer">
         <span class="material-symbols-outlined text-[18px]">close</span>
       </button>
     ` : "";
@@ -2358,7 +2414,7 @@ async function muatTabelPendaftaran(page) {
         <td class="py-3.5 px-4">${badgeStatus(p.status)}</td>
         <td class="py-3.5 px-4 text-right">
           <div class="inline-flex items-center gap-1.5 justify-end">
-            <button type="button" onclick="bukaModalDetailPendaftar('${p.id}')" title="Lihat Detail Pendaftar" aria-label="Lihat Detail Pendaftar" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
+            <button type="button" onclick="bukaModalDetailPendaftar('${p.id}')" title="Lihat Detail Pendaftar" aria-label="Lihat Detail Pendaftar" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
               <span class="material-symbols-outlined text-[18px]">visibility</span>
             </button>
             ${tombolAksi}
@@ -2433,6 +2489,7 @@ async function bukaModalDetailPendaftar(id) {
     </div>
   `;
   document.body.appendChild(overlay);
+  pasangFokusModalAdmin(overlay);
 
   const tombolTutup = document.getElementById("tombol-tutup-detail-pendaftar");
   const tombolTutupBawah = document.getElementById("tombol-tutup-detail-bawah");
@@ -2586,10 +2643,10 @@ async function muatTabelAspirasi(page) {
       <td class="py-3.5 px-4">${badgeAspirasi(a.dibaca)}</td>
       <td class="py-3.5 px-4 text-right">
         <div class="inline-flex items-center gap-1.5 justify-end">
-          <button type="button" onclick="bukaModalAspirasi('${a.id}')" title="Baca pesan" aria-label="Baca pesan" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 cursor-pointer">
+          <button type="button" onclick="bukaModalAspirasi('${a.id}')" title="Baca pesan" aria-label="Baca pesan" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 cursor-pointer">
             <span class="material-symbols-outlined text-[18px]" aria-hidden="true">visibility</span>
           </button>
-          <button type="button" onclick="hapusAspirasi('${a.id}')" title="Hapus pesan" aria-label="Hapus pesan" class="w-8 h-8 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 cursor-pointer">
+          <button type="button" onclick="hapusAspirasi('${a.id}')" title="Hapus pesan" aria-label="Hapus pesan" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 cursor-pointer">
             <span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>
           </button>
         </div>
@@ -2655,6 +2712,7 @@ async function bukaModalAspirasi(id) {
       </div>
     </div>`;
   document.body.appendChild(overlay);
+  pasangFokusModalAdmin(overlay);
 
   const tutup = () => { overlay.remove(); document.removeEventListener("keydown", esc); };
   const esc = (e) => { if (e.key === "Escape") tutup(); };
@@ -2688,6 +2746,15 @@ function hapusAspirasi(id) {
   });
 }
 
+// Sel Excel yang berawalan = + - @ (atau tab/CR) dibaca Excel sebagai rumus. Awali dengan tanda petik agar tampil sebagai teks.
+function amankanSelExcel(v) {
+  if (typeof v !== "string") return v;
+  return /^[=+\-@\t\r]/.test(v) ? "'" + v : v;
+}
+function amankanBarisExcel(rows) {
+  return rows.map(r => Object.fromEntries(Object.entries(r).map(([k, v]) => [k, amankanSelExcel(v)])));
+}
+
 async function unduhAspirasiExcel() {
   const { data, error } = await supabaseClient.from("aspirasi").select("*").order("created_at", { ascending: false });
   if (error || !data || !data.length) { tampilkanToast("Tidak ada aspirasi untuk diunduh.", "gagal"); return; }
@@ -2700,7 +2767,7 @@ async function unduhAspirasiExcel() {
     Pesan: a.pesan,
     Status: a.dibaca ? "Dibaca" : "Baru",
   }));
-  const ws = XLSX.utils.json_to_sheet(rows);
+  const ws = XLSX.utils.json_to_sheet(amankanBarisExcel(rows));
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Aspirasi");
   XLSX.writeFile(wb, `aspirasi-himpalubi-${new Date().toISOString().slice(0, 10)}.xlsx`);
@@ -2737,7 +2804,7 @@ async function muatTabelGaleri(page) {
       <td class="py-3.5 px-4 font-semibold text-on-surface">${escapeHtml(g.judul || "-")}</td>
       <td class="py-3.5 px-4 text-secondary text-xs whitespace-nowrap">${formatTanggal(g.tanggal)}</td>
       <td class="py-3.5 px-4 text-right">
-        <button type="button" onclick="hapusGaleri('${g.id}')" title="Hapus Foto Galeri" aria-label="Hapus Foto Galeri" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
+        <button type="button" onclick="hapusGaleri('${g.id}')" title="Hapus Foto Galeri" aria-label="Hapus Foto Galeri" class="w-11 h-11 rounded-lg inline-flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
           <span class="material-symbols-outlined text-[18px]">delete</span>
         </button>
       </td>
@@ -2853,13 +2920,13 @@ async function muatDaftarProgramAdmin(page) {
               <td class="py-3.5 px-4">${badgeStatusProgram(p.status)}</td>
               <td class="py-3.5 px-4 text-right">
                 <div class="inline-flex items-center gap-1.5 justify-end">
-                  <button type="button" onclick="editProgram('${p.id}')" title="Edit Program Kerja" aria-label="Edit Program Kerja" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
+                  <button type="button" onclick="editProgram('${p.id}')" title="Edit Program Kerja" aria-label="Edit Program Kerja" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
                     <span class="material-symbols-outlined text-[18px]">edit</span>
                   </button>
-                  <button type="button" onclick="unduhSatuProgram('${p.id}')" title="Unduh Dokumen Word" aria-label="Unduh Dokumen Word" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
+                  <button type="button" onclick="unduhSatuProgram('${p.id}')" title="Unduh Dokumen Word" aria-label="Unduh Dokumen Word" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
                     <span class="material-symbols-outlined text-[18px]">download</span>
                   </button>
-                  <button type="button" onclick="hapusProgram('${p.id}')" title="Hapus Program Kerja" aria-label="Hapus Program Kerja" class="w-8 h-8 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
+                  <button type="button" onclick="hapusProgram('${p.id}')" title="Hapus Program Kerja" aria-label="Hapus Program Kerja" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
                     <span class="material-symbols-outlined text-[18px]">delete</span>
                   </button>
                 </div>
@@ -3069,10 +3136,10 @@ async function muatTabelFaq(page) {
       <td class="py-3.5 px-4 text-secondary text-xs">${f.urutan ?? "-"}</td>
       <td class="py-3.5 px-4 text-right">
         <div class="inline-flex items-center gap-1.5 justify-end">
-          <button type="button" onclick="editFaq('${f.id}')" title="Edit FAQ" aria-label="Edit FAQ" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
+          <button type="button" onclick="editFaq('${f.id}')" title="Edit FAQ" aria-label="Edit FAQ" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
             <span class="material-symbols-outlined text-[18px]">edit</span>
           </button>
-          <button type="button" onclick="hapusFaq('${f.id}')" title="Hapus FAQ" aria-label="Hapus FAQ" class="w-8 h-8 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
+          <button type="button" onclick="hapusFaq('${f.id}')" title="Hapus FAQ" aria-label="Hapus FAQ" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
             <span class="material-symbols-outlined text-[18px]">delete</span>
           </button>
         </div>
@@ -3179,10 +3246,10 @@ async function muatTabelTestimoni(page) {
       <td class="py-3.5 px-4 text-secondary text-xs">${t.urutan ?? "-"}</td>
       <td class="py-3.5 px-4 text-right">
         <div class="inline-flex items-center gap-1.5 justify-end">
-          <button type="button" onclick="editTestimoni('${t.id}')" title="Edit Testimoni" aria-label="Edit Testimoni" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
+          <button type="button" onclick="editTestimoni('${t.id}')" title="Edit Testimoni" aria-label="Edit Testimoni" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
             <span class="material-symbols-outlined text-[18px]">edit</span>
           </button>
-          <button type="button" onclick="hapusTestimoni('${t.id}')" title="Hapus Testimoni" aria-label="Hapus Testimoni" class="w-8 h-8 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
+          <button type="button" onclick="hapusTestimoni('${t.id}')" title="Hapus Testimoni" aria-label="Hapus Testimoni" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
             <span class="material-symbols-outlined text-[18px]">delete</span>
           </button>
         </div>
@@ -3304,8 +3371,7 @@ function badgeStatusAnggota(status) {
 }
 
 
-// ================= TABEL RESPONSIF: beri data-label dari judul kolom =================
-// Dipakai CSS di layar kecil agar tiap baris tampil sebagai kartu (Status dan Aksi tidak tersembunyi).
+// ================= TABEL RESPONSIF: beri data-label dari judul kolom ==========// Dipakai CSS di layar kecil agar tiap baris tampil sebagai kartu (Status dan Aksi tidak tersembunyi).
 function labelTabelResponsif() {
   const main = document.querySelector("main");
   if (!main) return;
@@ -3331,3 +3397,12 @@ if (typeof document !== "undefined") {
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", labelTabelResponsif);
   else labelTabelResponsif();
 }
+// Tombol aksi admin/undangan memakai atribut data-* (bukan onclick berisi email) agar aman dari karakter khusus.
+document.addEventListener("click", (e) => {
+  const tombol = e.target.closest("[data-aksi-undang],[data-aksi-admin]");
+  if (!tombol) return;
+  const email = tombol.dataset.email || "";
+  if (tombol.dataset.aksiUndang === "batalkan") batalkanUndangan(email);
+  else if (tombol.dataset.aksiAdmin === "reset") bukaModalResetSandi(tombol.dataset.id, email);
+  else if (tombol.dataset.aksiAdmin === "cabut") cabutAksesAdmin(tombol.dataset.id, email);
+});

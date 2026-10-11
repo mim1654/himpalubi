@@ -217,6 +217,18 @@ tailwind.config = {
 };
 ```
 
+## 11a. Warna status (khusus dashboard admin)
+
+Dashboard admin boleh memakai warna status berikut hanya untuk lencana, pesan hasil, dan tombol tindakan, selalu disertai teks atau ikon (jangan hanya warna):
+
+| Makna | Kelas Tailwind |
+|---|---|
+| Berhasil / diterima | `emerald` (50 untuk latar, 700 untuk teks) |
+| Peringatan / menunggu | `amber` (50 untuk latar, 700 untuk teks) |
+| Bahaya / ditolak / hapus | token `error` dan `rose-50`/`rose-100` untuk latar |
+
+Halaman publik tidak memakai warna di luar token utama.
+
 ## 12. Cara memakai dokumen ini
 
 Awali setiap prompt ke Stitch, Antigravity, atau agen lain dengan:

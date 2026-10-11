@@ -3,15 +3,20 @@
 // mereset sandi admin lain. Kunci rahasia (service_role) HANYA dipakai
 // di sini, di server Supabase — tidak pernah dikirim ke frontend.
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.117.3";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+// Hanya situs HIMPALUBI yang boleh memanggil fungsi ini dari browser.
+// Bisa diganti lewat secret ALLOWED_ORIGIN di Supabase bila domain situs berubah.
+const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") ?? "https://mim1654.github.io";
+
 function corsHeaders() {
   return {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+    "Vary": "Origin",
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
@@ -67,6 +72,16 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: "Gunakan fitur lupa sandi biasa untuk mereset sandi milikmu sendiri." }, 400);
     }
 
+    // Target harus benar-benar akun admin (bukan sembarang akun di Auth)
+    const { data: targetInfo } = await supabaseAdmin
+      .from("admin_users")
+      .select("email")
+      .eq("id", target_user_id)
+      .maybeSingle();
+    if (!targetInfo) {
+      return jsonResponse({ error: "Akun tujuan bukan admin." }, 404);
+    }
+
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
       target_user_id,
       { password: password_baru }
@@ -75,18 +90,13 @@ Deno.serve(async (req) => {
     if (updateError) return jsonResponse({ error: updateError.message }, 400);
 
     // Catat ke log aktivitas — tidak pernah mencatat sandi baru itu sendiri
-    const { data: targetInfo } = await supabaseAdmin
-      .from("admin_users")
-      .select("email")
-      .eq("id", target_user_id)
-      .maybeSingle();
 
     await supabaseAdmin.from("admin_activity_log").insert({
       dilakukan_oleh: userData.user.id,
       dilakukan_oleh_email: userData.user.email,
       aksi: "reset_password",
       target_user_id,
-      target_email: targetInfo?.email || null,
+      target_email: targetInfo.email || null,
     });
 
     return jsonResponse({ success: true });

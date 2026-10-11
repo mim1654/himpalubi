@@ -1,7 +1,7 @@
 /* =========================================================
    HIMPALUBI — Design tokens
    Warna diambil dari nuansa kehangatan & kepedulian (dunia
-   pendidikan luar biasa): teal dalam untuk kepercayaan,
+   pendidikan luar biasa): charcoal dalam untuk kepercayaan,
    emas hangat untuk semangat, sage lembut sebagai latar.
    ========================================================= */
 
@@ -23,9 +23,9 @@
   --inverse-on-surface: #EAF1FF;
   
   /* Legacy alias mappings for existing components */
-  --teal-900: #121C28;
-  --teal-700: #27313E;
-  --teal-500: #5C5E66;
+  --ink-900: #121C28;
+  --ink-700: #27313E;
+  --ink-500: #5C5E66;
   --gold-500: #9E001F;
   --gold-100: #FFDAD8;
   --sage-100: #EEF4FF;
@@ -60,6 +60,8 @@
 .text-label-md { font-size: 12px; line-height: 16px; letter-spacing: 0.04em; font-weight: 600; }
 .text-label-sm { font-size: 11px; line-height: 14px; letter-spacing: 0.02em; font-weight: 500; }
 
+[hidden] { display: none !important; }
+
 * { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -74,7 +76,7 @@ body {
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
-  color: var(--teal-900);
+  color: var(--ink-900);
   line-height: 1.2;
   margin: 0 0 0.5em;
 }
@@ -91,8 +93,8 @@ p { max-width: 68ch; }
   line-height: 1.75;
 }
 
-a { color: var(--teal-700); }
-a:hover { color: var(--teal-900); }
+a { color: var(--ink-700); }
+a:hover { color: var(--ink-900); }
 
 /* T3: tautan di footer mewarisi warna teks footer (sebelumnya #27313E di atas latar #27313E = tak terlihat).
    Class Tailwind pada <a> (text-*, hover:text-*) tetap menang karena spesifisitasnya lebih tinggi. */
@@ -125,7 +127,7 @@ h1, h2, h3, h4, h5, p, li, figcaption, blockquote { overflow-wrap: anywhere; }
   position: absolute;
   left: -999px;
   top: 0;
-  background: var(--teal-900);
+  background: var(--ink-900);
   color: var(--white);
   padding: 0.75em 1.25em;
   z-index: 100;
@@ -503,7 +505,7 @@ section + section { border-top: 1px solid var(--line); }
 .news-item:first-child { padding-top: 0; }
 .news-item time {
   font-weight: 600;
-  color: var(--teal-700);
+  color: var(--ink-700);
 }
 .news-item h3 { margin-bottom: 0.35rem; }
 .news-item .excerpt { color: var(--ink-600); margin: 0; font-family: var(--font-reading); }
@@ -708,7 +710,7 @@ section + section { border-top: 1px solid var(--line); }
   justify-content: center;
   font-family: var(--font-display);
   font-size: 1.4rem;
-  color: var(--teal-900);
+  color: var(--ink-900);
   margin-bottom: 0.75rem;
   overflow: hidden;
 }
@@ -738,12 +740,12 @@ input, textarea, select {
 }
 textarea { min-height: 120px; resize: vertical; }
 input:focus, textarea:focus, select:focus {
-  border-color: var(--teal-500);
+  border-color: var(--ink-500);
 }
 
 .btn {
   display: inline-block;
-  background: var(--teal-700);
+  background: var(--ink-700);
   color: var(--white);
   border: none;
   padding: 0.75rem 1.5rem;
@@ -753,11 +755,11 @@ input:focus, textarea:focus, select:focus {
   cursor: pointer;
   text-decoration: none;
 }
-.btn:hover { background: var(--teal-900); }
+.btn:hover { background: var(--ink-900); }
 .btn.secondary {
   background: transparent;
-  color: var(--teal-700);
-  border: 1px solid var(--teal-700);
+  color: var(--ink-700);
+  border: 1px solid var(--ink-700);
 }
 .btn.secondary:hover { background: var(--sage-100); }
 .btn.danger { background: var(--danger); }
@@ -772,7 +774,7 @@ input:focus, textarea:focus, select:focus {
 }
 .form-message.success { background: #e4f2e8; color: var(--ok); }
 .form-message.error { background: #fbe8e3; color: var(--danger); }
-.form-message.info { background: var(--gold-100); color: var(--teal-900); }
+.form-message.info { background: var(--gold-100); color: var(--ink-900); }
 
 /* ---------- Status badges ---------- */
 .badge {
@@ -795,7 +797,7 @@ input:focus, textarea:focus, select:focus {
   min-height: 100vh;
 }
 .admin-sidebar {
-  background: var(--teal-900);
+  background: var(--ink-900);
   color: var(--sage-050);
   padding: 1.5rem 1.25rem;
   position: sticky;
@@ -898,7 +900,7 @@ input:focus, textarea:focus, select:focus {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--teal-900);
+    background: var(--ink-900);
     padding: 0.85rem 1.1rem;
     position: sticky;
     top: 0;
@@ -1508,7 +1510,7 @@ tr:last-child td { border-bottom: none; }
 
 /* ---------- Footer ---------- */
 .site-footer {
-  background: var(--teal-900);
+  background: var(--ink-900);
   color: #c7cedb;
   margin-top: 2rem;
   border-top: 3px solid var(--gold-500);

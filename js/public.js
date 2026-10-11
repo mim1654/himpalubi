@@ -100,6 +100,7 @@ async function muatDetailKonten(elId, backLinkId) {
   try {
     const res = await supabaseClient.from("berita").select("*").eq("id", id).maybeSingle();
     data = res.data;
+    if (res.error) { console.error(res.error); return tampilGagalMuat(el); }
   } catch (err) {
     console.warn("Info: Gagal mengambil data detail dari Supabase.", err);
   }
@@ -181,8 +182,7 @@ async function muatDetailKonten(elId, backLinkId) {
             </div>
             <div>
               <div class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-on-surface">
-                <span>${escapeHtml(data.penulis || "Biro Media & Informasi")}</span>
-                <span aria-hidden="true" class="material-symbols-outlined text-[16px] text-primary-container" title="Terverifikasi Resmi Organisasi">verified</span>
+                <span>${escapeHtml(data.penulis || "Redaksi HIMPALUBI")}</span>
               </div>
               <div class="flex items-center gap-2 text-xs text-secondary">
                 <span>${formatTanggal(data.tanggal)}</span>
@@ -194,13 +194,13 @@ async function muatDetailKonten(elId, backLinkId) {
 
           <!-- Quick Share Buttons Desktop -->
           <div class="inline-flex items-center gap-1 p-1 rounded-full bg-surface-container-low border border-surface-container shadow-xs">
-            <a href="https://api.whatsapp.com/send?text=${shareText}${shareUrl}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-primary transition-all flex items-center justify-center cursor-pointer" title="Bagikan ke WhatsApp">
+            <a href="https://api.whatsapp.com/send?text=${shareText}${shareUrl}" target="_blank" rel="noopener noreferrer" class="w-11 h-11 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-primary transition-all flex items-center justify-center cursor-pointer" title="Bagikan ke WhatsApp" aria-label="Bagikan ke WhatsApp">
               <span aria-hidden="true" class="material-symbols-outlined text-[16px]">chat</span>
             </a>
-            <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-primary transition-all flex items-center justify-center cursor-pointer" title="Bagikan ke X / Twitter">
+            <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" class="w-11 h-11 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-primary transition-all flex items-center justify-center cursor-pointer" title="Bagikan ke X / Twitter" aria-label="Bagikan ke X / Twitter">
               <span aria-hidden="true" class="material-symbols-outlined text-[16px]">share</span>
             </a>
-            <button type="button" class="btn-copy-link w-8 h-8 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-primary transition-all flex items-center justify-center cursor-pointer" title="Salin Tautan">
+            <button type="button" class="btn-copy-link w-11 h-11 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-primary transition-all flex items-center justify-center cursor-pointer" title="Salin Tautan" aria-label="Salin Tautan">
               <span aria-hidden="true" class="material-symbols-outlined text-[16px]">link</span>
             </button>
           </div>
@@ -219,7 +219,7 @@ async function muatDetailKonten(elId, backLinkId) {
             <div class="py-2.5 px-4 bg-surface-container-low text-xs text-secondary flex flex-wrap items-center justify-between gap-2 border-t border-surface-container">
               <span class="flex items-center gap-1.5 font-medium text-on-surface/80">
                 <span class="material-symbols-outlined text-[15px] text-primary-container" aria-hidden="true">photo_camera</span>
-                Dokumentasi Resmi Publikasi
+                Dokumentasi
               </span>
               <span class="text-secondary">HIMPALUBI FKIP UNIPAR</span>
             </div>
@@ -251,22 +251,25 @@ async function muatDetailKonten(elId, backLinkId) {
         
         <!-- Action Cluster in a single unified pill container -->
         <div class="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl sm:rounded-full max-w-full bg-surface-container-low border border-surface-container shadow-xs">
-          <a href="https://api.whatsapp.com/send?text=${shareText}${shareUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold" title="Bagikan ke WhatsApp">
-            <span aria-hidden="true" class="material-symbols-outlined text-[16px] text-green-600">chat</span>
+          <a href="https://api.whatsapp.com/send?text=${shareText}${shareUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[44px] rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold" title="Bagikan ke WhatsApp">
+            <span aria-hidden="true" class="material-symbols-outlined text-[16px] text-secondary">chat</span>
             <span>WhatsApp</span>
           </a>
           <span class="w-[1px] h-4 bg-surface-container" aria-hidden="true"></span>
-          <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold" title="Bagikan ke X / Twitter">
+          <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[44px] rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold" title="Bagikan ke X / Twitter">
             <span aria-hidden="true" class="material-symbols-outlined text-[16px]">send</span>
             <span>X / Twitter</span>
           </a>
           <span class="w-[1px] h-4 bg-surface-container" aria-hidden="true"></span>
-          <button type="button" class="btn-copy-link inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold cursor-pointer" title="Salin Tautan Artikel">
+          <button type="button" class="btn-copy-link inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[44px] rounded-full hover:bg-surface-container-lowest text-on-surface hover:text-primary transition-all text-xs font-semibold cursor-pointer" title="Salin Tautan Artikel">
             <span aria-hidden="true" class="material-symbols-outlined text-[16px]">link</span>
             <span>Salin</span>
           </button>
           <span class="w-[1px] h-4 bg-surface-container" aria-hidden="true"></span>
-          <button type="button" onclick="window.print()" class="w-8 h-8 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-on-surface transition-all flex items-center justify-center cursor-pointer" title="Cetak Artikel">
+          <button type="button" id="btn-dengar" hidden aria-pressed="false" class="w-11 h-11 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-on-surface transition-all flex items-center justify-center cursor-pointer" title="Dengarkan Artikel" aria-label="Dengarkan artikel">
+            <span aria-hidden="true" class="material-symbols-outlined text-[16px]">volume_up</span>
+          </button>
+          <button type="button" onclick="window.print()" class="w-11 h-11 rounded-full hover:bg-surface-container-lowest text-secondary hover:text-on-surface transition-all flex items-center justify-center cursor-pointer" title="Cetak Artikel" aria-label="Cetak Artikel">
             <span aria-hidden="true" class="material-symbols-outlined text-[16px]">print</span>
           </button>
         </div>
@@ -286,12 +289,12 @@ async function muatDetailKonten(elId, backLinkId) {
             Himpunan Mahasiswa Pendidikan Luar Biasa (HIMPALUBI) FKIP Universitas PGRI Argopuro Jember. Wadah aspirasi mahasiswa, advokasi disabilitas, dan pengembangan keilmuan pendidikan khusus.
           </p>
           <div class="flex items-center justify-center sm:justify-start gap-4 text-xs font-semibold text-primary">
-            <a href="tentang.html" class="hover:underline inline-flex items-center gap-1 hover:text-primary-container transition-colors">
+            <a href="tentang.html" class="hover:underline inline-flex items-center gap-1 min-h-[44px] hover:text-primary-container transition-colors">
               <span>Profil Organisasi</span>
               <span aria-hidden="true" class="material-symbols-outlined text-[14px]">arrow_forward</span>
             </a>
             <span class="opacity-30 text-secondary">•</span>
-            <a href="kontak.html" class="hover:underline inline-flex items-center gap-1 hover:text-primary-container transition-colors">
+            <a href="kontak.html" class="hover:underline inline-flex items-center gap-1 min-h-[44px] hover:text-primary-container transition-colors">
               <span>Hubungi Redaksi</span>
               <span aria-hidden="true" class="material-symbols-outlined text-[14px]">arrow_forward</span>
             </a>
@@ -301,6 +304,29 @@ async function muatDetailKonten(elId, backLinkId) {
 
     </article>
   `;
+
+  // Tombol "Dengarkan": membacakan judul dan isi artikel dengan suara bawaan perangkat (bahasa Indonesia).
+  const btnDengar = el.querySelector("#btn-dengar");
+  if (btnDengar && "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined") {
+    btnDengar.hidden = false;
+    const ikon = btnDengar.querySelector(".material-symbols-outlined");
+    const atur = (aktif) => {
+      btnDengar.setAttribute("aria-pressed", aktif ? "true" : "false");
+      btnDengar.setAttribute("aria-label", aktif ? "Hentikan pembacaan artikel" : "Dengarkan artikel");
+      btnDengar.title = aktif ? "Hentikan Pembacaan" : "Dengarkan Artikel";
+      if (ikon) ikon.textContent = aktif ? "stop_circle" : "volume_up";
+    };
+    btnDengar.addEventListener("click", () => {
+      if (window.speechSynthesis.speaking) { window.speechSynthesis.cancel(); atur(false); return; }
+      const teks = [data.judul, data.isi].filter(Boolean).join(". ");
+      const u = new SpeechSynthesisUtterance(teks);
+      u.lang = "id-ID";
+      u.onend = u.onerror = () => atur(false);
+      window.speechSynthesis.speak(u);
+      atur(true);
+    });
+    window.addEventListener("pagehide", () => window.speechSynthesis.cancel());
+  }
 
   // Pasang event listener tombol salin tautan
   const copyButtons = el.querySelectorAll(".btn-copy-link");
@@ -417,6 +443,7 @@ async function muatKegiatanTerbaru(elId) {
       .order("tanggal", { ascending: false })
       .limit(3);
     data = res.data;
+    if (res.error) { console.error(res.error); return tampilGagalMuat(el); }
   } catch (e) {
     console.warn("Info: Menampilkan agenda kurasi HIMPALUBI", e);
   }
@@ -492,6 +519,7 @@ async function muatHalamanKegiatan(gridId = "daftar-kegiatan-grid", featuredSect
       .eq("kategori", "Kegiatan")
       .order("tanggal", { ascending: false });
     data = res.data;
+    if (res.error) { console.error(res.error); if (featuredSec) featuredSec.style.display = "none"; return tampilGagalMuat(grid); }
   } catch (err) {
     console.warn("Info: Tidak dapat memuat kegiatan dari Supabase.", err);
   }
@@ -701,6 +729,7 @@ async function muatHalamanBerita(gridId = "news-grid-container", featuredId = "f
       .eq("kategori", "Berita")
       .order("tanggal", { ascending: false });
     supabaseData = res.data;
+    if (res.error) { console.error(res.error); if (featuredSec) featuredSec.classList.add("hidden"); return tampilGagalMuat(grid); }
   } catch (err) {
     console.warn("Info: Gagal memuat berita dari Supabase.", err);
   }
@@ -767,7 +796,7 @@ async function muatHalamanBerita(gridId = "news-grid-container", featuredId = "f
           
           <!-- Top Meta Badges -->
           <div class="relative z-10 flex flex-wrap items-center gap-2">
-            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary-container text-on-primary text-xs uppercase tracking-wider font-bold shadow-sm">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[44px] rounded-full bg-primary-container text-on-primary text-xs uppercase tracking-wider font-bold shadow-sm">
               <span class="material-symbols-outlined text-[16px]" aria-hidden="true">campaign</span>
               <span>Sorotan Khusus</span>
             </span>
@@ -1080,6 +1109,7 @@ async function muatBeritaKartu(elId, batas) {
     if (batas) query = query.limit(batas);
     const res = await query;
     data = res.data;
+    if (res.error) { console.error(res.error); return tampilGagalMuat(el); }
   } catch (e) {
     console.warn("Info: Menampilkan warta kurasi HIMPALUBI", e);
   }
@@ -1155,6 +1185,7 @@ async function muatPengurusBeranda(elId = "pengurus-beranda-grid", batas = 5) {
       .order("nama")
       .limit(batas);
     data = res.data;
+    if (res.error) { console.error(res.error); return tampilGagalMuat(el); }
   } catch (err) {
     console.warn("Info: Tidak dapat memuat pengurus dari Supabase.", err);
   }
@@ -1214,6 +1245,7 @@ async function muatAnggota(elId) {
       .order("angkatan", { ascending: false })
       .order("nama", { ascending: true });
     data = res.data;
+    if (res.error) { console.error(res.error); return tampilGagalMuat(el); }
   } catch (err) {
     console.warn("Info: Tidak dapat memuat anggota dari Supabase.", err);
   }
@@ -1286,6 +1318,7 @@ async function muatStruktur(elId) {
       .order("urutan", { ascending: true, nullsFirst: false })
       .order("nama");
     data = res.data;
+    if (res.error) { console.error(res.error); return tampilGagalMuat(el); }
   } catch (err) {
     console.warn("Info: Tidak dapat memuat struktur dari Supabase.", err);
   }
@@ -1335,6 +1368,7 @@ async function muatProgramKerja(elId) {
       .select("*")
       .order("divisi");
     data = res.data;
+    if (res.error) { console.error(res.error); return tampilGagalMuat(el); }
   } catch (err) {
     console.warn("Info: Tidak dapat memuat program kerja dari Supabase.", err);
   }
@@ -1457,6 +1491,7 @@ async function muatGaleriBeranda(elId = "galeri-beranda-grid", batas = 4) {
       .order("tanggal", { ascending: false })
       .limit(batas);
     data = res.data;
+    if (res.error) { console.error(res.error); return tampilGagalMuat(el); }
   } catch (err) {
     console.warn("Info: Tidak dapat memuat galeri dari Supabase.", err);
   }
@@ -1570,8 +1605,8 @@ async function muatKontakRingkasBeranda(elId) {
     barisTel.hidden = false;
   }
 
-  pasangTautanSosial("beranda-instagram", data.instagram, false);
-  pasangTautanSosial("beranda-youtube", data.youtube, false);
+  pasangTautanSosial("beranda-instagram", data.instagram, true);
+  pasangTautanSosial("beranda-youtube", data.youtube, true);
   pasangTautanSosial("beranda-tiktok", data.tiktok, true);
 }
 
@@ -1614,11 +1649,11 @@ async function muatPengaturanFooter() {
   const fe = document.getElementById("footer-email");
   if (fe && data.email && hrefEmailAman(data.email)) fe.href = hrefEmailAman(data.email);
   setTeksAman("footer-telepon", data.telepon);
+  const barisTelFooter = document.getElementById("footer-telepon-baris");
+  if (barisTelFooter && data.telepon) barisTelFooter.hidden = false;
 
-  const ig = document.getElementById("footer-instagram");
-  if (ig && urlTautanAman(data.instagram)) ig.href = urlTautanAman(data.instagram);
-  const yt = document.getElementById("footer-youtube");
-  if (yt && urlTautanAman(data.youtube)) yt.href = urlTautanAman(data.youtube);
+  pasangTautanSosial("footer-instagram", data.instagram, true);
+  pasangTautanSosial("footer-youtube", data.youtube, true);
   pasangTautanSosial("footer-tiktok", data.tiktok, true);
 }
 
@@ -1644,7 +1679,7 @@ async function muatStatistikBeranda(elId) {
     ]);
 
     const tahun = pengaturanRes.data?.tahun_berdiri;
-    let labelTahun = "Sejak 2008";
+    let labelTahun = "";
     if (tahun) {
       labelTahun = String(tahun).toLowerCase().startsWith("sejak") ? escapeHtml(tahun) : "Sejak " + escapeHtml(tahun);
     }
@@ -1694,6 +1729,8 @@ async function muatStatistikBeranda(elId) {
         <span class="label text-[11px] sm:text-xs font-medium text-secondary-fixed-dim mt-1">Program Kerja</span>
       </div>
     `;
+    // Tahun berdiri belum diisi di Pengaturan: jangan tampilkan angka karangan.
+    if (!labelTahun && el.firstElementChild) el.firstElementChild.remove();
   } catch (err) {
     console.warn("Gagal memuat statistik beranda dari database:", err);
   }
@@ -1915,7 +1952,7 @@ async function muatTickerBerjalan() {
 
   const fallbackPotongan = [
     "Selamat datang di Portal Resmi HIMPALUBI UNIPAR Jember",
-    "Pendaftaran Calon Anggota Baru Gelombang 2026/2027 telah dibuka",
+    "Informasi kegiatan dan pendaftaran anggota tersedia di website ini",
     "Mari wujudkan lingkungan kampus yang ramah, inklusif, dan berdaya bersama"
   ];
 
@@ -1988,6 +2025,16 @@ function pasangFormAspirasi(formId) {
 }
 
 // ================= FORM PENDAFTARAN (pendaftaran.html) =================
+// Menampilkan pesan hasil formulir di layar (gulir + fokus + role yang tepat untuk pembaca layar).
+function umumkanPesan(el) {
+  if (!el) return;
+  el.setAttribute("role", el.classList.contains("error") ? "alert" : "status");
+  el.setAttribute("tabindex", "-1");
+  const kurangiGerak = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  el.scrollIntoView({ behavior: kurangiGerak ? "auto" : "smooth", block: "center" });
+  el.focus({ preventScroll: true });
+}
+
 function pasangFormPendaftaran(formId) {
   const form = document.getElementById(formId);
   if (!form) return;
@@ -2027,13 +2074,24 @@ function pasangFormPendaftaran(formId) {
     if (!/^[A-Za-z0-9]{6,20}$/.test(nim)) {
       pesanEl.className = "form-message error";
       pesanEl.textContent = "NIM boleh berisi huruf dan angka, 6-20 karakter.";
+      umumkanPesan(pesanEl);
       form.nim.focus();
       return;
     }
     if (!/^(\+62|62|0)8[0-9]{8,12}$/.test(noWa)) {
       pesanEl.className = "form-message error";
       pesanEl.textContent = "Format Nomor WhatsApp tidak valid. Contoh: 08123456789.";
+      umumkanPesan(pesanEl);
       form.no_wa.focus();
+      return;
+    }
+
+    // Persetujuan pengolahan data pribadi (wajib)
+    if (form.setuju && !form.setuju.checked) {
+      pesanEl.className = "form-message error";
+      pesanEl.textContent = "Centang persetujuan pengolahan data pribadi terlebih dahulu.";
+      umumkanPesan(pesanEl);
+      form.setuju.focus();
       return;
     }
 
@@ -2041,6 +2099,7 @@ function pasangFormPendaftaran(formId) {
     if (form.hp_konfirmasi_situs && form.hp_konfirmasi_situs.value.trim() !== "") {
       pesanEl.className = "form-message success";
       pesanEl.textContent = "Pendaftaran berhasil dikirim.";
+      umumkanPesan(pesanEl);
       form.reset();
       return;
     }
@@ -2060,8 +2119,14 @@ function pasangFormPendaftaran(formId) {
       email: form.email.value.trim(),
       alasan: form.alasan.value.trim(),
     };
+    if (form.setuju) payload.setuju_pada = new Date().toISOString();
 
-    const { error } = await supabaseClient.from("pendaftaran").insert(payload);
+    let { error } = await supabaseClient.from("pendaftaran").insert(payload);
+    // Cadangan: jika kolom setuju_pada belum dibuat di database (SQL tahap 19 belum dijalankan), kirim tanpa kolom itu.
+    if (error && payload.setuju_pada && (error.code === "PGRST204" || /setuju_pada/.test(error.message || ""))) {
+      delete payload.setuju_pada;
+      ({ error } = await supabaseClient.from("pendaftaran").insert(payload));
+    }
 
     tombol.disabled = false;
     tombol.textContent = "Kirim Pendaftaran";
@@ -2069,14 +2134,16 @@ function pasangFormPendaftaran(formId) {
     if (error) {
       pesanEl.className = "form-message error";
       pesanEl.textContent = error.code === "23505"
-        ? "NIM ini sudah pernah terdaftar sebelumnya. Hubungi pengurus kalau ini keliru."
+        ? "Pendaftaran tidak dapat diproses. Jika kamu merasa sudah mendaftar atau data ini keliru, hubungi pengurus."
         : "Pendaftaran gagal terkirim. Coba lagi sebentar lagi.";
+      umumkanPesan(pesanEl);
       console.error(error);
       return;
     }
 
     pesanEl.className = "form-message success";
     pesanEl.textContent = "Pendaftaran berhasil dikirim. Tim pengurus akan menghubungi kamu.";
+      umumkanPesan(pesanEl);
     form.reset();
   });
 }
@@ -2170,6 +2237,37 @@ function skeletonBarisTabel(kolom, jumlahBaris) {
 }
 
 // ================= EMPTY STATE: tampilan "belum ada data" yang bersih & responsif =================
+// Tampilan seragam saat data gagal dimuat (jaringan/Supabase bermasalah), supaya tidak disangka "data kosong".
+function tampilGagalMuat(el, pesan) {
+  if (!el) return;
+  el.innerHTML = `
+    <div role="alert" class="col-span-full p-8 text-center bg-surface-container-lowest rounded-2xl border border-surface-container">
+      <p class="text-body-md text-on-surface font-semibold mb-1">Data belum bisa dimuat</p>
+      <p class="text-body-md text-secondary mb-4">${escapeHtml(pesan || "Periksa koneksi internet Anda, lalu coba lagi.")}</p>
+      <button type="button" onclick="location.reload()" class="inline-flex items-center justify-center min-h-[44px] px-6 rounded-full bg-primary-container hover:bg-primary text-on-primary text-sm font-semibold transition-colors">Muat ulang halaman</button>
+    </div>`;
+}
+
+// Kunci fokus di dalam dialog (Tab berputar di dalam), Esc menutup, fokus kembali ke pemicu.
+function jebakFokusDialog(dialogEl, tutup) {
+  const pemicu = document.activeElement;
+  const sel = 'a[href],button:not([disabled]),input:not([disabled]):not([tabindex="-1"]),select,textarea,[tabindex]:not([tabindex="-1"])';
+  const onKey = (e) => {
+    if (e.key === "Escape") { e.stopPropagation(); tutup(); return; }
+    if (e.key !== "Tab") return;
+    const f = Array.from(dialogEl.querySelectorAll(sel)).filter(x => x.offsetParent !== null);
+    if (!f.length) { e.preventDefault(); return; }
+    const a = f[0], z = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
+    else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
+  };
+  dialogEl.addEventListener("keydown", onKey);
+  return function lepas() {
+    dialogEl.removeEventListener("keydown", onKey);
+    if (pemicu && typeof pemicu.focus === "function" && document.contains(pemicu)) pemicu.focus();
+  };
+}
+
 function emptyState(judul, deskripsi, options = {}) {
   const icon = (typeof options === "string" ? options : options.icon) || "event_busy";
   const btnText = typeof options === "object" ? options.btnText : "";
@@ -2210,7 +2308,7 @@ function perbaruiMetaDetail(data, kategori) {
   const BASE = "https://mim1654.github.io/himpalubi/";
   const judul = `${data.judul} — HIMPALUBI`;
   const deskripsi = ringkas((data.isi || "").replace(/\n+/g, " "), 160);
-  const gambar = data.foto_url || `${BASE}img/logo.png`;
+  const gambar = data.foto_url || `${BASE}img/og-default.png`;
   const url = `${BASE}detail.html?id=${data.id}&kategori=${kategori}`;
 
   aturMeta('meta[name="description"]', "content", deskripsi);
@@ -2262,7 +2360,7 @@ function bukaPencarian() {
   overlay.className = "search-overlay";
   overlay.id = "overlay-pencarian";
   overlay.innerHTML = `
-    <div class="search-box">
+    <div class="search-box" role="dialog" aria-modal="true" aria-label="Pencarian situs">
       <div class="search-input-wrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" id="input-pencarian" placeholder="Cari berita, kegiatan, anggota, program kerja..." aria-label="Kata kunci pencarian">
@@ -2276,16 +2374,18 @@ function bukaPencarian() {
   document.body.appendChild(overlay);
 
   const input = document.getElementById("input-pencarian");
+  const _pemicuPencarian = document.activeElement;
   input.focus();
 
+  let lepasFokus = () => {};
   function tutup() {
     overlay.remove();
-    document.removeEventListener("keydown", escHandler);
+    lepasFokus();
   }
-  function escHandler(e) {
-    if (e.key === "Escape") tutup();
-  }
-  document.addEventListener("keydown", escHandler);
+  lepasFokus = jebakFokusDialog(overlay, tutup);
+  // jebakFokusDialog mencatat elemen aktif saat dipanggil (sudah input), jadi kembalikan ke pemicu asli
+  const _lepasAsli = lepasFokus;
+  lepasFokus = () => { _lepasAsli(); if (_pemicuPencarian && document.contains(_pemicuPencarian)) _pemicuPencarian.focus(); };
   document.getElementById("tombol-tutup-search").addEventListener("click", tutup);
   overlay.addEventListener("click", (e) => { if (e.target === overlay) tutup(); });
 
@@ -2305,13 +2405,18 @@ async function jalankanPencarian(kata) {
   if (!hasilEl) return;
   hasilEl.innerHTML = `<p class="search-empty">Mencari...</p>`;
 
-  const kunci = `%${kata}%`;
+  const kunci = `%${kata.replace(/[\\%_]/g, "\\$&")}%`;
   const [beritaRes, kegiatanRes, anggotaRes, programRes] = await Promise.all([
     supabaseClient.from("berita").select("id, judul, tanggal").eq("kategori", "Berita").ilike("judul", kunci).limit(5),
     supabaseClient.from("berita").select("id, judul, tanggal").eq("kategori", "Kegiatan").ilike("judul", kunci).limit(5),
     supabaseClient.from("anggota").select("id, nama, jabatan, kategori").ilike("nama", kunci).limit(5),
     supabaseClient.from("program_kerja").select("id, nama_program, divisi").ilike("nama_program", kunci).limit(5),
   ]);
+
+  if (beritaRes.error || kegiatanRes.error || anggotaRes.error || programRes.error) {
+    hasilEl.innerHTML = `<p class="search-empty">Pencarian belum bisa dilakukan. Periksa koneksi, lalu coba lagi.</p>`;
+    return;
+  }
 
   const grup = [];
 
@@ -2377,12 +2482,16 @@ function pasangLightbox(containerId) {
   if (!gambar.length) return;
 
   let indeks = 0;
+  let lepasFokusLightbox = () => {};
 
   function bukaLightbox(i) {
     indeks = i;
     const overlay = document.createElement("div");
     overlay.className = "lightbox-overlay";
     overlay.id = "lightbox-aktif";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Pratinjau foto");
     overlay.innerHTML = `
       <button class="lightbox-tutup" aria-label="Tutup">&times;</button>
       ${gambar.length > 1 ? `<button class="lightbox-prev" aria-label="Sebelumnya">&larr;</button>` : ""}
@@ -2401,16 +2510,21 @@ function pasangLightbox(containerId) {
     if (prev) prev.addEventListener("click", () => geser(-1));
     if (next) next.addEventListener("click", () => geser(1));
     document.addEventListener("keydown", tombolKeyboard);
+    lepasFokusLightbox = jebakFokusDialog(overlay, tutupLightbox);
+    overlay.querySelector(".lightbox-tutup").focus();
   }
 
   function geser(arah) {
     indeks = (indeks + arah + gambar.length) % gambar.length;
     const overlay = document.getElementById("lightbox-aktif");
-    if (overlay) overlay.querySelector("img").src = gambar[indeks].src;
+    if (overlay) {
+      const besar = overlay.querySelector("img");
+      besar.src = gambar[indeks].src;
+      besar.alt = gambar[indeks].alt || "";
+    }
   }
 
   function tombolKeyboard(e) {
-    if (e.key === "Escape") tutupLightbox();
     if (e.key === "ArrowLeft") geser(-1);
     if (e.key === "ArrowRight") geser(1);
   }
@@ -2419,6 +2533,8 @@ function pasangLightbox(containerId) {
     const overlay = document.getElementById("lightbox-aktif");
     if (overlay) overlay.remove();
     document.removeEventListener("keydown", tombolKeyboard);
+    lepasFokusLightbox();
+    lepasFokusLightbox = () => {};
   }
 
   gambar.forEach((img, i) => {

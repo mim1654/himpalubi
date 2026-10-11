@@ -4,16 +4,30 @@
 // serta menangani interaktivitas navbar, dropdown, dan aksesibilitas.
 // =========================================================
 
+// Halaman 404 bisa dibuka dari alamat bertingkat (mis. /himpalubi/a/b), jadi jalur relatif
+// harus diawali alamat dasar situs (atribut data-base pada <body>).
+function perbaikiJalurRelatif(root) {
+  const base = document.body.dataset.base;
+  if (!base || !root) return;
+  root.querySelectorAll("[href],[src],[srcset]").forEach((el) => {
+    ["href", "src", "srcset"].forEach((attr) => {
+      const v = el.getAttribute(attr);
+      if (v && !/^(https?:|mailto:|tel:|data:|#|\/)/i.test(v)) el.setAttribute(attr, base + v);
+    });
+  });
+}
+
 async function muatKomponen() {
+  const BASE = document.body.dataset.base || "";
   const headerSlot = document.getElementById("site-header-slot");
   const footerSlot = document.getElementById("site-footer-slot");
 
   if (headerSlot) {
     try {
-      let res = await fetch("partials/header.html");
-      if (!res.ok) res = await fetch("header.html");
+      const res = await fetch(BASE + "partials/header.html");
       if (res.ok) {
         headerSlot.innerHTML = await res.text();
+        perbaikiJalurRelatif(headerSlot);
         tandaiMenuAktif();
         pasangHamburger();
         pasangDropdown();
@@ -27,10 +41,10 @@ async function muatKomponen() {
 
   if (footerSlot) {
     try {
-      let res = await fetch("partials/footer.html");
-      if (!res.ok) res = await fetch("footer.html");
+      const res = await fetch(BASE + "partials/footer.html");
       if (res.ok) {
         footerSlot.innerHTML = await res.text();
+        perbaikiJalurRelatif(footerSlot);
         const elTahun = document.getElementById("tahun");
         if (elTahun) elTahun.textContent = new Date().getFullYear();
         if (typeof muatPengaturanFooter === "function") muatPengaturanFooter();
