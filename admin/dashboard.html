@@ -231,6 +231,28 @@
     .quick-link .material-symbols-outlined { color: #9E001F; }
     .quick-link small { display: block; font-weight: 400; font-size: 0.75rem; color: #5C5E66; }
 
+
+    /* ===== Pengaturan: kartu per kelompok ===== */
+    .set-nav { display:flex; gap:.5rem; overflow-x:auto; padding-bottom:.25rem; margin-bottom:1.25rem; -webkit-overflow-scrolling:touch; }
+    .set-chip { display:inline-flex; align-items:center; gap:.4rem; flex:0 0 auto; min-height:44px; padding:0 .9rem; border:1px solid #DFE9FA; border-radius:9999px; background:#fff; color:#121C28; font-size:.8125rem; font-weight:600; text-decoration:none; }
+    .set-chip:hover { border-color:#C8102E; }
+    .set-chip .material-symbols-outlined { font-size:18px; color:#9E001F; }
+    .set-form { display:flex; flex-direction:column; gap:1.25rem; }
+    .set-card { margin:0; min-width:0; padding:1.5rem; background:#fff; border:1px solid #E5EEFF; border-radius:1rem; scroll-margin-top:6rem; }
+    .set-legend { float:left; width:100%; display:flex; gap:.85rem; align-items:flex-start; padding:0; margin-bottom:1.25rem; }
+    .set-legend + * { clear:both; }
+    .set-ico { flex:0 0 auto; display:grid; place-items:center; width:2.5rem; height:2.5rem; border-radius:.75rem; background:#FFDAD8; color:#92001C; }
+    .set-title { display:block; font-size:1.0625rem; line-height:1.5rem; font-weight:700; color:#121C28; }
+    .set-desc { display:block; margin-top:.1rem; font-size:.8125rem; line-height:1.25rem; color:#5C5E66; }
+    .set-grid { display:grid; grid-template-columns:1fr; gap:1rem 1.25rem; }
+    @media (min-width:768px) { .set-grid { grid-template-columns:1fr 1fr; } .set-grid > .md\:col-span-2 { grid-column:1 / -1; } }
+    .set-label { display:block; margin-bottom:.35rem; font-size:.875rem; font-weight:600; color:#121C28; }
+    .set-hint { margin:.35rem 0 0; font-size:.75rem; line-height:1.1rem; color:#5C5E66; }
+    .set-card input:disabled, .set-card textarea:disabled { background:#F1F4FA; color:#5C5E66; cursor:not-allowed; }
+    .set-savebar { position:sticky; bottom:0; z-index:10; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; padding:.9rem 1.25rem; background:#fff; border:1px solid #E5EEFF; border-radius:1rem; box-shadow:0 -4px 16px rgba(18,28,40,.06); }
+    .set-savebar-note { margin:0; font-size:.8125rem; color:#5C5E66; }
+    @media (max-width:560px) { .set-card { padding:1.1rem; } .set-savebar button { width:100%; } }
+
     /* Tabel menjadi kartu bertumpuk di layar kecil agar kolom Status dan Aksi selalu terlihat */
     @media (max-width: 719px) {
       .admin-section table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
@@ -1105,181 +1127,195 @@
 
       <!-- ================= 9. PENGATURAN WEBSITE ================= -->
       <section id="kelola-pengaturan" class="admin-section">
-        
-        <div class="mb-6">
-          <div class="flex items-center gap-2 text-xs font-semibold text-primary uppercase tracking-wider mb-1">
-            <span class="material-symbols-outlined text-[16px]">settings</span>
-            <span>Konfigurasi Organisasi</span>
+
+        <div class="mb-5">
+          <h1 class="text-2xl sm:text-3xl font-bold text-on-surface tracking-tight">Pengaturan website</h1>
+          <p class="text-sm text-secondary mt-1">Isian di sini langsung dipakai di beranda, halaman Tentang, Kegiatan, Kontak, dan footer setelah disimpan.</p>
+        </div>
+
+        <nav class="set-nav" aria-label="Lompat ke kelompok pengaturan"><a href="#set-identitas" class="set-chip" data-set-jump="set-identitas"><span class="material-symbols-outlined" aria-hidden="true">badge</span>Identitas organisasi</a><a href="#set-beranda" class="set-chip" data-set-jump="set-beranda"><span class="material-symbols-outlined" aria-hidden="true">home</span>Tampilan beranda</a><a href="#set-tentang" class="set-chip" data-set-jump="set-tentang"><span class="material-symbols-outlined" aria-hidden="true">info</span>Halaman Tentang</a><a href="#set-layanan" class="set-chip" data-set-jump="set-layanan"><span class="material-symbols-outlined" aria-hidden="true">accessible</span>Layanan inklusi</a><a href="#set-kontak" class="set-chip" data-set-jump="set-kontak"><span class="material-symbols-outlined" aria-hidden="true">contact_mail</span>Kontak dan media sosial</a></nav>
+
+        <div id="pesan-pengaturan" aria-live="polite"></div>
+
+        <form id="form-pengaturan" class="set-form">
+
+            <fieldset id="set-identitas" class="set-card">
+              <legend class="set-legend">
+                <span class="set-ico"><span class="material-symbols-outlined" aria-hidden="true">badge</span></span>
+                <span><span class="set-title">Identitas organisasi</span><span class="set-desc">Nama dan tahun berdiri yang tampil di seluruh website.</span></span>
+              </legend>
+              <div class="set-grid">
+              <div class="">
+                <label for="nama_organisasi" class="set-label">Nama resmi organisasi</label>
+                <input type="text" id="nama_organisasi" name="nama_organisasi" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" required>
+                
+              </div>
+<div class="">
+                <label for="tahun_berdiri" class="set-label">Tahun berdiri</label>
+                <input type="text" id="tahun_berdiri" name="tahun_berdiri" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" placeholder="Contoh: 2018">
+                
+              </div>
+              </div>
+            </fieldset>
+
+            <fieldset id="set-beranda" class="set-card">
+              <legend class="set-legend">
+                <span class="set-ico"><span class="material-symbols-outlined" aria-hidden="true">home</span></span>
+                <span><span class="set-title">Tampilan beranda</span><span class="set-desc">Lencana akreditasi, periode, slogan, dan teks berjalan di halaman depan.</span></span>
+              </legend>
+              <div class="set-grid">
+              <div class="">
+                <label for="akreditasi_label" class="set-label">Label akreditasi</label>
+                <input type="text" id="akreditasi_label" name="akreditasi_label" aria-describedby="akreditasi_label-hint" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" placeholder="Contoh: Akreditasi Unggul" maxlength="60">
+                <p class="set-hint" id="akreditasi_label-hint">Kosongkan untuk menyembunyikan lencana akreditasi di beranda.</p>
+              </div>
+<div class="">
+                <label for="akreditasi_periode" class="set-label">Periode akreditasi</label>
+                <input type="text" id="akreditasi_periode" name="akreditasi_periode" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" placeholder="Contoh: 2025/2026" maxlength="60">
+                
+              </div>
+<div class="">
+                <label for="periode_kepengurusan" class="set-label">Periode kepengurusan</label>
+                <input type="text" id="periode_kepengurusan" name="periode_kepengurusan" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" placeholder="Contoh: 2025/2026" maxlength="60">
+                
+              </div>
+<div class="">
+                <label for="tagline" class="set-label">Tagline singkat</label>
+                <input type="text" id="tagline" name="tagline" aria-describedby="tagline-hint" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                <p class="set-hint" id="tagline-hint">Tampil di footer.</p>
+              </div>
+<div class="md:col-span-2">
+                <label for="tagline_hero" class="set-label">Slogan hero beranda</label>
+                <input type="text" id="tagline_hero" name="tagline_hero" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" placeholder="Contoh: Bergerak Bersama, Peduli untuk Semua">
+                
+              </div>
+<div class="md:col-span-2">
+                <label for="teks_berjalan" class="set-label">Teks berjalan manual</label>
+                <input type="text" id="teks_berjalan" name="teks_berjalan" aria-describedby="teks_berjalan-hint" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" placeholder="Contoh: Pendaftaran anggota baru dibuka sampai 30 September!">
+                <p class="set-hint" id="teks_berjalan-hint">Tampil di bilah teks berjalan di atas website, digabung otomatis dengan berita terbaru.</p>
+              </div>
+              </div>
+            </fieldset>
+
+            <fieldset id="set-tentang" class="set-card">
+              <legend class="set-legend">
+                <span class="set-ico"><span class="material-symbols-outlined" aria-hidden="true">info</span></span>
+                <span><span class="set-title">Halaman Tentang</span><span class="set-desc">Profil, sejarah, tujuan, visi, dan misi. Pada kolom tujuan dan misi, satu baris sama dengan satu poin.</span></span>
+              </legend>
+              <div class="set-grid">
+              <div class="md:col-span-2">
+                <label for="tentang" class="set-label">Tentang organisasi</label>
+                <textarea id="tentang" name="tentang" rows="8" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"></textarea>
+                
+              </div>
+<div class="md:col-span-2">
+                <label for="sejarah" class="set-label">Sejarah organisasi</label>
+                <textarea id="sejarah" name="sejarah" rows="7" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"></textarea>
+                
+              </div>
+<div class="md:col-span-2">
+                <label for="tujuan" class="set-label">Tujuan organisasi</label>
+                <textarea id="tujuan" name="tujuan" aria-describedby="tujuan-hint" rows="5" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"></textarea>
+                <p class="set-hint" id="tujuan-hint">Satu baris per poin.</p>
+              </div>
+<div class="">
+                <label for="visi" class="set-label">Visi organisasi</label>
+                <textarea id="visi" name="visi" rows="4" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"></textarea>
+                
+              </div>
+<div class="">
+                <label for="misi" class="set-label">Misi organisasi</label>
+                <textarea id="misi" name="misi" aria-describedby="misi-hint" rows="5" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"></textarea>
+                <p class="set-hint" id="misi-hint">Satu baris per poin.</p>
+              </div>
+              </div>
+            </fieldset>
+
+            <fieldset id="set-layanan" class="set-card">
+              <legend class="set-legend">
+                <span class="set-ico"><span class="material-symbols-outlined" aria-hidden="true">accessible</span></span>
+                <span><span class="set-title">Layanan inklusi (halaman Kegiatan)</span><span class="set-desc">Kotak “Layanan Fasilitas Inklusi” di bagian bawah halaman Kegiatan.</span></span>
+              </legend>
+              <div class="set-grid">
+              <div class="md:col-span-2">
+                <label for="layanan_judul" class="set-label">Judul kotak</label>
+                <input type="text" id="layanan_judul" name="layanan_judul" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" maxlength="120">
+                
+              </div>
+<div class="md:col-span-2">
+                <label for="layanan_deskripsi" class="set-label">Penjelasan layanan</label>
+                <textarea id="layanan_deskripsi" name="layanan_deskripsi" rows="4" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"></textarea>
+                
+              </div>
+<div class="md:col-span-2">
+                <label for="layanan_fasilitas" class="set-label">Fasilitas yang disediakan</label>
+                <textarea id="layanan_fasilitas" name="layanan_fasilitas" aria-describedby="layanan_fasilitas-hint" rows="4" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"></textarea>
+                <p class="set-hint" id="layanan_fasilitas-hint">Satu baris per poin.</p>
+              </div>
+<div class="">
+                <label for="layanan_kontak_label" class="set-label">Label narahubung</label>
+                <input type="text" id="layanan_kontak_label" name="layanan_kontak_label" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" placeholder="Contoh: Narahubung Advokasi Inklusi" maxlength="80">
+                
+              </div>
+<div class="">
+                <label for="layanan_whatsapp" class="set-label">Nomor WhatsApp narahubung</label>
+                <input type="text" id="layanan_whatsapp" name="layanan_whatsapp" aria-describedby="layanan_whatsapp-hint" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" placeholder="Contoh: 0812-3463-4724" maxlength="25">
+                <p class="set-hint" id="layanan_whatsapp-hint">Dipakai untuk teks nomor dan tombol WhatsApp. Kosongkan untuk menyembunyikan keduanya.</p>
+              </div>
+              </div>
+            </fieldset>
+
+            <fieldset id="set-kontak" class="set-card">
+              <legend class="set-legend">
+                <span class="set-ico"><span class="material-symbols-outlined" aria-hidden="true">contact_mail</span></span>
+                <span><span class="set-title">Kontak dan media sosial</span><span class="set-desc">Tampil di halaman Kontak, beranda, dan footer. Kosongkan kolom yang belum ada.</span></span>
+              </legend>
+              <div class="set-grid">
+              <div class="md:col-span-2">
+                <label for="alamat" class="set-label">Alamat sekretariat</label>
+                <input type="text" id="alamat" name="alamat" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                
+              </div>
+<div class="">
+                <label for="email-pengaturan" class="set-label">Email resmi</label>
+                <input type="email" id="email-pengaturan" name="email" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                
+              </div>
+<div class="">
+                <label for="telepon" class="set-label">Nomor kontak / WhatsApp</label>
+                <input type="text" id="telepon" name="telepon" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                
+              </div>
+<div class="md:col-span-2">
+                <label for="jam_layanan" class="set-label">Jam layanan piket</label>
+                <input type="text" id="jam_layanan" name="jam_layanan" aria-describedby="jam_layanan-hint" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" placeholder="Contoh: Senin - Jumat: 09.00 - 17.00 WIB" maxlength="120">
+                <p class="set-hint" id="jam_layanan-hint">Tampil di kartu Sekretariat pada beranda. Kosongkan untuk menyembunyikannya.</p>
+              </div>
+<div class="">
+                <label for="instagram" class="set-label">Tautan Instagram</label>
+                <input type="url" id="instagram" name="instagram" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" placeholder="https://instagram.com/himpalubi_unipar">
+                
+              </div>
+<div class="">
+                <label for="youtube" class="set-label">Tautan YouTube</label>
+                <input type="url" id="youtube" name="youtube" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" placeholder="https://youtube.com/@himpalubi">
+                
+              </div>
+<div class="">
+                <label for="tiktok" class="set-label">Tautan TikTok</label>
+                <input type="url" id="tiktok" name="tiktok" aria-describedby="tiktok-hint" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" placeholder="https://tiktok.com/@himpalubi">
+                <p class="set-hint" id="tiktok-hint">Kosongkan jika belum ada; tombol TikTok tidak akan ditampilkan.</p>
+              </div>
+              </div>
+            </fieldset>
+
+          <div class="set-savebar">
+            <p class="set-savebar-note">Perubahan baru tampil di website setelah disimpan.</p>
+            <button type="submit" class="px-6 py-2.5 rounded-full bg-primary hover:bg-primary-container text-on-primary text-sm font-semibold shadow-sm hover:shadow-md transition-all active:scale-[0.98] min-h-[44px]">
+              Simpan pengaturan
+            </button>
           </div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-on-surface tracking-tight">Pengaturan Website</h1>
-          <p class="text-sm text-secondary mt-1">Informasi ini tersinkronisasi otomatis pada halaman Tentang, Kontak, Hero Beranda, dan Footer website.</p>
-        </div>
-
-        <div class="bg-surface-container-lowest rounded-2xl p-6 border border-surface-container shadow-sm">
-          
-          <div id="pesan-pengaturan" aria-live="polite"></div>
-
-          <form id="form-pengaturan" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            
-            <div class="form-group-head">
-              <h2>Identitas organisasi</h2>
-              <p>Nama dan tahun berdiri yang tampil di seluruh website.</p>
-            </div>
-            <div>
-              <label for="nama_organisasi" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Nama Resmi Organisasi</label>
-              <input type="text" id="nama_organisasi" name="nama_organisasi" required class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-            </div>
-
-            <div>
-              <label for="tahun_berdiri" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Tahun Berdiri</label>
-              <input type="text" id="tahun_berdiri" name="tahun_berdiri" placeholder="Contoh: 2018" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-            </div>
-
-            
-            <div class="form-group-head">
-              <h2>Tampilan beranda</h2>
-              <p>Lencana, periode, slogan, dan teks berjalan di halaman depan.</p>
-            </div>
-            <div>
-              <label for="akreditasi_label" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Label Akreditasi (Beranda)</label>
-              <input type="text" id="akreditasi_label" name="akreditasi_label" maxlength="60" placeholder="Contoh: Akreditasi Unggul" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
-              <p class="mt-1 text-[11px] text-secondary">Kosongkan untuk menyembunyikan lencana akreditasi di beranda.</p>
-            </div>
-
-            <div>
-              <label for="akreditasi_periode" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Periode Akreditasi (Beranda)</label>
-              <input type="text" id="akreditasi_periode" name="akreditasi_periode" maxlength="60" placeholder="Contoh: 2025/2026" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
-            </div>
-
-            <div>
-              <label for="periode_kepengurusan" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Periode Kepengurusan (Beranda)</label>
-              <input type="text" id="periode_kepengurusan" name="periode_kepengurusan" maxlength="60" placeholder="Contoh: 2025/2026" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
-            </div>
-<div>
-              <label for="tagline" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Tagline Singkat (Footer)</label>
-              <input type="text" id="tagline" name="tagline" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-            </div>
-
-            <div>
-              <label for="tagline_hero" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Slogan Hero Beranda</label>
-              <input type="text" id="tagline_hero" name="tagline_hero" placeholder="Contoh: Bergerak Bersama, Peduli untuk Semua" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-            </div>
-
-            <div class="md:col-span-2">
-              <label for="teks_berjalan" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Teks Berjalan Manual (Running Text)</label>
-              <input type="text" id="teks_berjalan" name="teks_berjalan" placeholder="Contoh: Pendaftaran anggota baru dibuka sampai 30 September!" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-              <p class="text-[11px] text-secondary mt-1">Tampil di running text atas website, digabung otomatis dengan berita terbaru.</p>
-            </div>
-
-            <div class="form-group-head">
-              <h2>Halaman Tentang</h2>
-              <p>Profil, sejarah, tujuan, visi, dan misi. Satu baris sama dengan satu poin pada kolom tujuan dan misi.</p>
-            </div>
-            <div class="md:col-span-2">
-              <label for="tentang" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Tentang Organisasi</label>
-              <textarea id="tentang" name="tentang" rows="8" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"></textarea>
-            </div>
-
-            <div class="md:col-span-2">
-              <label for="sejarah" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Sejarah Organisasi</label>
-              <textarea id="sejarah" name="sejarah" rows="7" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"></textarea>
-            </div>
-
-            <div class="md:col-span-2">
-              <label for="tujuan" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Tujuan Organisasi (Satu baris per poin)</label>
-              <textarea id="tujuan" name="tujuan" rows="5" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"></textarea>
-            </div>
-
-            <div>
-              <label for="visi" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Visi Organisasi</label>
-              <textarea id="visi" name="visi" rows="4" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"></textarea>
-            </div>
-
-            <div>
-              <label for="misi" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Misi Organisasi (Satu baris per poin)</label>
-              <textarea id="misi" name="misi" rows="5" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"></textarea>
-            </div>
-
-            <div class="form-group-head">
-              <h2>Layanan inklusi (halaman Kegiatan)</h2>
-              <p>Kotak &ldquo;Layanan Fasilitas Inklusi&rdquo; di bagian bawah halaman Kegiatan.</p>
-            </div>
-            <div class="md:col-span-2">
-              <label for="layanan_judul" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Judul Kotak</label>
-              <input type="text" id="layanan_judul" name="layanan_judul" maxlength="120" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/30 focus:border-primary-container transition-all">
-            </div>
-
-            <div class="md:col-span-2">
-              <label for="layanan_deskripsi" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Penjelasan Layanan</label>
-              <textarea id="layanan_deskripsi" name="layanan_deskripsi" rows="4" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/30 focus:border-primary-container transition-all"></textarea>
-            </div>
-
-            <div class="md:col-span-2">
-              <label for="layanan_fasilitas" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Fasilitas yang Disediakan (Satu baris per poin)</label>
-              <textarea id="layanan_fasilitas" name="layanan_fasilitas" rows="4" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/30 focus:border-primary-container transition-all"></textarea>
-            </div>
-
-            <div>
-              <label for="layanan_kontak_label" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Label Narahubung</label>
-              <input type="text" id="layanan_kontak_label" name="layanan_kontak_label" maxlength="80" placeholder="Contoh: Narahubung Advokasi Inklusi" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/30 focus:border-primary-container transition-all">
-            </div>
-
-            <div>
-              <label for="layanan_whatsapp" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Nomor WhatsApp Narahubung</label>
-              <input type="text" id="layanan_whatsapp" name="layanan_whatsapp" maxlength="25" placeholder="Contoh: 0812-3463-4724" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/30 focus:border-primary-container transition-all">
-              <p class="mt-1 text-[11px] text-secondary">Dipakai untuk teks nomor dan tombol WhatsApp. Kosongkan untuk menyembunyikan keduanya.</p>
-            </div>
-
-            <div class="form-group-head">
-              <h2>Kontak dan media sosial</h2>
-              <p>Tampil di halaman Kontak dan footer. Kosongkan kolom yang belum ada.</p>
-            </div>
-            <div class="md:col-span-2">
-              <label for="alamat" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Alamat Sekretariat</label>
-              <input type="text" id="alamat" name="alamat" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-            </div>
-
-            <div>
-              <label for="email-pengaturan" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Email Resmi</label>
-              <input type="email" id="email-pengaturan" name="email" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-            </div>
-
-            <div>
-              <label for="telepon" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Nomor Kontak / WhatsApp</label>
-              <input type="text" id="telepon" name="telepon" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-            </div>
-
-            
-            <div class="md:col-span-2">
-              <label for="jam_layanan" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Jam Layanan Piket</label>
-              <input type="text" id="jam_layanan" name="jam_layanan" maxlength="120" placeholder="Contoh: Senin - Jumat: 09.00 - 17.00 WIB" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
-              <p class="mt-1 text-[11px] text-secondary">Tampil di kartu Sekretariat pada beranda. Kosongkan untuk menyembunyikannya.</p>
-            </div>
-<div>
-              <label for="instagram" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Tautan Instagram</label>
-              <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/himpalubi_unipar" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-            </div>
-
-            <div>
-              <label for="youtube" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Tautan YouTube</label>
-              <input type="url" id="youtube" name="youtube" placeholder="https://youtube.com/@himpalubi" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-            </div>
-
-            
-            <div>
-              <label for="tiktok" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">TikTok (URL)</label>
-              <input type="url" id="tiktok" name="tiktok" placeholder="https://tiktok.com/@himpalubi" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
-              <p class="mt-1 text-[11px] text-secondary">Kosongkan jika belum ada; tombol TikTok tidak akan ditampilkan.</p>
-            </div>
-<div class="md:col-span-2 sticky bottom-0 z-10 -mx-6 -mb-6 mt-2 px-6 py-4 bg-surface-container-lowest border-t border-surface-container rounded-b-2xl">
-              <button type="submit" class="px-6 py-2.5 rounded-full bg-primary hover:bg-primary-container text-on-primary text-sm font-semibold tracking-wide shadow-sm hover:shadow-md transition-all active:scale-[0.98] min-h-[44px]">
-                Simpan Perubahan Pengaturan
-              </button>
-            </div>
-
-          </form>
-
-        </div>
+        </form>
 
       </section>
 
@@ -1298,7 +1334,7 @@
   <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
   <script src="../js/supabaseClient.js?v=3.0"></script>
   <script src="../js/public.js?v=4.1"></script>
-  <script src="../js/admin.js?v=4.1"></script>
+  <script src="../js/admin.js?v=4.2"></script>
   <script>
     (async () => {
       // 1. Muat modular Sidebar & Top Navbar
