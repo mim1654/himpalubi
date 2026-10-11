@@ -1765,10 +1765,22 @@ async function muatVisiMisi(elId) {
 }
 
 // ================= HALAMAN TENTANG: FAQ =================
+// Kolom faq.halaman ada setelah SQL tahap 18. Sebelum itu, semua FAQ dianggap milik halaman Tentang.
+async function ambilFaqUntukHalaman(halaman) {
+  const urut = (q) => q.order("urutan", { ascending: true, nullsFirst: false });
+  const res = await urut(supabaseClient.from("faq").select("*").in("halaman", [halaman, "semua"]));
+  if (res.error) {
+    // Kolom belum ada: Tentang memakai semua FAQ, halaman lain tidak punya FAQ database.
+    if (halaman !== "tentang") return { data: [], error: null };
+    return await urut(supabaseClient.from("faq").select("*"));
+  }
+  return res;
+}
+
 async function muatFaqHalaman(elId) {
   const el = document.getElementById(elId);
   if (!el) return;
-  const { data, error } = await supabaseClient.from("faq").select("*").order("urutan", { ascending: true, nullsFirst: false });
+  const { data, error } = await ambilFaqUntukHalaman("tentang");
   const bagianFaq = el.closest("section");
   if (error || !data || data.length === 0) {
     el.innerHTML = "";
@@ -1782,6 +1794,67 @@ async function muatFaqHalaman(elId) {
       <div class="faq-jawaban">${escapeHtml(f.jawaban).replace(/\n/g, "<br>")}</div>
     </details>
   `).join("");
+}
+
+// ================= HALAMAN KEGIATAN: FAQ + Layanan Inklusi =================
+async function muatFaqKegiatan(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  let hasil;
+  try { hasil = await ambilFaqUntukHalaman("kegiatan"); } catch (err) { return; }
+  const { data, error } = hasil;
+  if (error || !data || data.length === 0) return; // pertahankan isi bawaan di HTML
+  el.innerHTML = data.map((f, i) => `
+    <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container overflow-hidden">
+      <button class="faq-btn w-full px-5 py-4 text-left flex items-center justify-between gap-4 text-sm sm:text-base font-semibold text-on-surface hover:text-primary-container transition-colors min-h-[48px]" type="button" aria-expanded="false" aria-controls="faq-kegiatan-${i}">
+        <span>${escapeHtml(f.pertanyaan)}</span>
+        <span class="material-symbols-outlined faq-icon transition-transform duration-200 text-secondary" aria-hidden="true">expand_more</span>
+      </button>
+      <div id="faq-kegiatan-${i}" class="faq-content hidden px-5 pb-5 text-xs sm:text-sm text-secondary leading-relaxed border-t border-surface-container pt-3">${escapeHtml(f.jawaban).replace(/\n/g, "<br>")}</div>
+    </div>
+  `).join("");
+}
+
+function nomorWaAman(nomor) {
+  let d = String(nomor || "").replace(/\D/g, "");
+  if (d.startsWith("0")) d = "62" + d.slice(1);
+  else if (d.startsWith("8")) d = "62" + d;
+  return d.length >= 9 && d.length <= 15 ? d : "";
+}
+
+async function muatLayananInklusi() {
+  if (!document.getElementById("layanan-judul")) return;
+  let data = null;
+  try { ({ data } = await ambilPengaturan()); } catch (err) { return; }
+  if (!data || !("layanan_judul" in data)) return; // SQL tahap 18 belum dijalankan: isi bawaan HTML dipakai
+
+  if (data.layanan_judul) setTeksAman("layanan-judul", data.layanan_judul);
+  if (data.layanan_deskripsi) setTeksAman("layanan-deskripsi", data.layanan_deskripsi);
+  if (data.layanan_kontak_label) setTeksAman("layanan-label", data.layanan_kontak_label.replace(/:?\s*$/, ":"));
+
+  const daftar = String(data.layanan_fasilitas || "").split(/\n+/).map(t => t.trim()).filter(Boolean);
+  const wadah = document.getElementById("layanan-fasilitas");
+  if (wadah && daftar.length) {
+    wadah.innerHTML = daftar.map(t => `
+      <div class="flex items-center gap-3 text-secondary-fixed-dim text-xs sm:text-sm">
+        <span class="material-symbols-outlined text-primary-fixed text-[20px] shrink-0" aria-hidden="true">check_circle</span>
+        <span>${escapeHtml(t)}</span>
+      </div>`).join("");
+  }
+
+  const wa = nomorWaAman(data.layanan_whatsapp);
+  const aNomor = document.getElementById("layanan-nomor");
+  const aWa = document.getElementById("layanan-wa");
+  if (data.layanan_whatsapp !== null && data.layanan_whatsapp !== undefined) {
+    if (!wa) {
+      // Nomor dikosongkan di dashboard: sembunyikan narahubung dan tombol WhatsApp
+      if (aNomor && aNomor.parentElement) aNomor.parentElement.hidden = true;
+      if (aWa) aWa.style.display = "none";
+    } else {
+      if (aNomor) { aNomor.textContent = data.layanan_whatsapp.trim(); aNomor.href = "tel:+" + wa; }
+      if (aWa) aWa.href = "https://wa.me/" + wa + "?text=" + encodeURIComponent("Halo HIMPALUBI, saya ingin menanyakan layanan akomodasi untuk kegiatan.");
+    }
+  }
 }
 
 // ================= BERANDA: Testimoni =================

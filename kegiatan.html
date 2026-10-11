@@ -321,15 +321,15 @@
               <span>Layanan Fasilitas Inklusi</span>
             </div>
 
-            <h3 class="text-xl sm:text-2xl font-bold text-on-primary mb-3">
+            <h3 id="layanan-judul" class="text-xl sm:text-2xl font-bold text-on-primary mb-3">
               Memerlukan Akomodasi Khusus atau Juru Bahasa Isyarat (JBI)?
             </h3>
 
-            <p class="text-xs sm:text-sm text-secondary-fixed-dim leading-relaxed mb-6">
+            <p id="layanan-deskripsi" class="text-xs sm:text-sm text-secondary-fixed-dim leading-relaxed mb-6">
               HIMPALUBI menjamin setiap kegiatan ramah dan aksesibel bagi kawan difabel (Tuli, Netra, Daksa, Neurodivergen). Kami menyediakan pendamping relawan, modul cetak braille, deskripsi audio, dan JBI tanpa dipungut biaya.
             </p>
 
-            <div class="space-y-3 mb-8">
+            <div id="layanan-fasilitas" class="space-y-3 mb-8">
               <div class="flex items-center gap-3 text-secondary-fixed-dim text-xs sm:text-sm">
                 <span class="material-symbols-outlined text-primary-fixed text-[20px] shrink-0" aria-hidden="true">check_circle</span>
                 <span>Juru Bahasa Isyarat (BISINDO) di panggung &amp; Zoom</span>
@@ -347,10 +347,10 @@
 
           <div class="relative z-10 pt-4 border-t border-surface-container-lowest/10 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="text-left w-full sm:w-auto">
-              <span class="text-xs text-secondary-fixed-dim block">Narahubung Advokasi Inklusi:</span>
-              <a class="text-sm font-bold text-on-primary hover:underline underline-offset-4 inline-flex items-center min-h-[44px]" href="tel:+6281234634724">+62 812-3463-4724</a>
+              <span id="layanan-label" class="text-xs text-secondary-fixed-dim block">Narahubung Advokasi Inklusi:</span>
+              <a id="layanan-nomor" class="text-sm font-bold text-on-primary hover:underline underline-offset-4 inline-flex items-center min-h-[44px]" href="tel:+6281234634724">+62 812-3463-4724</a>
             </div>
-            <a class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary-container hover:bg-primary text-on-primary text-xs font-bold transition-colors shadow-md min-h-[44px]" href="https://wa.me/6281234634724?text=Halo%20HIMPALUBI%2C%20saya%20membutuhkan%20akomodasi%20untuk%20kegiatan." target="_blank" rel="noopener">
+            <a id="layanan-wa" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary-container hover:bg-primary text-on-primary text-xs font-bold transition-colors shadow-md min-h-[44px]" href="https://wa.me/6281234634724?text=Halo%20HIMPALUBI%2C%20saya%20membutuhkan%20akomodasi%20untuk%20kegiatan." target="_blank" rel="noopener">
               <span class="material-symbols-outlined text-[18px]" aria-hidden="true">chat</span>
               <span>Hubungi via WhatsApp</span>
             </a>
@@ -369,30 +369,34 @@
 <!-- Core Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabaseClient.js?v=3.0"></script>
-<script src="js/public.js?v=4.0"></script>
+<script src="js/public.js?v=4.1"></script>
 <script src="js/components.js?v=4.0"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    // 1. FAQ Accordion Logic
-    const faqButtons = document.querySelectorAll(".faq-btn");
-    faqButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const content = btn.nextElementSibling;
-        const icon = btn.querySelector(".faq-icon");
-        const isExpanded = !content.classList.contains("hidden");
+    // 1. FAQ Accordion (delegasi klik: berlaku juga untuk butir yang dimuat dari database)
+    const akordeon = document.getElementById("faqAccordion");
+    if (akordeon) akordeon.addEventListener("click", (e) => {
+      const btn = e.target.closest(".faq-btn");
+      if (!btn) return;
+      const content = btn.nextElementSibling;
+      const icon = btn.querySelector(".faq-icon");
+      const isExpanded = !content.classList.contains("hidden");
 
-        document.querySelectorAll(".faq-content").forEach((c) => c.classList.add("hidden"));
-        document.querySelectorAll(".faq-icon").forEach((i) => i.classList.remove("rotate-180"));
-        document.querySelectorAll(".faq-btn").forEach((b) => b.setAttribute("aria-expanded", "false"));
+      akordeon.querySelectorAll(".faq-content").forEach((c) => c.classList.add("hidden"));
+      akordeon.querySelectorAll(".faq-icon").forEach((i) => i.classList.remove("rotate-180"));
+      akordeon.querySelectorAll(".faq-btn").forEach((b) => b.setAttribute("aria-expanded", "false"));
 
-        if (!isExpanded) {
-          content.classList.remove("hidden");
-          if (icon) icon.classList.add("rotate-180");
-          btn.setAttribute("aria-expanded", "true");
-        }
-      });
+      if (!isExpanded) {
+        content.classList.remove("hidden");
+        if (icon) icon.classList.add("rotate-180");
+        btn.setAttribute("aria-expanded", "true");
+      }
     });
+
+    // Muat FAQ dan kotak Layanan Inklusi dari database (isi bawaan di atas tetap dipakai bila kosong/gagal)
+    muatFaqKegiatan("faqAccordion");
+    muatLayananInklusi();
 
     // 2. Muat Agenda Kegiatan dari Supabase dengan Empty State
     muatHalamanKegiatan("daftar-kegiatan-grid", "featured-event-section", "eventCounterNotice");

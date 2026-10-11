@@ -2964,6 +2964,17 @@ async function muatFormPengaturan() {
     if (!kolomBaruAda) input.placeholder = "Aktif setelah SQL tahap 15 dijalankan";
   });
 
+  // Layanan Inklusi (halaman Kegiatan): kolom baru dari SQL tahap 18.
+  const kolomLayananAda = "layanan_judul" in data;
+  form.dataset.kolomLayanan = kolomLayananAda ? "1" : "";
+  ["layanan_judul", "layanan_deskripsi", "layanan_fasilitas", "layanan_kontak_label", "layanan_whatsapp"].forEach((nama) => {
+    const input = form[nama];
+    if (!input) return;
+    input.value = data[nama] || "";
+    input.disabled = !kolomLayananAda;
+    if (!kolomLayananAda) input.placeholder = "Aktif setelah SQL tahap 18 dijalankan";
+  });
+
   // TikTok dan Jam Layanan Piket: kolom baru dari SQL tahap 16.
   const kolomKontakAda = "jam_layanan" in data;
   form.dataset.kolomKontak = kolomKontakAda ? "1" : "";
@@ -3008,6 +3019,11 @@ function pasangFormPengaturan(formId) {
       payload.tiktok = form.tiktok.value.trim();
       payload.jam_layanan = form.jam_layanan.value.trim();
     }
+    if (form.dataset.kolomLayanan === "1") {
+      ["layanan_judul", "layanan_deskripsi", "layanan_fasilitas", "layanan_kontak_label", "layanan_whatsapp"].forEach((nama) => {
+        payload[nama] = form[nama].value.trim();
+      });
+    }
     const { error } = await supabaseClient.from("pengaturan").update(payload).eq("id", 1);
     if (error) {
       pesanEl.className = "form-message error";
@@ -3028,16 +3044,20 @@ async function muatTabelFaq(page) {
   if (!page) page = ambilHalamanTabel("tabel-faq");
   aturHalamanTabel("tabel-faq", page);
 
-  el.innerHTML = skeletonBarisTabel(3, 2);
+  el.innerHTML = skeletonBarisTabel(4, 2);
   const { data, error } = await supabaseClient.from("faq").select("*").order("urutan", { ascending: true, nullsFirst: false });
-  if (error) { el.innerHTML = `<tr><td colspan="3" class="py-4 px-4 text-center text-error text-xs">Gagal memuat FAQ.</td></tr>`; return; }
+  if (error) { el.innerHTML = `<tr><td colspan="4" class="py-4 px-4 text-center text-error text-xs">Gagal memuat FAQ.</td></tr>`; return; }
 
   const total = data ? data.length : 0;
   if (!total) {
-    el.innerHTML = `<tr><td colspan="3">${emptyState("Belum ada FAQ", "Tambahkan pertanyaan baru melalui formulir di atas.", { icon: "contact_support" })}</td></tr>`;
+    el.innerHTML = `<tr><td colspan="4">${emptyState("Belum ada FAQ", "Tambahkan pertanyaan baru melalui formulir di atas.", { icon: "contact_support" })}</td></tr>`;
     renderBarisPaginasi("tabel-faq", 0, 1, () => {});
     return;
   }
+
+  // Kolom "halaman" baru ada setelah SQL tahap 18; sebelum itu pilihan halaman dinonaktifkan.
+  aturPilihanHalamanFaq(data.length > 0 && "halaman" in data[0]);
+  const labelHalaman = { tentang: "Tentang", kegiatan: "Kegiatan", semua: "Tentang + Kegiatan" };
 
   const offset = (page - 1) * BATAS_PER_HALAMAN;
   const paged = data.slice(offset, offset + BATAS_PER_HALAMAN);
@@ -3045,6 +3065,7 @@ async function muatTabelFaq(page) {
   el.innerHTML = paged.map(f => `
     <tr class="hover:bg-surface-container-low/70 transition-colors border-b border-surface-container/60 last:border-b-0">
       <td class="py-3.5 px-4 font-semibold text-on-surface">${escapeHtml(f.pertanyaan)}</td>
+      <td class="py-3.5 px-4 text-secondary text-xs">${escapeHtml(labelHalaman[f.halaman] || "Tentang")}</td>
       <td class="py-3.5 px-4 text-secondary text-xs">${f.urutan ?? "-"}</td>
       <td class="py-3.5 px-4 text-right">
         <div class="inline-flex items-center gap-1.5 justify-end">
@@ -3062,6 +3083,19 @@ async function muatTabelFaq(page) {
   renderBarisPaginasi("tabel-faq", total, page, (hal) => muatTabelFaq(hal));
 }
 
+// Pilihan halaman FAQ hanya aktif bila kolom faq.halaman sudah ada di database.
+let _kolomHalamanFaqAda = null;
+function aturPilihanHalamanFaq(ada) {
+  _kolomHalamanFaqAda = ada;
+  const sel = document.getElementById("halaman-faq");
+  const catatan = document.getElementById("catatan-halaman-faq");
+  if (!sel) return;
+  sel.disabled = !ada;
+  if (catatan) catatan.textContent = ada
+    ? "Menentukan di halaman mana pertanyaan ini muncul."
+    : "Aktif setelah SQL tahap 18 dijalankan. Sebelum itu semua FAQ tampil di halaman Tentang.";
+}
+
 function pasangFormFaq(formId) {
   const form = document.getElementById(formId);
   if (!form) return;
@@ -3073,6 +3107,7 @@ function pasangFormFaq(formId) {
       jawaban: form.jawaban.value.trim(),
       urutan: form.urutan.value ? parseInt(form.urutan.value, 10) : null,
     };
+    if (_kolomHalamanFaqAda && form.halaman) payload.halaman = form.halaman.value;
     const query = id
       ? supabaseClient.from("faq").update(payload).eq("id", id)
       : supabaseClient.from("faq").insert(payload);
@@ -3093,6 +3128,7 @@ async function editFaq(id) {
   form.pertanyaan.value = data.pertanyaan;
   form.jawaban.value = data.jawaban;
   form.urutan.value = data.urutan ?? "";
+  if (form.halaman) form.halaman.value = data.halaman || "tentang";
   form.dataset.editId = id;
   document.getElementById("judul-form-faq").textContent = "Edit Pertanyaan FAQ";
   form.scrollIntoView({ behavior: "smooth" });

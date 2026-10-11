@@ -966,7 +966,7 @@
             <span>Informasi Publik</span>
           </div>
           <h1 class="text-2xl sm:text-3xl font-bold text-on-surface tracking-tight">Kelola Tanya Jawab (FAQ)</h1>
-          <p class="text-sm text-secondary mt-1">Kelola daftar pertanyaan yang sering diajukan di halaman Tentang organisasi.</p>
+          <p class="text-sm text-secondary mt-1">Kelola pertanyaan yang sering diajukan. Setiap pertanyaan bisa ditampilkan di halaman Tentang, halaman Kegiatan, atau keduanya.</p>
         </div>
 
         <div class="bg-surface-container-lowest rounded-2xl p-6 border border-surface-container shadow-sm mb-6">
@@ -981,6 +981,16 @@
             <div>
               <label for="jawaban-faq" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Jawaban Lengkap</label>
               <textarea id="jawaban-faq" name="jawaban" required rows="4" placeholder="Tuliskan jawaban yang ringkas dan jelas..." class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"></textarea>
+            </div>
+
+            <div>
+              <label for="halaman-faq" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Tampil di Halaman</label>
+              <select id="halaman-faq" name="halaman" class="w-full max-w-xs px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/30 focus:border-primary-container transition-all">
+                <option value="tentang">Tentang</option>
+                <option value="kegiatan">Kegiatan</option>
+                <option value="semua">Semua halaman (Tentang dan Kegiatan)</option>
+              </select>
+              <p id="catatan-halaman-faq" class="mt-1 text-[11px] text-secondary">Menentukan di halaman mana pertanyaan ini muncul.</p>
             </div>
 
             <div>
@@ -1005,12 +1015,13 @@
               <thead>
                 <tr class="bg-surface-container-low border-b border-surface-container text-[11px] font-semibold text-secondary uppercase tracking-wider">
                   <th scope="col" class="py-3 px-4">Pertanyaan</th>
+                  <th scope="col" class="py-3 px-4">Halaman</th>
                   <th scope="col" class="py-3 px-4">Urutan</th>
                   <th scope="col" class="py-3 px-4 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tabel-faq" class="divide-y divide-surface-container text-on-surface" aria-live="polite">
-                <tr><td colspan="3" class="py-4 px-4 text-center text-secondary text-xs">Memuat FAQ...</td></tr>
+                <tr><td colspan="4" class="py-4 px-4 text-center text-secondary text-xs">Memuat FAQ...</td></tr>
               </tbody>
             </table>
           </div>
@@ -1190,6 +1201,36 @@
             </div>
 
             <div class="form-group-head">
+              <h2>Layanan inklusi (halaman Kegiatan)</h2>
+              <p>Kotak &ldquo;Layanan Fasilitas Inklusi&rdquo; di bagian bawah halaman Kegiatan.</p>
+            </div>
+            <div class="md:col-span-2">
+              <label for="layanan_judul" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Judul Kotak</label>
+              <input type="text" id="layanan_judul" name="layanan_judul" maxlength="120" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/30 focus:border-primary-container transition-all">
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="layanan_deskripsi" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Penjelasan Layanan</label>
+              <textarea id="layanan_deskripsi" name="layanan_deskripsi" rows="4" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/30 focus:border-primary-container transition-all"></textarea>
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="layanan_fasilitas" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Fasilitas yang Disediakan (Satu baris per poin)</label>
+              <textarea id="layanan_fasilitas" name="layanan_fasilitas" rows="4" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/30 focus:border-primary-container transition-all"></textarea>
+            </div>
+
+            <div>
+              <label for="layanan_kontak_label" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Label Narahubung</label>
+              <input type="text" id="layanan_kontak_label" name="layanan_kontak_label" maxlength="80" placeholder="Contoh: Narahubung Advokasi Inklusi" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/30 focus:border-primary-container transition-all">
+            </div>
+
+            <div>
+              <label for="layanan_whatsapp" class="block text-xs font-semibold text-on-surface uppercase tracking-wider mb-1.5">Nomor WhatsApp Narahubung</label>
+              <input type="text" id="layanan_whatsapp" name="layanan_whatsapp" maxlength="25" placeholder="Contoh: 0812-3463-4724" class="w-full px-4 py-2.5 bg-surface rounded-xl border border-surface-container text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/30 focus:border-primary-container transition-all">
+              <p class="mt-1 text-[11px] text-secondary">Dipakai untuk teks nomor dan tombol WhatsApp. Kosongkan untuk menyembunyikan keduanya.</p>
+            </div>
+
+            <div class="form-group-head">
               <h2>Kontak dan media sosial</h2>
               <p>Tampil di halaman Kontak dan footer. Kosongkan kolom yang belum ada.</p>
             </div>
@@ -1256,8 +1297,8 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
   <script src="../js/supabaseClient.js?v=3.0"></script>
-  <script src="../js/public.js?v=3.0"></script>
-  <script src="../js/admin.js?v=4.0"></script>
+  <script src="../js/public.js?v=4.1"></script>
+  <script src="../js/admin.js?v=4.1"></script>
   <script>
     (async () => {
       // 1. Muat modular Sidebar & Top Navbar
