@@ -297,6 +297,72 @@ function salinSitus() {
   }
 }
 
+
+// ---------- Sitemap, peta alamat, dan pengalihan detail.html ----------
+// Halaman tetap di root situs. Hanya berkas yang benar-benar ada di repo yang dimasukkan sitemap.
+const HALAMAN_UTAMA = ["index", "tentang", "kegiatan", "berita", "anggota", "struktur", "program-kerja", "galeri", "pendaftaran", "kontak", "kampus", "privasi"];
+
+const tglDari = (iso) => (/^\d{4}-\d{2}-\d{2}/.test(iso || "") ? String(iso).slice(0, 10) : "");
+const tglTerbaru = (daftar) => daftar.filter(Boolean).sort().pop() || "";
+const xml = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" }[c]));
+
+function tulisSitemap(semua) {
+  // lastmod artikel = tanggal data dimasukkan ke database (created_at); suntingan belum bisa dideteksi.
+  for (const it of semua) it.lastmod = tglDari(it.created_at) || it.tanggalIso;
+  const terbaru = (saring) => tglTerbaru(semua.filter(saring).map((i) => i.lastmod));
+  const lastmodHalaman = {
+    index: terbaru(() => true),
+    berita: terbaru((i) => !i.adalahKegiatan),
+    kegiatan: terbaru((i) => i.adalahKegiatan),
+  };
+  const baris = [];
+  for (const nama of HALAMAN_UTAMA) {
+    if (!existsSync(join(AKAR, nama + ".html"))) continue;
+    const loc = nama === "index" ? BASE : `${BASE}${nama}.html`;
+    const lm = lastmodHalaman[nama];
+    baris.push(`  <url><loc>${xml(loc)}</loc>${lm ? `<lastmod>${lm}</lastmod>` : ""}</url>`);
+  }
+  for (const it of semua) {
+    baris.push(`  <url><loc>${xml(it.url)}</loc>${it.lastmod ? `<lastmod>${it.lastmod}</lastmod>` : ""}</url>`);
+  }
+  writeFileSync(join(KELUAR, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${baris.join("\n")}\n</urlset>\n`, "utf8");
+  return baris.length;
+}
+
+function tulisPetaAlamat(semua) {
+  const peta = {};
+  for (const it of semua) peta[it.id] = it.berkas;
+  writeFileSync(join(KELUAR, "peta-artikel.json"), JSON.stringify(peta), "utf8");
+}
+
+// Menyisipkan pengalihan ke SALINAN detail.html di _site/ (berkas asli di repo tidak diubah).
+// Tautan lama detail.html?id=... dialihkan ke halaman statisnya; id yang belum ada di peta tetap dimuat seperti biasa.
+const SKRIP_ALIH = `
+<script>
+(function () {
+  var id = new URLSearchParams(location.search).get("id");
+  if (!id || !window.fetch) return;
+  fetch("peta-artikel.json", { cache: "no-cache" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (peta) {
+      if (!peta || !peta[id]) return;
+      var kanonik = document.querySelector('link[rel="canonical"]');
+      if (kanonik) kanonik.href = new URL(peta[id], location.href).href;
+      location.replace(peta[id]);
+    })
+    .catch(function () {});
+})();
+</script>`;
+
+function suntikDetail() {
+  const berkas = join(KELUAR, "detail.html");
+  if (!existsSync(berkas)) { console.log("Peringatan: detail.html tidak ada, pengalihan dilewati."); return false; }
+  const html = readFileSync(berkas, "utf8");
+  if (!/<head[^>]*>/i.test(html)) throw new Error("detail.html tidak punya tag <head>; pengalihan tidak bisa disisipkan.");
+  writeFileSync(berkas, html.replace(/<head[^>]*>/i, (m) => m + SKRIP_ALIH), "utf8");
+  return true;
+}
+
 async function utama() {
   const berkasTemplat = join(AKAR, "templates", "artikel.html");
   if (!existsSync(berkasTemplat)) throw new Error("templates/artikel.html tidak ditemukan.");
@@ -337,6 +403,10 @@ async function utama() {
     writeFileSync(join(KELUAR, it.berkas), html, "utf8");
   }
 
+  const nUrl = tulisSitemap(semua);
+  tulisPetaAlamat(semua);
+  const dialihkan = suntikDetail();
+
   mkdirSync(INFO, { recursive: true });
   writeFileSync(
     join(INFO, "halaman.json"),
@@ -345,6 +415,7 @@ async function utama() {
 
   const nBerita = semua.filter((i) => !i.adalahKegiatan).length;
   console.log(`Selesai: ${nBerita} berita dan ${semua.length - nBerita} kegiatan -> ${semua.length} halaman statis di _site/`);
+  console.log(`sitemap.xml: ${nUrl} alamat | peta-artikel.json: ${semua.length} id | pengalihan detail.html: ${dialihkan ? "aktif" : "TIDAK aktif"}`);
   if (semua.length === 0) console.log("Peringatan: tidak ada data berita/kegiatan. Situs disalin tanpa halaman tambahan.");
 }
 
