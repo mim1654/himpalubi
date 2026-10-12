@@ -1,12 +1,15 @@
 # Membangun halaman berita/kegiatan + sitemap, lalu menerbitkan ke GitHub Pages.
 # Jalan otomatis setiap ada perubahan di branch main, dan bisa dijalankan manual dari tab Actions.
-# (Pemicu terjadwal dan dari Supabase ditambahkan di tahap berikutnya.)
+# Pemicu: (1) perubahan di main, (2) manual, (3) tiap 2 jam sebagai cadangan, (4) dipanggil Supabase
+# lewat API GitHub saat berita/kegiatan ditambah, diubah, atau dihapus (lihat sql/migrasi_picu_terbit_situs.sql).
 name: Terbitkan situs
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: "23 */2 * * *" # waktu UTC; GitHub bisa menunda beberapa menit
 
 permissions:
   contents: read
