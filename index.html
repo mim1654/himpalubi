@@ -178,7 +178,7 @@
       100% { background-position: -200% 0; }
     }
   </style>
-  <link rel="stylesheet" href="css/style.css?v=5.4">
+  <link rel="stylesheet" href="css/style.css?v=5.5">
 </head>
 <body class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col" data-page="beranda">
 
@@ -391,73 +391,24 @@
       </div>
     </section>
 
-    <!-- Seksi Struktur Pengurus HIMPALUBI -->
-    <section class="w-full bg-surface-container-low py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-12" id="struktur-organisasi">
+    <!-- Seksi Jaringan Kampus & UKM (tampil setelah ada UKM aktif) -->
+    <section hidden class="w-full bg-surface-container-low border-b border-surface-container-high py-16 sm:py-20 px-4 sm:px-6 lg:px-12" id="jaringan-kampus" aria-labelledby="judul-jaringan">
       <div class="max-w-7xl mx-auto">
-        
-        <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <div id="label-kepengurusan" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold text-label-md mb-3 uppercase tracking-wider">
-            KEPENGURUSAN 2025/2026
-          </div>
-          <h2 class="text-headline-lg-mobile sm:text-headline-lg font-bold text-on-surface tracking-tight mb-2.5">
-            Struktur Pengurus HIMPALUBI
-          </h2>
-          <p class="text-body-md text-secondary leading-relaxed">
-            Fungsionaris yang berdedikasi membawa aspirasi serta integritas mahasiswa Pendidikan Luar Biasa UNIPAR.
-          </p>
-        </div>
-
-        <!-- Dynamic Grid Pengurus Inti -->
-        <div id="pengurus-beranda-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-          <!-- Dinamis dari database atau status belum ada data -->
-        </div>
-
-        <div class="mt-8 text-center">
-          <a href="struktur.html" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-surface-container-lowest text-on-surface hover:bg-primary-container hover:text-on-primary border border-surface-container text-label-md font-semibold transition-colors shadow-sm min-h-[44px]">
-            <span>Lihat Seluruh Struktur Pengurus &amp; Divisi</span>
-            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
-          </a>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Seksi Galeri Momen Kegiatan -->
-    <section class="w-full bg-surface-container-lowest py-16 sm:py-20 px-4 sm:px-6 lg:px-12" id="galeri">
-      <div class="max-w-7xl mx-auto">
-        
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-semibold text-label-md mb-3 uppercase tracking-wider">
-              DOKUMENTASI PROGRAM
-            </div>
-            <h2 class="text-headline-lg-mobile sm:text-headline-lg font-bold text-on-surface tracking-tight">
-              Galeri Momen Kegiatan
+            <h2 id="judul-jaringan" class="text-headline-lg-mobile sm:text-headline-lg font-bold text-on-surface tracking-tight">
+              Jaringan Kampus &amp; UKM
             </h2>
             <p class="text-body-md text-secondary mt-1.5">
-              Rekam jejak pergerakan, kebersamaan, dan prestasi mahasiswa Pendidikan Luar Biasa.
+              Unit kegiatan mahasiswa Universitas PGRI Argopuro Jember yang kami dukung.
             </p>
           </div>
-          <a class="inline-flex items-center gap-1 text-label-md font-semibold text-primary-container hover:text-primary transition-colors min-h-[44px]" href="galeri.html">
-            <span>Buka Galeri Lengkap</span>
+          <a class="inline-flex items-center gap-1 text-label-md font-semibold text-primary-container hover:text-primary transition-colors min-h-[44px]" href="kampus.html">
+            <span id="jaringan-beranda-semua">Lihat Jaringan Kampus</span>
             <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
           </a>
         </div>
-
-        <!-- 4-Column Photo Grid (Hydrated by Supabase with Empty State) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="galeri-beranda-grid">
-          <div class="col-span-full w-full py-12 px-6 sm:px-8 rounded-2xl bg-surface-container-lowest border border-surface-container text-center flex flex-col items-center justify-center shadow-sm my-2">
-            <div class="w-14 h-14 rounded-2xl bg-primary-fixed/60 text-primary-container flex items-center justify-center mb-3.5 shadow-sm">
-              <span class="material-symbols-outlined text-[28px]" aria-hidden="true">photo_library</span>
-            </div>
-            <h3 class="text-base sm:text-lg font-bold text-on-surface mb-1.5 tracking-tight">Belum ada dokumentasi galeri yang diunggah</h3>
-            <p class="text-xs sm:text-sm text-secondary max-w-md mx-auto leading-relaxed mb-4">Foto dokumentasi kegiatan dan program kerja akan tampil di sini begitu dipublikasikan oleh pengurus.</p>
-            <a href="kegiatan.html" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-primary-container hover:bg-primary text-on-primary text-xs font-semibold transition-all shadow-sm min-h-[40px]">
-              <span>Lihat Seluruh Kegiatan</span>
-              <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
-            </a>
-          </div>
-        </div>
+        <ul id="jaringan-beranda-daftar" class="ukm-daftar ukm-daftar--ringkas"></ul>
       </div>
     </section>
 
@@ -634,7 +585,7 @@
   <!-- Backend Integration Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
   <script src="js/supabaseClient.js?v=5.2"></script>
-  <script src="js/public.js?v=5.4"></script>
+  <script src="js/public.js?v=5.5"></script>
   <script src="js/components.js?v=5.2"></script>
 
   <!-- Page Dynamic Data Hydration -->
@@ -643,10 +594,9 @@
       if (typeof muatTaglineHero === "function") muatTaglineHero("hero-tagline");
       if (typeof muatTentangRingkas === "function") muatTentangRingkas("tentang-ringkas-teks");
       if (typeof muatStatistikBeranda === "function") muatStatistikBeranda("statistik-beranda");
-      if (typeof muatPengurusBeranda === "function") muatPengurusBeranda("pengurus-beranda-grid", 5);
       if (typeof muatKegiatanTerbaru === "function") muatKegiatanTerbaru("kegiatan-terbaru-grid");
       if (typeof muatBeritaKartu === "function") muatBeritaKartu("berita-terbaru-grid", 3);
-      if (typeof muatGaleriBeranda === "function") muatGaleriBeranda("galeri-beranda-grid", 4);
+      if (typeof muatJaringanBeranda === "function") muatJaringanBeranda("jaringan-beranda-daftar", 4);
       if (typeof muatKontakRingkasBeranda === "function") muatKontakRingkasBeranda("kontak-ringkas-beranda");
       if (typeof muatTestimoniBeranda === "function") muatTestimoniBeranda("testimoni-beranda-grid");
       if (typeof muatLabelBeranda === "function") muatLabelBeranda();

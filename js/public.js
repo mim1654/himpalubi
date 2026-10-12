@@ -2676,11 +2676,17 @@ function htmlTautanKampus(daftar) {
 function htmlUkmKampus(daftar) {
   return daftar.map(u => {
     const logo = urlGambarAman(u.logo_url);
-    const isi = `<span class="ukm-logo">${logo ? `<img src="${escapeHtml(logo)}" alt="" loading="lazy" width="64" height="64">` : escapeHtml(inisialNama(u.nama))}</span><span class="ukm-nama">${escapeHtml(u.nama)}</span>`;
     const href = urlTautanAman(u.url);
-    return href
-      ? `<li><a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(u.nama)}, buka Instagram di tab baru">${isi}</a></li>`
-      : `<li><span class="ukm-statis">${isi}</span></li>`;
+    const penjelasan = String(u.keterangan || "").trim();
+    return `
+      <li class="ukm-kartu">
+        <span class="ukm-logo" aria-hidden="true">${logo ? `<img src="${escapeHtml(logo)}" alt="" loading="lazy" width="64" height="64">` : escapeHtml(inisialNama(u.nama))}</span>
+        <div class="ukm-kartu__isi">
+          <h3 class="ukm-nama">${escapeHtml(u.nama)}</h3>
+          ${penjelasan ? `<p class="ukm-kartu__teks">${escapeHtml(penjelasan)}</p>` : ""}
+          ${href ? `<a class="ukm-kartu__tautan" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer"><span>Buka Instagram</span><span class="material-symbols-outlined" aria-hidden="true">arrow_outward</span><span class="sr-only">${escapeHtml(u.nama)} (tab baru)</span></a>` : ""}
+        </div>
+      </li>`;
   }).join("");
 }
 
@@ -2707,4 +2713,17 @@ async function muatHalamanKampus() {
   }
   const kosong = document.getElementById("kampus-kosong");
   if (kosong) kosong.hidden = ukm.length > 0;
+}
+
+// Beranda: ringkasan Jaringan Kampus. Bagian tetap tersembunyi sampai ada UKM aktif.
+async function muatJaringanBeranda(elId = "jaringan-beranda-daftar", batas = 4) {
+  const daftarEl = document.getElementById(elId);
+  const bagian = document.getElementById("jaringan-kampus");
+  if (!daftarEl || !bagian) return;
+  const ukm = await ambilMitra("ukm");
+  if (!ukm.length) return;
+  daftarEl.innerHTML = htmlUkmKampus(ukm.slice(0, batas));
+  const semua = document.getElementById("jaringan-beranda-semua");
+  if (semua && ukm.length > batas) semua.textContent = `Lihat semua ${ukm.length} UKM`;
+  bagian.hidden = false;
 }

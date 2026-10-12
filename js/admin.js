@@ -3497,8 +3497,10 @@ const JENIS_MITRA = {
     nama: "Contoh: UKM Seni Tari",
     urlLabel: "Instagram UKM",
     urlPlaceholder: "@namaakun",
+    keteranganLabel: "Penjelasan singkat (tampil di samping logo)",
+    keteranganHint: "Satu atau dua kalimat tentang UKM ini, maksimal 300 karakter. Contoh: Wadah mahasiswa untuk berlatih dan tampil dalam seni tari tradisional.",
     urlHint: "Cukup tulis nama akun, misalnya @ukmseni, atau tempel tautan lengkapnya.",
-    logo: true, keterangan: false,
+    logo: true, keterangan: true,
   },
   tautan: {
     label: "Tautan kampus",
