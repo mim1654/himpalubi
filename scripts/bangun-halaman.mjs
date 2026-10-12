@@ -41,7 +41,7 @@ function formatTanggal(tgl) {
 function buatSlug(judul, id) {
   const dasar = String(judul || "")
     .normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase().replace(/&/g, " dan ")
+    .toLowerCase().replace(/['’`]/g, "").replace(/&/g, " dan ")
     .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   let p = dasar.slice(0, 60);
   if (dasar.length > 60) { const i = p.lastIndexOf("-"); if (i > 20) p = p.slice(0, i); }
@@ -132,7 +132,7 @@ function bangunJsonLd(it) {
     description: it.deskripsi,
     image: [gambar],
     datePublished: it.tanggalIso || undefined,
-    author: it.penulis
+    author: it.penulis && !/^(admin|redaksi|administrator)$/i.test(it.penulis.trim())
       ? { "@type": "Person", name: it.penulis }
       : { "@type": "Organization", name: NAMA_ORG, url: BASE },
     publisher: { "@type": "Organization", name: NAMA_ORG, url: BASE, logo: { "@type": "ImageObject", url: BASE + "img/logo.png" } },
