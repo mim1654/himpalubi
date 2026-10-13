@@ -2488,7 +2488,7 @@ async function jalankanPencarian(kata) {
   if (anggotaRes.data?.length) {
     grup.push({
       judul: "Anggota & Pengurus",
-      items: anggotaRes.data.map(a => `<a class="search-result-item" href="${a.kategori === "Pengurus" ? "struktur.html" : "anggota.html"}"><div class="label">${escapeHtml(a.nama)}</div><div class="meta">${escapeHtml(a.jabatan || (a.kategori === "Pengurus" ? "Pengurus" : "Anggota"))}</div></a>`),
+      items: anggotaRes.data.map(a => `<a class="search-result-item" href="${a.kategori === "Pengurus" ? "struktur.html" : "tentang.html#anggota"}"><div class="label">${escapeHtml(a.nama)}</div><div class="meta">${escapeHtml(a.jabatan || (a.kategori === "Pengurus" ? "Pengurus" : "Anggota"))}</div></a>`),
     });
   }
   if (programRes.data?.length) {
@@ -2680,7 +2680,7 @@ function htmlUkmKampus(daftar) {
     const penjelasan = String(u.keterangan || "").trim();
     return `
       <li class="ukm-kartu">
-        <span class="ukm-logo" aria-hidden="true">${logo ? `<img src="${escapeHtml(logo)}" alt="" loading="lazy" width="64" height="64">` : escapeHtml(inisialNama(u.nama))}</span>
+        ${href ? `<a class="ukm-logo-tautan" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><span class="ukm-logo">${logo ? `<img src="${escapeHtml(logo)}" alt="" loading="lazy" width="64" height="64">` : escapeHtml(inisialNama(u.nama))}</span></a>` : `<span class="ukm-logo" aria-hidden="true">${logo ? `<img src="${escapeHtml(logo)}" alt="" loading="lazy" width="64" height="64">` : escapeHtml(inisialNama(u.nama))}</span>`}
         <div class="ukm-kartu__isi">
           <h3 class="ukm-nama">${escapeHtml(u.nama)}</h3>
           ${penjelasan ? `<p class="ukm-kartu__teks">${escapeHtml(penjelasan)}</p>` : ""}

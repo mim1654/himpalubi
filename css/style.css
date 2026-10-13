@@ -2098,6 +2098,9 @@ body[data-page="kampus"] main section + section { border-top: 0; }
 @media (min-width: 768px) { .ukm-daftar { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .ukm-kartu { display: flex; align-items: flex-start; gap: 1rem; min-width: 0; padding: 1.25rem; background: var(--surface-container-lowest); border: 1px solid var(--surface-container-high); border-radius: 0.75rem; box-shadow: 0 1px 2px rgba(18, 28, 40, 0.06); }
 .ukm-kartu .ukm-logo { flex: none; }
+.ukm-logo-tautan { flex: none; display: block; border-radius: 9999px; text-decoration: none; }
+.ukm-logo-tautan:hover .ukm-logo { border-color: var(--primary-container); }
+#anggota { scroll-margin-top: 5.5rem; }
 .ukm-kartu__isi { min-width: 0; }
 .ukm-kartu .ukm-nama { margin: 0; font-size: 1rem; line-height: 1.5rem; }
 .ukm-kartu__teks { margin: 0.25rem 0 0; font-size: 0.875rem; line-height: 1.55; color: var(--ink-600); overflow-wrap: anywhere; }
