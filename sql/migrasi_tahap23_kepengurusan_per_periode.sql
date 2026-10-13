@@ -16,6 +16,7 @@
 --
 --   Cara pakai: Supabase > SQL Editor > New query.
 --   Jalankan LANGKAH A dulu (hanya membaca), lihat hasilnya, lalu LANGKAH B.
+--   Langkah C (cek data ganda) dan D (kunci NIM unik) opsional, ada di bagian bawah.
 -- =====================================================================
 
 
@@ -60,6 +61,14 @@ create table if not exists public.kepengurusan (
   constraint kepengurusan_unik unique (anggota_id, periode, divisi, jabatan)
 );
 
+-- Satu periode = satu tahun, misalnya 2026/2027 (tahun kedua selalu tahun pertama + 1).
+alter table public.kepengurusan drop constraint if exists kepengurusan_periode_satu_tahun;
+alter table public.kepengurusan add constraint kepengurusan_periode_satu_tahun check (
+  case when periode ~ '^\d{4}/\d{4}$'
+       then split_part(periode, '/', 2)::int = split_part(periode, '/', 1)::int + 1
+       else false end
+);
+
 create index if not exists kepengurusan_anggota_idx on public.kepengurusan (anggota_id);
 create index if not exists kepengurusan_periode_idx on public.kepengurusan (periode, urutan);
 
@@ -94,6 +103,8 @@ declare
 begin
   select periode_kepengurusan into v_periode from public.pengaturan limit 1;
   if v_periode is null or v_periode !~ '^\d{4}/\d{4}$' then
+    v_periode := '2025/2026';
+  elsif split_part(v_periode, '/', 2)::int <> split_part(v_periode, '/', 1)::int + 1 then
     v_periode := '2025/2026';
   end if;
 
@@ -137,3 +148,30 @@ end $$;
 select
   (select count(*) from public.kepengurusan) as baris_kepengurusan,
   (select count(*) from public.migrasi22_anggota_baru) as anggota_baru_dibuat;
+
+
+-- ---------------------------------------------------------------------
+-- LANGKAH C (opsional, hanya membaca): cari orang yang tercatat dua kali di anggota.
+-- Hasil kosong = tidak ada data ganda. Bila ada, rapikan lewat Dashboard > Anggota
+-- (hapus salah satu baris; riwayat kepengurusan ikut baris yang dihapus, jadi hapus baris
+-- yang TIDAK punya jabatan, atau pindahkan jabatannya dulu).
+-- ---------------------------------------------------------------------
+select 'nama sama' as jenis, lower(regexp_replace(trim(nama), '\s+', ' ', 'g')) as kunci, count(*) as jumlah,
+       string_agg(coalesce(nim, '(tanpa NIM)'), ', ') as nim_terkait
+from public.anggota
+where kategori = 'Anggota'
+group by lower(regexp_replace(trim(nama), '\s+', ' ', 'g'))
+having count(*) > 1
+union all
+select 'NIM sama', nim, count(*), string_agg(nama, ', ')
+from public.anggota
+where kategori = 'Anggota' and nim is not null and nim <> ''
+group by nim
+having count(*) > 1;
+
+
+-- ---------------------------------------------------------------------
+-- LANGKAH D (opsional, jalankan HANYA bila Langkah C tidak menampilkan baris "NIM sama"):
+-- NIM tidak boleh dipakai dua anggota. Situs sudah memeriksa ini; langkah ini menjaganya di database.
+-- ---------------------------------------------------------------------
+-- create unique index if not exists anggota_nim_unik on public.anggota (nim) where nim is not null and nim <> '';

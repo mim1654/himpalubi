@@ -1080,17 +1080,34 @@ function pasangImportExportAnggota() {
           return;
         }
 
-        const { error } = await supabaseClient.from("anggota").insert(payload);
-        if (error) {
-          pesanEl.className = "form-message error";
-          pesanEl.textContent = "Gagal mengimpor: " + error.message;
-          console.error(error);
-          return;
+        const daftar = await ambilIdentitasAnggota();
+        const baru = [];
+        const dilengkapi = [];
+        let dilewati = 0;
+        payload.forEach((x) => {
+          const sama = cocokkanAnggota(daftar, x);
+          if (!sama) { baru.push(x); return; }
+          const patch = lengkapiDataAnggota(sama.baris, x);
+          if (Object.keys(patch).length) dilengkapi.push({ id: sama.baris.id, patch });
+          else dilewati++;
+        });
+
+        if (baru.length) {
+          const { error } = await supabaseClient.from("anggota").insert(baru);
+          if (error) {
+            pesanEl.className = "form-message error";
+            pesanEl.textContent = "Gagal mengimpor: " + error.message;
+            console.error(error);
+            return;
+          }
         }
+        const hasilLengkapi = await Promise.all(dilengkapi.map(d => supabaseClient.from("anggota").update(d.patch).eq("id", d.id)));
+        const gagalLengkapi = hasilLengkapi.filter(h => h.error).length;
 
         pesanEl.className = "form-message success";
-        pesanEl.textContent = `Sebanyak ${payload.length} data anggota berhasil diimpor.`;
-        tampilkanToast(`${payload.length} data anggota ditambahkan.`, "sukses");
+        pesanEl.textContent = `${baru.length} anggota baru ditambahkan, ${dilengkapi.length - gagalLengkapi} data lama dilengkapi (NIM/angkatan), ${dilewati} dilewati karena sudah ada.` +
+          (gagalLengkapi ? ` ${gagalLengkapi} gagal dilengkapi.` : "");
+        tampilkanToast(`${baru.length} anggota baru, ${dilengkapi.length - gagalLengkapi} dilengkapi, ${dilewati} dilewati.`, "sukses");
         inputImport.value = "";
         muatTabelOrang("Anggota", "tabel-anggota");
         muatRingkasan();
@@ -2202,6 +2219,54 @@ const ORANG_CONFIG = {
   Anggota: { formId: "form-anggota", judulFormId: "judul-form-anggota", tabelElId: "tabel-anggota", labelTambah: "Tambah Anggota Baru", labelEdit: "Edit Data Anggota", fotoInputId: "foto_url_anggota", fotoPreviewId: "preview-foto_url_anggota" },
 };
 
+// ================= KESAMAAN DATA ANGGOTA =================
+// Mencegah satu orang tercatat dua kali (mis. pengurus lama tanpa NIM lalu mendaftar sebagai anggota).
+function rapikanNama(nama) {
+  return String(nama || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+async function ambilIdentitasAnggota() {
+  const { data, error } = await supabaseClient
+    .from("anggota").select("id, nama, nim, angkatan, jabatan, foto_url").eq("kategori", "Anggota");
+  if (error) throw error;
+  return data || [];
+}
+
+// cara "nim": NIM sama. cara "nama": nama sama dan salah satu NIM-nya kosong. Dua NIM berbeda dianggap dua orang.
+function cocokkanAnggota(daftar, { nim, nama }, kecualiId) {
+  const nimBaru = String(nim || "").trim();
+  const kandidat = daftar.filter(a => a.id !== kecualiId);
+  if (nimBaru) {
+    const samaNim = kandidat.find(a => String(a.nim || "").trim() === nimBaru);
+    if (samaNim) return { cara: "nim", baris: samaNim };
+  }
+  const kunci = rapikanNama(nama);
+  const samaNama = kandidat.find(a => rapikanNama(a.nama) === kunci && (!nimBaru || !String(a.nim || "").trim()));
+  return samaNama ? { cara: "nama", baris: samaNama } : null;
+}
+
+// Isian yang masih kosong pada baris lama dilengkapi dari data baru; isian yang sudah ada tidak ditimpa.
+function lengkapiDataAnggota(lama, baru) {
+  const patch = {};
+  if (!String(lama.nim || "").trim() && String(baru.nim || "").trim()) patch.nim = String(baru.nim).trim();
+  if (!String(lama.angkatan || "").trim() && String(baru.angkatan || "").trim()) patch.angkatan = String(baru.angkatan).trim();
+  return patch;
+}
+
+function tanyaGabungAnggota(baris) {
+  return new Promise((selesai) => {
+    tampilkanModalKonfirmasi({
+      judul: "Anggota ini sudah tercatat",
+      pesan: `Sudah ada "${baris.nama}"${baris.nim ? ` (NIM ${baris.nim})` : " tanpa NIM"} di daftar anggota, mungkin dari data pengurus. Lengkapi data itu dengan isian ini agar tidak ada dua data?`,
+      teksKonfirmasi: "Ya, lengkapi",
+      teksBatal: "Batal",
+      tipe: "info",
+      ikon: "merge",
+      onKonfirmasi: () => selesai(true),
+    });
+  });
+}
+
 // Ringkasan kepengurusan per anggota untuk kolom dan penyaring di tabel Anggota.
 async function ambilPetaKepengurusan() {
   const peta = {};
@@ -2297,7 +2362,26 @@ function pasangFormOrang(formId, kategori) {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const id = form.dataset.editId;
+    let id = form.dataset.editId;
+
+    try {
+      const sama = cocokkanAnggota(await ambilIdentitasAnggota(), { nim: form.nim.value, nama: form.nama.value }, id);
+      if (sama && sama.cara === "nim") {
+        tampilkanToast(`NIM ${sama.baris.nim} sudah dipakai oleh ${sama.baris.nama}.`, "gagal");
+        return;
+      }
+      if (sama && !id) {
+        // Admin yang memutuskan: bila "Ya", baris lama diperbarui, bukan membuat baris kedua.
+        if (!(await tanyaGabungAnggota(sama.baris))) return;
+        id = sama.baris.id;
+        form.dataset.fotoLama = sama.baris.foto_url || "";
+      }
+    } catch (err) {
+      tampilkanToast("Gagal memeriksa data anggota.", "gagal");
+      console.error(err);
+      return;
+    }
+
     const tombolSimpan = form.querySelector("button[type=submit]");
     tombolSimpan.disabled = true;
     tombolSimpan.innerHTML = `
@@ -2504,11 +2588,11 @@ function pasangFormKepengurusan() {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = form.dataset.editId;
-    const periode = form.periode.value.trim();
+    const periode = form.periode.value.trim().replace(/\s*[-\u2013\u2014]\s*/, "/");
     const cocokPeriode = periode.match(/^(\d{4})\/(\d{4})$/);
     if (!form.anggota_id.value) { tampilkanToast("Pilih anggota terlebih dahulu.", "gagal"); return; }
     if (!cocokPeriode || Number(cocokPeriode[2]) !== Number(cocokPeriode[1]) + 1) {
-      tampilkanToast("Periode harus berurutan, contoh: 2025/2026.", "gagal");
+      tampilkanToast("Periode adalah satu tahun, contoh: 2026/2027 atau 2026-2027.", "gagal");
       return;
     }
 
@@ -2739,27 +2823,34 @@ function konfirmasiStatusPendaftaran(id, status) {
 
 async function ubahStatusPendaftaran(id, status) {
   let sudahJadiAnggota = false;
+  let dilengkapi = false;
 
   if (status === "Diterima") {
     // 1) Tambahkan ke anggota LEBIH DULU. Jika gagal, status pendaftar tidak diubah.
     const { data: pendaftar, error: errAmbil } = await supabaseClient.from("pendaftaran").select("*").eq("id", id).single();
     if (errAmbil || !pendaftar) { tampilkanToast("Gagal membaca data pendaftar.", "gagal"); console.error(errAmbil); return; }
 
-    let duplikat = false;
-    if (pendaftar.nim) {
-      const { data: samaNim, error: errNim } = await supabaseClient.from("anggota").select("id").eq("nim", pendaftar.nim);
-      if (errNim) { tampilkanToast("Gagal memeriksa data anggota.", "gagal"); console.error(errNim); return; }
-      duplikat = !!(samaNim && samaNim.length);
-    }
-    if (!duplikat) {
-      const { data: samaNama, error: errNama } = await supabaseClient
-        .from("anggota").select("id").eq("nama", pendaftar.nama).eq("angkatan", pendaftar.angkatan || "");
-      if (errNama) { tampilkanToast("Gagal memeriksa data anggota.", "gagal"); console.error(errNama); return; }
-      duplikat = !!(samaNama && samaNama.length);
+    let sama;
+    try {
+      sama = cocokkanAnggota(await ambilIdentitasAnggota(), pendaftar);
+    } catch (errCek) {
+      tampilkanToast("Gagal memeriksa data anggota.", "gagal");
+      console.error(errCek);
+      return;
     }
 
-    if (duplikat) {
+    if (sama) {
       sudahJadiAnggota = true;
+      const patch = lengkapiDataAnggota(sama.baris, pendaftar);
+      if (Object.keys(patch).length) {
+        const { error: errLengkapi } = await supabaseClient.from("anggota").update(patch).eq("id", sama.baris.id);
+        if (errLengkapi) {
+          tampilkanToast("Gagal melengkapi data anggota. Status pendaftar tidak diubah.", "gagal");
+          console.error(errLengkapi);
+          return;
+        }
+        dilengkapi = true;
+      }
     } else {
       const { error: errTambah } = await supabaseClient.from("anggota").insert({
         nama: pendaftar.nama,
@@ -2783,7 +2874,9 @@ async function ubahStatusPendaftaran(id, status) {
 
   tampilkanToast(
     sudahJadiAnggota
-      ? "Status diubah jadi Diterima. Pendaftar sudah ada di daftar anggota, jadi tidak ditambahkan lagi."
+      ? (dilengkapi
+        ? "Status diubah jadi Diterima. Pendaftar sudah tercatat (mis. sebagai pengurus), jadi datanya dilengkapi dengan NIM dan angkatan, bukan ditambah baru."
+        : "Status diubah jadi Diterima. Pendaftar sudah ada di daftar anggota, jadi tidak ditambahkan lagi.")
       : `Status pendaftaran berhasil diubah jadi ${status}.`,
     "sukses"
   );

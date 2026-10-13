@@ -8,3 +8,6 @@ delete from public.anggota
 
 drop table if exists public.kepengurusan;
 drop table if exists public.migrasi22_anggota_baru;
+
+-- Bila Langkah D (indeks NIM unik) pernah dijalankan:
+drop index if exists public.anggota_nim_unik;
