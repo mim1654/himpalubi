@@ -1,0 +1,21 @@
+PAKET KEPENGURUSAN PER PERIODE (HIMPALUBI)
+
+URUTAN PASANG
+1. Supabase > SQL Editor > New query. Buka sql/migrasi_tahap22_kepengurusan_per_periode.sql.
+   - Jalankan LANGKAH A saja dulu (select pertama). Periksa daftar: kolom
+     "cocok_dengan_anggota" kosong berarti pengurus itu akan dibuatkan baris anggota baru.
+   - Lalu jalankan LANGKAH B (sisanya). Hasil akhir menampilkan jumlah baris kepengurusan.
+2. GitHub > repo himpalubi > Add file > Upload files. Unggah isi paket ini dengan susunan folder
+   yang sama (timpa file lama). Commit ke main. Tunggu workflow "Terbitkan situs" selesai.
+3. Buka situs, tekan Ctrl+F5 (hard refresh).
+4. Dashboard > Anggota: kolom Kepengurusan dan penyaring sudah ada.
+   Dashboard > Struktur Pengurus: pilih nama dari daftar anggota, isi jabatan, divisi, periode.
+
+ROLLBACK
+- Database: jalankan sql/rollback_tahap22.sql (baris pengurus lama tidak pernah diubah).
+- Situs: pasang kembali file versi sebelumnya dari riwayat commit GitHub.
+
+CATATAN
+- Baris lama kategori 'Pengurus' dibiarkan sebagai arsip. Boleh dihapus manual lewat Table Editor
+  setelah Anda yakin datanya benar.
+- Periode bawaan di form diambil dari Dashboard > Pengaturan > periode kepengurusan.
