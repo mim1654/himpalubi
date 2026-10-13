@@ -1299,7 +1299,7 @@ async function petaKepengurusan(idAnggota) {
   data.forEach(k => {
     const ringkas = peta[k.anggota_id] = peta[k.anggota_id] || { aktif: [], mantan: [] };
     if (k.aktif) ringkas.aktif.push(k);
-    else ringkas.mantan.push(k.periode);
+    else ringkas.mantan.push({ periode: k.periode, jabatan: k.jabatan, divisi: k.divisi });
   });
   return peta;
 }
@@ -1317,8 +1317,10 @@ function kartuAnggota(a, unggulan, kep) {
     peran = kep.aktif.map(k => `${escapeHtml(k.jabatan)} &middot; ${escapeHtml(k.divisi)}`).join("<br>");
     lencana = `<span class="person__badge">Pengurus aktif</span>`;
   } else if (kep && kep.mantan.length) {
-    const terbaru = [...kep.mantan].sort().pop();
-    lencana = `<span class="person__badge person__badge--lalu">Mantan pengurus ${escapeHtml(terbaru)}</span>`;
+    // Terbaru di atas. Tampilkan jabatan dan divisi tiap periode, bukan hanya tahunnya.
+    const urut = [...kep.mantan].sort((x, y) => String(y.periode).localeCompare(String(x.periode)));
+    lencana = `<span class="person__badge person__badge--lalu">Mantan pengurus ${escapeHtml(urut[0].periode)}</span>`
+      + `<p class="person__riwayat">${urut.map(k => `${escapeHtml(k.jabatan)} &middot; ${escapeHtml(k.divisi)} (${escapeHtml(k.periode)})`).join("<br>")}</p>`;
   }
 
   return `
