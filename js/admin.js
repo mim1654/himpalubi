@@ -1080,17 +1080,34 @@ function pasangImportExportAnggota() {
           return;
         }
 
-        const { error } = await supabaseClient.from("anggota").insert(payload);
-        if (error) {
-          pesanEl.className = "form-message error";
-          pesanEl.textContent = "Gagal mengimpor: " + error.message;
-          console.error(error);
-          return;
+        const daftar = await ambilIdentitasAnggota();
+        const baru = [];
+        const dilengkapi = [];
+        let dilewati = 0;
+        payload.forEach((x) => {
+          const sama = cocokkanAnggota(daftar, x);
+          if (!sama) { baru.push(x); return; }
+          const patch = lengkapiDataAnggota(sama.baris, x);
+          if (Object.keys(patch).length) dilengkapi.push({ id: sama.baris.id, patch });
+          else dilewati++;
+        });
+
+        if (baru.length) {
+          const { error } = await supabaseClient.from("anggota").insert(baru);
+          if (error) {
+            pesanEl.className = "form-message error";
+            pesanEl.textContent = "Gagal mengimpor: " + error.message;
+            console.error(error);
+            return;
+          }
         }
+        const hasilLengkapi = await Promise.all(dilengkapi.map(d => supabaseClient.from("anggota").update(d.patch).eq("id", d.id)));
+        const gagalLengkapi = hasilLengkapi.filter(h => h.error).length;
 
         pesanEl.className = "form-message success";
-        pesanEl.textContent = `Sebanyak ${payload.length} data anggota berhasil diimpor.`;
-        tampilkanToast(`${payload.length} data anggota ditambahkan.`, "sukses");
+        pesanEl.textContent = `${baru.length} anggota baru ditambahkan, ${dilengkapi.length - gagalLengkapi} data lama dilengkapi (NIM/angkatan), ${dilewati} dilewati karena sudah ada.` +
+          (gagalLengkapi ? ` ${gagalLengkapi} gagal dilengkapi.` : "");
+        tampilkanToast(`${baru.length} anggota baru, ${dilengkapi.length - gagalLengkapi} dilengkapi, ${dilewati} dilewati.`, "sukses");
         inputImport.value = "";
         muatTabelOrang("Anggota", "tabel-anggota");
         muatRingkasan();
@@ -2005,13 +2022,13 @@ async function muatRingkasan() {
 
   const [anggota, pengurus, berita, kegiatan, pendaftar] = await Promise.all([
     supabaseClient.from("anggota").select("id", { count: "exact", head: true }).eq("kategori", "Anggota").eq("status", "Aktif"),
-    supabaseClient.from("anggota").select("id", { count: "exact", head: true }).eq("kategori", "Pengurus").eq("status", "Aktif"),
+    supabaseClient.from("kepengurusan").select("anggota_id").eq("aktif", true),
     supabaseClient.from("berita").select("id", { count: "exact", head: true }).eq("kategori", "Berita"),
     supabaseClient.from("berita").select("id", { count: "exact", head: true }).eq("kategori", "Kegiatan"),
     supabaseClient.from("pendaftaran").select("id", { count: "exact", head: true }).eq("status", "Menunggu"),
   ]);
   setTeks("jumlah-anggota", anggota.count ?? 0);
-  setTeks("jumlah-pengurus", pengurus.count ?? 0);
+  setTeks("jumlah-pengurus", new Set((pengurus.data || []).map(k => k.anggota_id)).size);
   setTeks("jumlah-berita", berita.count ?? 0);
   setTeks("jumlah-kegiatan", kegiatan.count ?? 0);
   setTeks("jumlah-pendaftar", pendaftar.count ?? 0);
@@ -2206,9 +2223,81 @@ function hapusKonten(id, kategori) {
 
 // ================= ANGGOTA & STRUKTUR PENGURUS =================
 const ORANG_CONFIG = {
-  Anggota: { formId: "form-anggota", judulFormId: "judul-form-anggota", tabelElId: "tabel-anggota", labelTambah: "Tambah Anggota Baru", labelEdit: "Edit Data Anggota", hasDivisi: false, fotoInputId: "foto_url_anggota", fotoPreviewId: "preview-foto_url_anggota" },
-  Pengurus: { formId: "form-struktur", judulFormId: "judul-form-struktur", tabelElId: "tabel-struktur", labelTambah: "Tambah Pengurus Baru", labelEdit: "Edit Data Pengurus", hasDivisi: true, fotoInputId: "foto_url-struktur", fotoPreviewId: "preview-foto_url-struktur" },
+  Anggota: { formId: "form-anggota", judulFormId: "judul-form-anggota", tabelElId: "tabel-anggota", labelTambah: "Tambah Anggota Baru", labelEdit: "Edit Data Anggota", fotoInputId: "foto_url_anggota", fotoPreviewId: "preview-foto_url_anggota" },
 };
+
+// ================= KESAMAAN DATA ANGGOTA =================
+// Mencegah satu orang tercatat dua kali (mis. pengurus lama tanpa NIM lalu mendaftar sebagai anggota).
+function rapikanNama(nama) {
+  return String(nama || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+async function ambilIdentitasAnggota() {
+  const { data, error } = await supabaseClient
+    .from("anggota").select("id, nama, nim, angkatan, jabatan, foto_url").eq("kategori", "Anggota");
+  if (error) throw error;
+  return data || [];
+}
+
+// cara "nim": NIM sama. cara "nama": nama sama dan salah satu NIM-nya kosong. Dua NIM berbeda dianggap dua orang.
+function cocokkanAnggota(daftar, { nim, nama }, kecualiId) {
+  const nimBaru = String(nim || "").trim();
+  const kandidat = daftar.filter(a => a.id !== kecualiId);
+  if (nimBaru) {
+    const samaNim = kandidat.find(a => String(a.nim || "").trim() === nimBaru);
+    if (samaNim) return { cara: "nim", baris: samaNim };
+  }
+  const kunci = rapikanNama(nama);
+  const samaNama = kandidat.find(a => rapikanNama(a.nama) === kunci && (!nimBaru || !String(a.nim || "").trim()));
+  return samaNama ? { cara: "nama", baris: samaNama } : null;
+}
+
+// Isian yang masih kosong pada baris lama dilengkapi dari data baru; isian yang sudah ada tidak ditimpa.
+function lengkapiDataAnggota(lama, baru) {
+  const patch = {};
+  if (!String(lama.nim || "").trim() && String(baru.nim || "").trim()) patch.nim = String(baru.nim).trim();
+  if (!String(lama.angkatan || "").trim() && String(baru.angkatan || "").trim()) patch.angkatan = String(baru.angkatan).trim();
+  return patch;
+}
+
+function tanyaGabungAnggota(baris) {
+  return new Promise((selesai) => {
+    tampilkanModalKonfirmasi({
+      judul: "Anggota ini sudah tercatat",
+      pesan: `Sudah ada "${baris.nama}"${baris.nim ? ` (NIM ${baris.nim})` : " tanpa NIM"} di daftar anggota, mungkin dari data pengurus. Lengkapi data itu dengan isian ini agar tidak ada dua data?`,
+      teksKonfirmasi: "Ya, lengkapi",
+      teksBatal: "Batal",
+      tipe: "info",
+      ikon: "merge",
+      onKonfirmasi: () => selesai(true),
+    });
+  });
+}
+
+// Ringkasan kepengurusan per anggota untuk kolom dan penyaring di tabel Anggota.
+async function ambilPetaKepengurusan() {
+  const peta = {};
+  const { data, error } = await supabaseClient.from("kepengurusan").select("anggota_id, periode, jabatan, divisi, aktif");
+  if (error || !data) return peta;
+  data.forEach(k => {
+    const r = peta[k.anggota_id] = peta[k.anggota_id] || { aktif: [], mantan: [] };
+    if (k.aktif) r.aktif.push(k);
+    else r.mantan.push(k.periode);
+  });
+  return peta;
+}
+
+function selKepengurusan(kep) {
+  if (kep && kep.aktif.length) {
+    const baris = kep.aktif.map(k => `${escapeHtml(k.jabatan)} &middot; ${escapeHtml(k.divisi)}`).join("<br>");
+    return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-fixed text-on-primary-fixed-variant"><span class="material-symbols-outlined text-[14px]">badge</span>Pengurus aktif</span><div class="text-xs text-secondary mt-1">${baris}</div>`;
+  }
+  if (kep && kep.mantan.length) {
+    const terbaru = [...kep.mantan].sort().pop();
+    return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-container-high text-secondary border border-surface-container">Mantan pengurus ${escapeHtml(terbaru)}</span>`;
+  }
+  return `<span class="text-xs text-secondary">Bukan pengurus</span>`;
+}
 
 async function muatTabelOrang(kategori, tabelElId, page) {
   const el = document.getElementById(tabelElId);
@@ -2216,17 +2305,29 @@ async function muatTabelOrang(kategori, tabelElId, page) {
   if (!page) page = ambilHalamanTabel(tabelElId);
   aturHalamanTabel(tabelElId, page);
 
-  el.innerHTML = skeletonBarisTabel(kategori === "Pengurus" ? 5 : 5, 3);
-  let query = supabaseClient.from("anggota").select("*").eq("kategori", kategori);
-  query = kategori === "Pengurus"
-    ? query.order("urutan", { ascending: true, nullsFirst: false }).order("nama")
-    : query.order("nama");
-  const { data, error } = await query;
-  if (error) { el.innerHTML = `<tr><td colspan="5" class="py-4 px-4 text-center text-error text-xs">Gagal memuat data.</td></tr>`; return; }
+  el.innerHTML = skeletonBarisTabel(6, 3);
+  const [hasil, peta] = await Promise.all([
+    supabaseClient.from("anggota").select("*").eq("kategori", kategori).order("nama"),
+    ambilPetaKepengurusan(),
+  ]);
+  const { data: semua, error } = hasil;
+  if (error) { el.innerHTML = `<tr><td colspan="6" class="py-4 px-4 text-center text-error text-xs">Gagal memuat data.</td></tr>`; return; }
 
-  const total = data ? data.length : 0;
+  const filter = document.getElementById("filter-kepengurusan")?.value || "semua";
+  const cocok = (a) => {
+    const kep = peta[a.id];
+    if (filter === "aktif") return !!(kep && kep.aktif.length);
+    if (filter === "mantan") return !!(kep && !kep.aktif.length && kep.mantan.length);
+    if (filter === "bukan") return !kep;
+    return true;
+  };
+  const data = (semua || []).filter(cocok);
+
+  const total = data.length;
   if (!total) {
-    el.innerHTML = `<tr><td colspan="5">${emptyState(`Belum ada ${kategori.toLowerCase()}`, "Tambahkan data melalui formulir di atas.", { icon: "person_add" })}</td></tr>`;
+    const judul = (semua || []).length ? "Tidak ada anggota yang cocok" : `Belum ada ${kategori.toLowerCase()}`;
+    const isi = (semua || []).length ? "Ubah pilihan penyaring Kepengurusan untuk melihat anggota lain." : "Tambahkan data melalui formulir di atas.";
+    el.innerHTML = `<tr><td colspan="6">${emptyState(judul, isi, { icon: "person_add" })}</td></tr>`;
     renderBarisPaginasi(tabelElId, 0, 1, () => {});
     return;
   }
@@ -2234,45 +2335,30 @@ async function muatTabelOrang(kategori, tabelElId, page) {
   const offset = (page - 1) * BATAS_PER_HALAMAN;
   const paged = data.slice(offset, offset + BATAS_PER_HALAMAN);
 
-  if (kategori === "Pengurus") {
-    el.innerHTML = paged.map(a => `
-      <tr class="hover:bg-surface-container-low/70 transition-colors border-b border-surface-container/60 last:border-b-0">
-        <td class="py-3.5 px-4 font-bold text-secondary text-xs">${a.urutan ?? "-"}</td>
-        <td class="py-3.5 px-4 font-semibold text-on-surface">${escapeHtml(a.nama)}</td>
-        <td class="py-3.5 px-4 text-secondary text-xs">${escapeHtml(a.jabatan || "-")}</td>
-        <td class="py-3.5 px-4 text-secondary text-xs">${escapeHtml(a.divisi || "-")}</td>
-        <td class="py-3.5 px-4 text-right">
-          <div class="inline-flex items-center gap-1.5 justify-end">
-            <button type="button" onclick="editOrang('${a.id}','Pengurus')" title="Edit Pengurus" aria-label="Edit Pengurus" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
-              <span class="material-symbols-outlined text-[18px]">edit</span>
-            </button>
-            <button type="button" onclick="hapusOrang('${a.id}','Pengurus')" title="Hapus Pengurus" aria-label="Hapus Pengurus" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
-              <span class="material-symbols-outlined text-[18px]">delete</span>
-            </button>
-          </div>
-        </td>
-      </tr>`).join("");
-  } else {
-    el.innerHTML = paged.map(a => `
+  el.innerHTML = paged.map(a => `
       <tr class="hover:bg-surface-container-low/70 transition-colors border-b border-surface-container/60 last:border-b-0">
         <td class="py-3.5 px-4 font-semibold text-on-surface">${escapeHtml(a.nama)}</td>
         <td class="py-3.5 px-4 text-secondary text-xs">${escapeHtml(a.nim || "-")}</td>
         <td class="py-3.5 px-4 text-secondary text-xs">${escapeHtml(a.angkatan || "-")}</td>
+        <td class="py-3.5 px-4">${selKepengurusan(peta[a.id])}</td>
         <td class="py-3.5 px-4">${badgeStatusAnggota(a.status)}</td>
         <td class="py-3.5 px-4 text-right">
           <div class="inline-flex items-center gap-1.5 justify-end">
-            <button type="button" onclick="editOrang('${a.id}','Anggota')" title="Edit Anggota" aria-label="Edit Anggota" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
+            <button type="button" onclick="editOrang('${a.id}','Anggota')" title="Edit Anggota" aria-label="Edit ${escapeHtml(a.nama)}" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
               <span class="material-symbols-outlined text-[18px]">edit</span>
             </button>
-            <button type="button" onclick="hapusOrang('${a.id}','Anggota')" title="Hapus Anggota" aria-label="Hapus Anggota" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
+            <button type="button" onclick="hapusOrang('${a.id}','Anggota')" title="Hapus Anggota" aria-label="Hapus ${escapeHtml(a.nama)}" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
               <span class="material-symbols-outlined text-[18px]">delete</span>
             </button>
           </div>
         </td>
       </tr>`).join("");
-  }
 
   renderBarisPaginasi(tabelElId, total, page, (hal) => muatTabelOrang(kategori, tabelElId, hal));
+}
+
+function pasangFilterKepengurusan() {
+  document.getElementById("filter-kepengurusan")?.addEventListener("change", () => muatTabelOrang("Anggota", "tabel-anggota", 1));
 }
 
 function pasangFormOrang(formId, kategori) {
@@ -2283,7 +2369,26 @@ function pasangFormOrang(formId, kategori) {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const id = form.dataset.editId;
+    let id = form.dataset.editId;
+
+    try {
+      const sama = cocokkanAnggota(await ambilIdentitasAnggota(), { nim: form.nim.value, nama: form.nama.value }, id);
+      if (sama && sama.cara === "nim") {
+        tampilkanToast(`NIM ${sama.baris.nim} sudah dipakai oleh ${sama.baris.nama}.`, "gagal");
+        return;
+      }
+      if (sama && !id) {
+        // Admin yang memutuskan: bila "Ya", baris lama diperbarui, bukan membuat baris kedua.
+        if (!(await tanyaGabungAnggota(sama.baris))) return;
+        id = sama.baris.id;
+        form.dataset.fotoLama = sama.baris.foto_url || "";
+      }
+    } catch (err) {
+      tampilkanToast("Gagal memeriksa data anggota.", "gagal");
+      console.error(err);
+      return;
+    }
+
     const tombolSimpan = form.querySelector("button[type=submit]");
     tombolSimpan.disabled = true;
     tombolSimpan.innerHTML = `
@@ -2308,13 +2413,8 @@ function pasangFormOrang(formId, kategori) {
       status: form.status.value,
       kategori,
     };
-    if (cfg.hasDivisi) {
-      payload.divisi = form.divisi.value.trim();
-      payload.urutan = form.urutan.value ? parseInt(form.urutan.value, 10) : null;
-    } else {
-      payload.angkatan = form.angkatan.value.trim();
-      payload.nim = form.nim.value.trim() || null;
-    }
+    payload.angkatan = form.angkatan.value.trim();
+    payload.nim = form.nim.value.trim() || null;
 
     const query = id
       ? supabaseClient.from("anggota").update(payload).eq("id", id)
@@ -2335,6 +2435,7 @@ function pasangFormOrang(formId, kategori) {
     document.getElementById(cfg.fotoPreviewId).innerHTML = "";
     document.getElementById(cfg.judulFormId).textContent = cfg.labelTambah;
     muatTabelOrang(kategori, cfg.tabelElId);
+    muatPilihanAnggota();
     muatRingkasan();
   });
 }
@@ -2349,13 +2450,8 @@ async function editOrang(id, kategori) {
   form.dataset.fotoLama = data.foto_url || "";
   tampilkanFotoLama(cfg.fotoPreviewId, data.foto_url);
   form.status.value = data.status;
-  if (cfg.hasDivisi) {
-    form.divisi.value = data.divisi || "";
-    form.urutan.value = data.urutan ?? "";
-  } else {
-    form.angkatan.value = data.angkatan || "";
-    form.nim.value = data.nim || "";
-  }
+  form.angkatan.value = data.angkatan || "";
+  form.nim.value = data.nim || "";
   form.dataset.editId = id;
   document.getElementById(cfg.judulFormId).textContent = cfg.labelEdit;
   form.scrollIntoView({ behavior: "smooth" });
@@ -2364,7 +2460,7 @@ async function editOrang(id, kategori) {
 function hapusOrang(id, kategori) {
   tampilkanModalKonfirmasi({
     judul: `Hapus Data ${kategori}?`,
-    pesan: `Apakah Anda yakin ingin menghapus data ${kategori.toLowerCase()} ini dari database? Data yang dihapus tidak dapat dipulihkan.`,
+    pesan: `Apakah Anda yakin ingin menghapus data ${kategori.toLowerCase()} ini dari database. Riwayat kepengurusannya juga ikut terhapus. Data yang dihapus tidak dapat dipulihkan.`,
     teksKonfirmasi: "Ya, Hapus",
     teksBatal: "Batal",
     tipe: "danger",
@@ -2376,8 +2472,198 @@ function hapusOrang(id, kategori) {
       if (data?.foto_url) hapusFotoDariStorage(data.foto_url);
       const cfg = ORANG_CONFIG[kategori];
       muatTabelOrang(kategori, cfg.tabelElId);
+      muatTabelKepengurusan();
+      muatPilihanAnggota();
       muatRingkasan();
       tampilkanToast(`Data ${kategori.toLowerCase()} berhasil dihapus.`, "sukses");
+    }
+  });
+}
+
+// ================= KEPENGURUSAN (STRUKTUR PER PERIODE) =================
+let daftarAnggotaPilihan = [];
+let periodeBawaan = "";
+
+async function muatPilihanAnggota() {
+  const { data, error } = await supabaseClient
+    .from("anggota").select("id, nama, angkatan, status").eq("kategori", "Anggota").order("nama");
+  if (error) { console.error(error); return; }
+  daftarAnggotaPilihan = data || [];
+  isiPilihanAnggota(document.getElementById("cari-anggota-struktur")?.value || "");
+}
+
+function isiPilihanAnggota(kata, terpilih) {
+  const select = document.getElementById("anggota-struktur");
+  if (!select) return;
+  const nilai = terpilih ?? select.value;
+  const kunci = kata.trim().toLowerCase();
+  const cocok = daftarAnggotaPilihan.filter(a => !kunci || a.nama.toLowerCase().includes(kunci) || a.id === nilai);
+  select.innerHTML = `<option value="">Pilih anggota...</option>` + cocok.map(a =>
+    `<option value="${a.id}"${a.id === nilai ? " selected" : ""}>${escapeHtml(a.nama)}${a.angkatan ? ` (${escapeHtml(a.angkatan)})` : ""}${a.status === "Nonaktif" ? " - nonaktif" : ""}</option>`
+  ).join("");
+}
+
+async function isiPeriodeBawaan() {
+  const { data } = await supabaseClient.from("pengaturan").select("periode_kepengurusan").eq("id", 1).maybeSingle();
+  const nilai = data?.periode_kepengurusan;
+  periodeBawaan = /^\d{4}\/\d{4}$/.test(nilai || "") ? nilai : "";
+  const input = document.getElementById("periode-struktur");
+  if (input && !input.value) input.value = periodeBawaan;
+}
+
+function badgeMenjabat(aktif) {
+  if (aktif) {
+    return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="material-symbols-outlined text-[14px]">check</span>Menjabat</span>`;
+  }
+  return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-container-high text-secondary border border-surface-container"><span class="material-symbols-outlined text-[14px]">history</span>Selesai</span>`;
+}
+
+async function muatTabelKepengurusan(page) {
+  const el = document.getElementById("tabel-struktur");
+  if (!el) return;
+  if (!page) page = ambilHalamanTabel("tabel-struktur");
+  aturHalamanTabel("tabel-struktur", page);
+
+  el.innerHTML = skeletonBarisTabel(7, 3);
+  const { data, error } = await supabaseClient
+    .from("kepengurusan")
+    .select("id, periode, jabatan, divisi, urutan, aktif, anggota(id, nama)")
+    .order("periode", { ascending: false })
+    .order("urutan", { ascending: true, nullsFirst: false });
+  if (error) {
+    console.error(error);
+    el.innerHTML = `<tr><td colspan="7" class="py-4 px-4 text-center text-error text-xs">Gagal memuat data. Pastikan SQL tahap 22 sudah dijalankan di Supabase.</td></tr>`;
+    return;
+  }
+
+  const saran = document.getElementById("saran-divisi");
+  if (saran) {
+    const unik = [...new Set(["BPH", ...(data || []).map(k => k.divisi)])];
+    saran.innerHTML = unik.map(d => `<option value="${escapeHtml(d)}"></option>`).join("");
+  }
+
+  const total = data ? data.length : 0;
+  if (!total) {
+    el.innerHTML = `<tr><td colspan="7">${emptyState("Belum ada pengurus", "Pilih anggota pada formulir di atas, lalu isi jabatan, divisi, dan periodenya.", { icon: "badge" })}</td></tr>`;
+    renderBarisPaginasi("tabel-struktur", 0, 1, () => {});
+    return;
+  }
+
+  const offset = (page - 1) * BATAS_PER_HALAMAN;
+  el.innerHTML = data.slice(offset, offset + BATAS_PER_HALAMAN).map(k => {
+    const nama = k.anggota ? k.anggota.nama : "(anggota dihapus)";
+    return `
+      <tr class="hover:bg-surface-container-low/70 transition-colors border-b border-surface-container/60 last:border-b-0">
+        <td class="py-3.5 px-4 font-bold text-secondary text-xs">${k.urutan ?? "-"}</td>
+        <td class="py-3.5 px-4 font-semibold text-on-surface">${escapeHtml(nama)}</td>
+        <td class="py-3.5 px-4 text-secondary text-xs">${escapeHtml(k.jabatan)}</td>
+        <td class="py-3.5 px-4 text-secondary text-xs">${escapeHtml(k.divisi)}</td>
+        <td class="py-3.5 px-4 text-secondary text-xs">${escapeHtml(k.periode)}</td>
+        <td class="py-3.5 px-4">${badgeMenjabat(k.aktif)}</td>
+        <td class="py-3.5 px-4 text-right">
+          <div class="inline-flex items-center gap-1.5 justify-end">
+            <button type="button" onclick="editKepengurusan('${k.id}')" title="Edit Pengurus" aria-label="Edit jabatan ${escapeHtml(nama)}" class="w-11 h-11 rounded-lg flex items-center justify-center text-on-surface bg-surface-container-low hover:bg-surface-container hover:text-primary transition-all active:scale-95 focus:ring-2 focus:ring-primary/20 cursor-pointer">
+              <span class="material-symbols-outlined text-[18px]">edit</span>
+            </button>
+            <button type="button" onclick="hapusKepengurusan('${k.id}')" title="Hapus Jabatan" aria-label="Hapus jabatan ${escapeHtml(nama)}" class="w-11 h-11 rounded-lg flex items-center justify-center text-error bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 cursor-pointer">
+              <span class="material-symbols-outlined text-[18px]">delete</span>
+            </button>
+          </div>
+        </td>
+      </tr>`;
+  }).join("");
+
+  renderBarisPaginasi("tabel-struktur", total, page, (hal) => muatTabelKepengurusan(hal));
+}
+
+function setelSimpanKepengurusan(form) {
+  form.reset();
+  delete form.dataset.editId;
+  document.getElementById("judul-form-struktur").textContent = "Tambah Pengurus Baru";
+  document.getElementById("periode-struktur").value = periodeBawaan;
+  isiPilihanAnggota("", "");
+}
+
+function pasangFormKepengurusan() {
+  const form = document.getElementById("form-struktur");
+  if (!form) return;
+
+  document.getElementById("cari-anggota-struktur")?.addEventListener("input", (e) => isiPilihanAnggota(e.target.value));
+  muatPilihanAnggota();
+  isiPeriodeBawaan();
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = form.dataset.editId;
+    const periode = form.periode.value.trim().replace(/\s*[-\u2013\u2014]\s*/, "/");
+    const cocokPeriode = periode.match(/^(\d{4})\/(\d{4})$/);
+    if (!form.anggota_id.value) { tampilkanToast("Pilih anggota terlebih dahulu.", "gagal"); return; }
+    if (!cocokPeriode || Number(cocokPeriode[2]) !== Number(cocokPeriode[1]) + 1) {
+      tampilkanToast("Periode adalah satu tahun, contoh: 2026/2027 atau 2026-2027.", "gagal");
+      return;
+    }
+
+    const tombol = form.querySelector("button[type=submit]");
+    tombol.disabled = true;
+    const payload = {
+      anggota_id: form.anggota_id.value,
+      periode,
+      jabatan: form.jabatan.value.trim(),
+      divisi: form.divisi.value.trim(),
+      urutan: form.urutan.value ? parseInt(form.urutan.value, 10) : null,
+      aktif: form.aktif.value === "true",
+    };
+    const query = id
+      ? supabaseClient.from("kepengurusan").update(payload).eq("id", id)
+      : supabaseClient.from("kepengurusan").insert(payload);
+    const { error } = await query;
+    tombol.disabled = false;
+    if (error) {
+      const duplikat = error.code === "23505";
+      tampilkanToast(duplikat ? "Jabatan yang sama untuk anggota dan periode ini sudah ada." : "Gagal menyimpan data.", "gagal");
+      console.error(error);
+      return;
+    }
+
+    tampilkanToast(id ? "Perubahan disimpan." : "Pengurus berhasil ditambahkan.", "sukses");
+    setelSimpanKepengurusan(form);
+    muatTabelKepengurusan();
+    muatTabelOrang("Anggota", "tabel-anggota");
+    muatRingkasan();
+  });
+}
+
+async function editKepengurusan(id) {
+  const { data } = await supabaseClient.from("kepengurusan").select("*").eq("id", id).single();
+  if (!data) return;
+  const form = document.getElementById("form-struktur");
+  document.getElementById("cari-anggota-struktur").value = "";
+  isiPilihanAnggota("", data.anggota_id);
+  form.periode.value = data.periode;
+  form.jabatan.value = data.jabatan;
+  form.divisi.value = data.divisi;
+  form.urutan.value = data.urutan ?? "";
+  form.aktif.value = data.aktif ? "true" : "false";
+  form.dataset.editId = id;
+  document.getElementById("judul-form-struktur").textContent = "Edit Data Pengurus";
+  form.scrollIntoView({ behavior: "smooth" });
+}
+
+function hapusKepengurusan(id) {
+  tampilkanModalKonfirmasi({
+    judul: "Hapus Jabatan Ini?",
+    pesan: "Jabatan ini dihapus dari struktur dan riwayat periode. Data anggotanya tidak ikut terhapus. Untuk menandai masa jabatan yang sudah selesai, cukup ubah statusnya menjadi Selesai.",
+    teksKonfirmasi: "Ya, Hapus",
+    teksBatal: "Batal",
+    tipe: "danger",
+    ikon: "delete",
+    onKonfirmasi: async () => {
+      const { error } = await supabaseClient.from("kepengurusan").delete().eq("id", id);
+      if (error) { tampilkanToast("Gagal menghapus jabatan: " + error.message, "gagal"); console.error(error); return; }
+      muatTabelKepengurusan();
+      muatTabelOrang("Anggota", "tabel-anggota");
+      muatRingkasan();
+      tampilkanToast("Jabatan berhasil dihapus.", "sukses");
     }
   });
 }
@@ -2544,27 +2830,34 @@ function konfirmasiStatusPendaftaran(id, status) {
 
 async function ubahStatusPendaftaran(id, status) {
   let sudahJadiAnggota = false;
+  let dilengkapi = false;
 
   if (status === "Diterima") {
     // 1) Tambahkan ke anggota LEBIH DULU. Jika gagal, status pendaftar tidak diubah.
     const { data: pendaftar, error: errAmbil } = await supabaseClient.from("pendaftaran").select("*").eq("id", id).single();
     if (errAmbil || !pendaftar) { tampilkanToast("Gagal membaca data pendaftar.", "gagal"); console.error(errAmbil); return; }
 
-    let duplikat = false;
-    if (pendaftar.nim) {
-      const { data: samaNim, error: errNim } = await supabaseClient.from("anggota").select("id").eq("nim", pendaftar.nim);
-      if (errNim) { tampilkanToast("Gagal memeriksa data anggota.", "gagal"); console.error(errNim); return; }
-      duplikat = !!(samaNim && samaNim.length);
-    }
-    if (!duplikat) {
-      const { data: samaNama, error: errNama } = await supabaseClient
-        .from("anggota").select("id").eq("nama", pendaftar.nama).eq("angkatan", pendaftar.angkatan || "");
-      if (errNama) { tampilkanToast("Gagal memeriksa data anggota.", "gagal"); console.error(errNama); return; }
-      duplikat = !!(samaNama && samaNama.length);
+    let sama;
+    try {
+      sama = cocokkanAnggota(await ambilIdentitasAnggota(), pendaftar);
+    } catch (errCek) {
+      tampilkanToast("Gagal memeriksa data anggota.", "gagal");
+      console.error(errCek);
+      return;
     }
 
-    if (duplikat) {
+    if (sama) {
       sudahJadiAnggota = true;
+      const patch = lengkapiDataAnggota(sama.baris, pendaftar);
+      if (Object.keys(patch).length) {
+        const { error: errLengkapi } = await supabaseClient.from("anggota").update(patch).eq("id", sama.baris.id);
+        if (errLengkapi) {
+          tampilkanToast("Gagal melengkapi data anggota. Status pendaftar tidak diubah.", "gagal");
+          console.error(errLengkapi);
+          return;
+        }
+        dilengkapi = true;
+      }
     } else {
       const { error: errTambah } = await supabaseClient.from("anggota").insert({
         nama: pendaftar.nama,
@@ -2588,7 +2881,9 @@ async function ubahStatusPendaftaran(id, status) {
 
   tampilkanToast(
     sudahJadiAnggota
-      ? "Status diubah jadi Diterima. Pendaftar sudah ada di daftar anggota, jadi tidak ditambahkan lagi."
+      ? (dilengkapi
+        ? "Status diubah jadi Diterima. Pendaftar sudah tercatat (mis. sebagai pengurus), jadi datanya dilengkapi dengan NIM dan angkatan, bukan ditambah baru."
+        : "Status diubah jadi Diterima. Pendaftar sudah ada di daftar anggota, jadi tidak ditambahkan lagi.")
       : `Status pendaftaran berhasil diubah jadi ${status}.`,
     "sukses"
   );

@@ -1263,6 +1263,8 @@ async function muatAnggota(elId) {
     return;
   }
 
+  const peta = await petaKepengurusan(data.map(a => a.id));
+
   const kelompok = {};
   data.forEach(a => {
     const k = a.angkatan || "Lainnya";
@@ -1278,25 +1280,54 @@ async function muatAnggota(elId) {
           <span class="group-head__meta">${kelompok[angkatan].length} mahasiswa</span>
         </div>
         <div class="people-grid">
-          ${kelompok[angkatan].map(a => kartuAnggota(a)).join("")}
+          ${kelompok[angkatan].map(a => kartuAnggota(a, false, peta[a.id])).join("")}
         </div>
       </section>
     `).join("");
 }
 
-function kartuAnggota(a, unggulan) {
+// Mengelompokkan baris kepengurusan per anggota. Bila tabel belum ada (SQL tahap 22 belum dijalankan), hasilnya kosong.
+async function petaKepengurusan(idAnggota) {
+  const peta = {};
+  if (!idAnggota.length) return peta;
+  const { data, error } = await supabaseClient
+    .from("kepengurusan")
+    .select("anggota_id, periode, jabatan, divisi, urutan, aktif")
+    .in("anggota_id", idAnggota);
+  if (error || !data) return peta;
+  data.sort((x, y) => (x.urutan ?? 9999) - (y.urutan ?? 9999));
+  data.forEach(k => {
+    const ringkas = peta[k.anggota_id] = peta[k.anggota_id] || { aktif: [], mantan: [] };
+    if (k.aktif) ringkas.aktif.push(k);
+    else ringkas.mantan.push(k.periode);
+  });
+  return peta;
+}
+
+function kartuAnggota(a, unggulan, kep) {
   const initialName = initial(a.nama);
   const fallback = `<span aria-hidden="true">${initialName}</span>`;
   const photoHtml = a.foto_url
     ? `<img src="${urlGambarAman(a.foto_url)}" alt="Foto ${escapeHtml(a.nama)}" loading="lazy" onerror="this.outerHTML='${fallback.replace(/'/g, "&#39;")}'">`
     : fallback;
 
+  let peran = escapeHtml(a.jabatan || "Anggota");
+  let lencana = "";
+  if (kep && kep.aktif.length) {
+    peran = kep.aktif.map(k => `${escapeHtml(k.jabatan)} &middot; ${escapeHtml(k.divisi)}`).join("<br>");
+    lencana = `<span class="person__badge">Pengurus aktif</span>`;
+  } else if (kep && kep.mantan.length) {
+    const terbaru = [...kep.mantan].sort().pop();
+    lencana = `<span class="person__badge person__badge--lalu">Mantan pengurus ${escapeHtml(terbaru)}</span>`;
+  }
+
   return `
     <article class="person${unggulan ? " person--lead" : ""}">
       <div class="person__photo">${photoHtml}</div>
       <div class="person__body">
         <h3 class="person__name">${escapeHtml(a.nama)}</h3>
-        <p class="person__role">${escapeHtml(a.jabatan || "Anggota")}</p>
+        <p class="person__role">${peran}</p>
+        ${lencana}
       </div>
     </article>
   `;
@@ -1308,51 +1339,89 @@ async function muatStruktur(elId) {
   if (!el) return;
   el.innerHTML = skeletonMemberGrid(4);
 
-  let data = null;
+  let rows = null;
   try {
     const res = await supabaseClient
-      .from("anggota")
-      .select("id, nama, jabatan, angkatan, foto_url, status, kategori, divisi, urutan")
-      .eq("kategori", "Pengurus")
-      .eq("status", "Aktif")
-      .order("urutan", { ascending: true, nullsFirst: false })
-      .order("nama");
-    data = res.data;
-    if (res.error) { console.error(res.error); return tampilGagalMuat(el); }
+      .from("kepengurusan")
+      .select("id, periode, jabatan, divisi, urutan, aktif, anggota(id, nama, foto_url)")
+      .order("urutan", { ascending: true, nullsFirst: false });
+    if (res.error) {
+      console.warn("Info: tabel kepengurusan belum tersedia, memakai data pengurus lama.", res.error);
+      return muatStrukturLama(el);
+    }
+    rows = (res.data || []).filter(r => r.anggota);
   } catch (err) {
     console.warn("Info: Tidak dapat memuat struktur dari Supabase.", err);
+    return tampilGagalMuat(el);
   }
 
-  if (!data || data.length === 0) {
-    el.innerHTML = emptyState(
-      "Belum ada data struktur pengurus",
-      "Susunan Badan Pengurus Harian (BPH) dan divisi belum diunggah ke database. Pengurus akan segera memperbarui struktur kepengurusan.",
-      {
-        icon: "account_tree",
-        btnText: "Kembali ke Beranda",
-        btnHref: "index.html"
-      }
-    );
-    return;
-  }
+  if (!rows.length) return tampilStrukturKosong(el);
 
+  const daftarPeriode = [...new Set(rows.map(r => r.periode))].sort().reverse();
+  const periodeBerjalan = rows.filter(r => r.aktif).map(r => r.periode).sort().pop() || daftarPeriode[0];
+  const gambar = (periode) => {
+    // Pada periode berjalan hanya yang masih menjabat; periode lama menampilkan semuanya.
+    const terpilih = rows.filter(r => r.periode === periode && (periode !== periodeBerjalan || r.aktif));
+    const kartu = terpilih.map(r => ({ divisi: r.divisi, orang: { nama: r.anggota.nama, foto_url: r.anggota.foto_url, jabatan: r.jabatan } }));
+    el.innerHTML = tabPeriodeStruktur(daftarPeriode, periode) + kelompokDivisiHtml(kartu);
+    el.querySelectorAll("[data-periode]").forEach(tombol => {
+      tombol.addEventListener("click", () => gambar(tombol.dataset.periode));
+    });
+  };
+  gambar(periodeBerjalan);
+}
+
+function tabPeriodeStruktur(daftar, terpilih) {
+  if (daftar.length < 2) return "";
+  return `
+    <div class="periode-tabs" role="tablist" aria-label="Periode kepengurusan">
+      ${daftar.map(p => `<button type="button" role="tab" class="periode-tab" data-periode="${escapeHtml(p)}" aria-selected="${p === terpilih}">Periode ${escapeHtml(p)}</button>`).join("")}
+    </div>`;
+}
+
+function kelompokDivisiHtml(kartu) {
   const kelompok = {};
-  data.forEach(a => {
-    const k = a.divisi || "Lainnya";
-    (kelompok[k] = kelompok[k] || []).push(a);
+  kartu.forEach(k => {
+    const nama = k.divisi || "Lainnya";
+    (kelompok[nama] = kelompok[nama] || []).push(k.orang);
   });
-
-  el.innerHTML = urutkanDivisi(Object.keys(kelompok)).map(divisi => `
+  return urutkanDivisi(Object.keys(kelompok)).map(divisi => `
     <section class="group-block" aria-label="${escapeHtml(divisi)}">
       <div class="group-head">
         <h2>${escapeHtml(divisi)}</h2>
         <span class="group-head__meta">${kelompok[divisi].length} fungsionaris</span>
       </div>
       <div class="people-grid${divisi === "BPH" ? " people-grid--lead" : ""}">
-        ${kelompok[divisi].map(a => kartuAnggota(a, divisi === "BPH")).join("")}
+        ${kelompok[divisi].map(o => kartuAnggota(o, divisi === "BPH")).join("")}
       </div>
     </section>
   `).join("");
+}
+
+function tampilStrukturKosong(el) {
+  el.innerHTML = emptyState(
+    "Belum ada data struktur pengurus",
+    "Susunan Badan Pengurus Harian (BPH) dan divisi belum diunggah ke database. Pengurus akan segera memperbarui struktur kepengurusan.",
+    {
+      icon: "account_tree",
+      btnText: "Kembali ke Beranda",
+      btnHref: "index.html"
+    }
+  );
+}
+
+// Cadangan selama SQL tahap 22 belum dijalankan: membaca baris pengurus lama.
+async function muatStrukturLama(el) {
+  const res = await supabaseClient
+    .from("anggota")
+    .select("id, nama, jabatan, angkatan, foto_url, status, kategori, divisi, urutan")
+    .eq("kategori", "Pengurus")
+    .eq("status", "Aktif")
+    .order("urutan", { ascending: true, nullsFirst: false })
+    .order("nama");
+  if (res.error) { console.error(res.error); return tampilGagalMuat(el); }
+  if (!res.data || !res.data.length) return tampilStrukturKosong(el);
+  el.innerHTML = kelompokDivisiHtml(res.data.map(a => ({ divisi: a.divisi, orang: a })));
 }
 
 // ================= HALAMAN PROGRAM KERJA: dikelompokkan per divisi =================
@@ -1728,7 +1797,7 @@ async function muatStatistikBeranda(elId) {
       ambilPengaturan(),
       supabaseClient.from("anggota").select("id", { count: "exact", head: true }).eq("kategori", "Anggota").eq("status", "Aktif"),
       supabaseClient.from("program_kerja").select("id", { count: "exact", head: true }),
-      supabaseClient.from("anggota").select("divisi").eq("kategori", "Pengurus").eq("status", "Aktif"),
+      supabaseClient.from("kepengurusan").select("divisi").eq("aktif", true),
     ]);
 
     const tahun = pengaturanRes.data?.tahun_berdiri;
@@ -2462,7 +2531,7 @@ async function jalankanPencarian(kata) {
   const [beritaRes, kegiatanRes, anggotaRes, programRes] = await Promise.all([
     supabaseClient.from("berita").select("id, judul, tanggal").eq("kategori", "Berita").ilike("judul", kunci).limit(5),
     supabaseClient.from("berita").select("id, judul, tanggal").eq("kategori", "Kegiatan").ilike("judul", kunci).limit(5),
-    supabaseClient.from("anggota").select("id, nama, jabatan, kategori").ilike("nama", kunci).limit(5),
+    supabaseClient.from("anggota").select("id, nama, jabatan, kategori").eq("kategori", "Anggota").ilike("nama", kunci).limit(5),
     supabaseClient.from("program_kerja").select("id, nama_program, divisi").ilike("nama_program", kunci).limit(5),
   ]);
 

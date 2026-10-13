@@ -68,8 +68,8 @@ function tandaiMenuAktif() {
     linkDesktop.classList.add("text-primary-container", "font-bold", "border-b-2", "border-primary-container");
   }
 
-  // Jika halaman adalah submenu Tentang (profil/struktur/program-kerja)
-  if (["tentang", "struktur", "program-kerja", "kampus"].includes(halaman)) {
+  // Jika halaman adalah submenu Tentang (profil/struktur/anggota/program-kerja/UKM)
+  if (["tentang", "struktur", "anggota", "program-kerja", "kampus"].includes(halaman)) {
     const btnTentang = document.getElementById("btn-dropdown-tentang");
     if (btnTentang) {
       btnTentang.classList.remove("text-secondary");

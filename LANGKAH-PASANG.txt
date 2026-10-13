@@ -1,28 +1,7 @@
-PAKET KEPENGURUSAN PER PERIODE (HIMPALUBI)
+PAKET PEMULIHAN: kepengurusan + lomba + menu Anggota di Tentang
 
-URUTAN PASANG
-1. Supabase > SQL Editor > New query. Buka sql/migrasi_tahap22_kepengurusan_per_periode.sql.
-   (Bila file lama sudah pernah dijalankan, jalankan ulang file ini; aman diulang.)
-   - Jalankan LANGKAH A saja dulu (select pertama). Periksa daftar: kolom
-     "cocok_dengan_anggota" kosong berarti pengurus itu akan dibuatkan baris anggota baru.
-   - Lalu jalankan LANGKAH B (sisanya). Hasil akhir menampilkan jumlah baris kepengurusan.
-   - LANGKAH C (opsional, hanya membaca) menampilkan orang yang tercatat dua kali. Hasil kosong = aman.
-   - LANGKAH D (opsional) mengunci NIM agar tidak bisa dobel; jalankan hanya bila Langkah C tidak
-     menampilkan baris "NIM sama" (hapus tanda -- di depan baris create unique index).
-2. GitHub > repo himpalubi > Add file > Upload files. Unggah isi paket ini dengan susunan folder
-   yang sama (timpa file lama). Commit ke main. Tunggu workflow "Terbitkan situs" selesai.
-3. Buka situs, tekan Ctrl+F5 (hard refresh).
-4. Dashboard > Anggota: kolom Kepengurusan dan penyaring sudah ada.
-   Dashboard > Struktur Pengurus: pilih nama dari daftar anggota, isi jabatan, divisi, periode.
-
-ROLLBACK
-- Database: jalankan sql/rollback_tahap22.sql (baris pengurus lama tidak pernah diubah).
-- Situs: pasang kembali file versi sebelumnya dari riwayat commit GitHub.
-
-CATATAN
-- Periode = satu tahun, contoh 2026/2027. Boleh diketik 2026-2027; disimpan sebagai 2026/2027.
-- Mencegah data ganda: saat pendaftar diterima, tambah anggota manual, atau impor Excel, nama yang sama
-  dengan anggota/pengurus yang belum punya NIM dilengkapi (bukan dibuat baru). NIM yang sama ditolak.
-- Baris lama kategori 'Pengurus' dibiarkan sebagai arsip. Boleh dihapus manual lewat Table Editor
-  setelah Anda yakin datanya benar.
-- Periode bawaan di form diambil dari Dashboard > Pengaturan > periode kepengurusan.
+1. GitHub > repo himpalubi > Add file > Upload files. Seret isi paket ini (susunan folder sama, timpa file lama). Commit ke main.
+2. Tunggu workflow "Terbitkan situs" selesai, lalu tekan Ctrl+Shift+R di situs.
+3. SQL: tidak ada SQL baru. Jika sql/migrasi_tahap23_kepengurusan_per_periode.sql belum pernah dijalankan di Supabase, jalankan dulu (Langkah A, lalu B).
+   Rollback: sql/rollback_tahap23.sql (kepengurusan) dan sql/rollback_tahap22.sql (lomba).
+4. Cek: menu Tentang > Anggota; halaman Anggota (lencana pengurus); halaman Struktur; Dashboard > Struktur Pengurus; Dashboard > Info Lomba.
