@@ -8,6 +8,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      kirim_sitemap:
+        description: "Kirim sitemap ke Search Console"
+        type: boolean
+        default: false
   schedule:
     - cron: "23 */2 * * *" # waktu UTC; GitHub bisa menunda beberapa menit
 
@@ -48,3 +53,54 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # Hanya jalan bila kotak "Kirim sitemap ke Search Console" dicentang saat menjalankan manual.
+  # Butuh secret GSC_SERVICE_ACCOUNT_JSON (lihat README / panduan pembuatan secret).
+  kirim-sitemap:
+    needs: terbitkan
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.kirim_sitemap }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      ALAMAT_SITUS: ${{ vars.GSC_SITE_URL || 'https://mim1654.github.io/himpalubi/' }}
+      KUNCI_ADA: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON != '' }}
+    steps:
+      - name: Periksa secret
+        run: |
+          if [ "$KUNCI_ADA" != "true" ]; then
+            echo "::error title=Secret belum dibuat::Secret GSC_SERVICE_ACCOUNT_JSON belum ada. Buat di Settings > Secrets and variables > Actions, lalu jalankan ulang."
+            exit 1
+          fi
+      - id: masuk
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/webmasters
+      - name: Kirim sitemap ke Search Console
+        env:
+          TOKEN: ${{ steps.masuk.outputs.access_token }}
+        run: |
+          set -u
+          SITEMAP="${ALAMAT_SITUS%/}/sitemap.xml"
+          S=$(jq -rn --arg v "$ALAMAT_SITUS" '$v|@uri')
+          F=$(jq -rn --arg v "$SITEMAP" '$v|@uri')
+          STATUS=$(curl -sS -o jawaban.txt -w '%{http_code}' -X PUT \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Length: 0" \
+            "https://www.googleapis.com/webmasters/v3/sites/$S/sitemaps/$F") || STATUS=000
+          if [ "$STATUS" = "204" ]; then
+            echo "Sitemap dikirim ke Search Console (status 204): $SITEMAP"
+            exit 0
+          fi
+          case "$STATUS" in
+            401) SEBAB="Token ditolak. Periksa isi secret GSC_SERVICE_ACCOUNT_JSON." ;;
+            403) SEBAB="Akun layanan belum jadi pengguna properti ini di Search Console (butuh izin Pemilik atau Penuh), atau Search Console API belum diaktifkan." ;;
+            404) SEBAB="Properti tidak ditemukan. Pastikan $ALAMAT_SITUS terdaftar persis di Search Console (jenis Awalan URL)." ;;
+            000) SEBAB="Tidak bisa terhubung ke Google." ;;
+            *)   SEBAB="Respons tak terduga dari Google." ;;
+          esac
+          echo "::error title=Sitemap GAGAL dikirim (status $STATUS)::$SEBAB"
+          echo "Rincian dari Google:"; cat jawaban.txt
+          exit 1
