@@ -1263,8 +1263,6 @@ async function muatAnggota(elId) {
     return;
   }
 
-  const peta = await petaKepengurusan(data.map(a => a.id));
-
   const kelompok = {};
   data.forEach(a => {
     const k = a.angkatan || "Lainnya";
@@ -1280,54 +1278,25 @@ async function muatAnggota(elId) {
           <span class="group-head__meta">${kelompok[angkatan].length} mahasiswa</span>
         </div>
         <div class="people-grid">
-          ${kelompok[angkatan].map(a => kartuAnggota(a, false, peta[a.id])).join("")}
+          ${kelompok[angkatan].map(a => kartuAnggota(a)).join("")}
         </div>
       </section>
     `).join("");
 }
 
-// Mengelompokkan baris kepengurusan per anggota. Bila tabel belum ada (SQL tahap 22 belum dijalankan), hasilnya kosong.
-async function petaKepengurusan(idAnggota) {
-  const peta = {};
-  if (!idAnggota.length) return peta;
-  const { data, error } = await supabaseClient
-    .from("kepengurusan")
-    .select("anggota_id, periode, jabatan, divisi, urutan, aktif")
-    .in("anggota_id", idAnggota);
-  if (error || !data) return peta;
-  data.sort((x, y) => (x.urutan ?? 9999) - (y.urutan ?? 9999));
-  data.forEach(k => {
-    const ringkas = peta[k.anggota_id] = peta[k.anggota_id] || { aktif: [], mantan: [] };
-    if (k.aktif) ringkas.aktif.push(k);
-    else ringkas.mantan.push(k.periode);
-  });
-  return peta;
-}
-
-function kartuAnggota(a, unggulan, kep) {
+function kartuAnggota(a, unggulan) {
   const initialName = initial(a.nama);
   const fallback = `<span aria-hidden="true">${initialName}</span>`;
   const photoHtml = a.foto_url
     ? `<img src="${urlGambarAman(a.foto_url)}" alt="Foto ${escapeHtml(a.nama)}" loading="lazy" onerror="this.outerHTML='${fallback.replace(/'/g, "&#39;")}'">`
     : fallback;
 
-  let peran = escapeHtml(a.jabatan || "Anggota");
-  let lencana = "";
-  if (kep && kep.aktif.length) {
-    peran = kep.aktif.map(k => `${escapeHtml(k.jabatan)} &middot; ${escapeHtml(k.divisi)}`).join("<br>");
-    lencana = `<span class="person__badge">Pengurus aktif</span>`;
-  } else if (kep && kep.mantan.length) {
-    const terbaru = [...kep.mantan].sort().pop();
-    lencana = `<span class="person__badge person__badge--lalu">Mantan pengurus ${escapeHtml(terbaru)}</span>`;
-  }
-
   return `
     <article class="person${unggulan ? " person--lead" : ""}">
       <div class="person__photo">${photoHtml}</div>
       <div class="person__body">
         <h3 class="person__name">${escapeHtml(a.nama)}</h3>
-        <p class="person__role">${peran}</p>
-        ${lencana}
+        <p class="person__role">${escapeHtml(a.jabatan || "Anggota")}</p>
       </div>
     </article>
   `;
@@ -1339,89 +1308,51 @@ async function muatStruktur(elId) {
   if (!el) return;
   el.innerHTML = skeletonMemberGrid(4);
 
-  let rows = null;
+  let data = null;
   try {
     const res = await supabaseClient
-      .from("kepengurusan")
-      .select("id, periode, jabatan, divisi, urutan, aktif, anggota(id, nama, foto_url)")
-      .order("urutan", { ascending: true, nullsFirst: false });
-    if (res.error) {
-      console.warn("Info: tabel kepengurusan belum tersedia, memakai data pengurus lama.", res.error);
-      return muatStrukturLama(el);
-    }
-    rows = (res.data || []).filter(r => r.anggota);
+      .from("anggota")
+      .select("id, nama, jabatan, angkatan, foto_url, status, kategori, divisi, urutan")
+      .eq("kategori", "Pengurus")
+      .eq("status", "Aktif")
+      .order("urutan", { ascending: true, nullsFirst: false })
+      .order("nama");
+    data = res.data;
+    if (res.error) { console.error(res.error); return tampilGagalMuat(el); }
   } catch (err) {
     console.warn("Info: Tidak dapat memuat struktur dari Supabase.", err);
-    return tampilGagalMuat(el);
   }
 
-  if (!rows.length) return tampilStrukturKosong(el);
+  if (!data || data.length === 0) {
+    el.innerHTML = emptyState(
+      "Belum ada data struktur pengurus",
+      "Susunan Badan Pengurus Harian (BPH) dan divisi belum diunggah ke database. Pengurus akan segera memperbarui struktur kepengurusan.",
+      {
+        icon: "account_tree",
+        btnText: "Kembali ke Beranda",
+        btnHref: "index.html"
+      }
+    );
+    return;
+  }
 
-  const daftarPeriode = [...new Set(rows.map(r => r.periode))].sort().reverse();
-  const periodeBerjalan = rows.filter(r => r.aktif).map(r => r.periode).sort().pop() || daftarPeriode[0];
-  const gambar = (periode) => {
-    // Pada periode berjalan hanya yang masih menjabat; periode lama menampilkan semuanya.
-    const terpilih = rows.filter(r => r.periode === periode && (periode !== periodeBerjalan || r.aktif));
-    const kartu = terpilih.map(r => ({ divisi: r.divisi, orang: { nama: r.anggota.nama, foto_url: r.anggota.foto_url, jabatan: r.jabatan } }));
-    el.innerHTML = tabPeriodeStruktur(daftarPeriode, periode) + kelompokDivisiHtml(kartu);
-    el.querySelectorAll("[data-periode]").forEach(tombol => {
-      tombol.addEventListener("click", () => gambar(tombol.dataset.periode));
-    });
-  };
-  gambar(periodeBerjalan);
-}
-
-function tabPeriodeStruktur(daftar, terpilih) {
-  if (daftar.length < 2) return "";
-  return `
-    <div class="periode-tabs" role="tablist" aria-label="Periode kepengurusan">
-      ${daftar.map(p => `<button type="button" role="tab" class="periode-tab" data-periode="${escapeHtml(p)}" aria-selected="${p === terpilih}">Periode ${escapeHtml(p)}</button>`).join("")}
-    </div>`;
-}
-
-function kelompokDivisiHtml(kartu) {
   const kelompok = {};
-  kartu.forEach(k => {
-    const nama = k.divisi || "Lainnya";
-    (kelompok[nama] = kelompok[nama] || []).push(k.orang);
+  data.forEach(a => {
+    const k = a.divisi || "Lainnya";
+    (kelompok[k] = kelompok[k] || []).push(a);
   });
-  return urutkanDivisi(Object.keys(kelompok)).map(divisi => `
+
+  el.innerHTML = urutkanDivisi(Object.keys(kelompok)).map(divisi => `
     <section class="group-block" aria-label="${escapeHtml(divisi)}">
       <div class="group-head">
         <h2>${escapeHtml(divisi)}</h2>
         <span class="group-head__meta">${kelompok[divisi].length} fungsionaris</span>
       </div>
       <div class="people-grid${divisi === "BPH" ? " people-grid--lead" : ""}">
-        ${kelompok[divisi].map(o => kartuAnggota(o, divisi === "BPH")).join("")}
+        ${kelompok[divisi].map(a => kartuAnggota(a, divisi === "BPH")).join("")}
       </div>
     </section>
   `).join("");
-}
-
-function tampilStrukturKosong(el) {
-  el.innerHTML = emptyState(
-    "Belum ada data struktur pengurus",
-    "Susunan Badan Pengurus Harian (BPH) dan divisi belum diunggah ke database. Pengurus akan segera memperbarui struktur kepengurusan.",
-    {
-      icon: "account_tree",
-      btnText: "Kembali ke Beranda",
-      btnHref: "index.html"
-    }
-  );
-}
-
-// Cadangan selama SQL tahap 22 belum dijalankan: membaca baris pengurus lama.
-async function muatStrukturLama(el) {
-  const res = await supabaseClient
-    .from("anggota")
-    .select("id, nama, jabatan, angkatan, foto_url, status, kategori, divisi, urutan")
-    .eq("kategori", "Pengurus")
-    .eq("status", "Aktif")
-    .order("urutan", { ascending: true, nullsFirst: false })
-    .order("nama");
-  if (res.error) { console.error(res.error); return tampilGagalMuat(el); }
-  if (!res.data || !res.data.length) return tampilStrukturKosong(el);
-  el.innerHTML = kelompokDivisiHtml(res.data.map(a => ({ divisi: a.divisi, orang: a })));
 }
 
 // ================= HALAMAN PROGRAM KERJA: dikelompokkan per divisi =================
@@ -1797,7 +1728,7 @@ async function muatStatistikBeranda(elId) {
       ambilPengaturan(),
       supabaseClient.from("anggota").select("id", { count: "exact", head: true }).eq("kategori", "Anggota").eq("status", "Aktif"),
       supabaseClient.from("program_kerja").select("id", { count: "exact", head: true }),
-      supabaseClient.from("kepengurusan").select("divisi").eq("aktif", true),
+      supabaseClient.from("anggota").select("divisi").eq("kategori", "Pengurus").eq("status", "Aktif"),
     ]);
 
     const tahun = pengaturanRes.data?.tahun_berdiri;
@@ -2531,7 +2462,7 @@ async function jalankanPencarian(kata) {
   const [beritaRes, kegiatanRes, anggotaRes, programRes] = await Promise.all([
     supabaseClient.from("berita").select("id, judul, tanggal").eq("kategori", "Berita").ilike("judul", kunci).limit(5),
     supabaseClient.from("berita").select("id, judul, tanggal").eq("kategori", "Kegiatan").ilike("judul", kunci).limit(5),
-    supabaseClient.from("anggota").select("id, nama, jabatan, kategori").eq("kategori", "Anggota").ilike("nama", kunci).limit(5),
+    supabaseClient.from("anggota").select("id, nama, jabatan, kategori").ilike("nama", kunci).limit(5),
     supabaseClient.from("program_kerja").select("id, nama_program, divisi").ilike("nama_program", kunci).limit(5),
   ]);
 
@@ -2557,7 +2488,7 @@ async function jalankanPencarian(kata) {
   if (anggotaRes.data?.length) {
     grup.push({
       judul: "Anggota & Pengurus",
-      items: anggotaRes.data.map(a => `<a class="search-result-item" href="tentang.html#anggota"><div class="label">${escapeHtml(a.nama)}</div><div class="meta">${escapeHtml(a.jabatan || "Anggota")}</div></a>`),
+      items: anggotaRes.data.map(a => `<a class="search-result-item" href="${a.kategori === "Pengurus" ? "struktur.html" : "anggota.html"}"><div class="label">${escapeHtml(a.nama)}</div><div class="meta">${escapeHtml(a.jabatan || (a.kategori === "Pengurus" ? "Pengurus" : "Anggota"))}</div></a>`),
     });
   }
   if (programRes.data?.length) {
@@ -2795,4 +2726,137 @@ async function muatJaringanBeranda(elId = "jaringan-beranda-daftar", batas = 4) 
   const semua = document.getElementById("jaringan-beranda-semua");
   if (semua && ukm.length > batas) semua.textContent = `Lihat semua ${ukm.length} UKM`;
   bagian.hidden = false;
+}
+
+
+// ================= INFO LOMBA (lomba.html) =================
+// Tautan hanya diterima dari Google Drive/Docs/Forms. Selain itu diabaikan.
+function urlGoogleAman(u, jenis) {
+  try {
+    const url = new URL(String(u || "").trim());
+    if (url.protocol !== "https:") return "";
+    const h = url.hostname.toLowerCase();
+    if (jenis === "form") {
+      const ok = (h === "docs.google.com" && url.pathname.startsWith("/forms/")) || h === "forms.gle" || h === "forms.google.com";
+      return ok ? url.href : "";
+    }
+    return (h === "drive.google.com" || h === "docs.google.com") ? url.href : "";
+  } catch (e) { return ""; }
+}
+
+// Tautan Drive "…/file/d/ID/view" diubah jadi tautan unduh langsung. Selain itu dipakai apa adanya.
+function tautanUnduhDrive(href) {
+  const m = /^https:\/\/drive\.google\.com\/file\/d\/([\w-]+)/.exec(href);
+  return m ? `https://drive.google.com/uc?export=download&id=${m[1]}` : href;
+}
+
+function statusLomba(l) {
+  const tgl = (s) => (s ? new Date(s + "T00:00:00") : null);
+  const sekarang = new Date();
+  const buka = tgl(l.tanggal_buka);
+  const tutup = tgl(l.tanggal_tutup);
+  if (tutup) tutup.setHours(23, 59, 59, 999);
+  if (buka && sekarang < buka) return { teks: "Segera dibuka", kelas: "" };
+  if (tutup && sekarang > tutup) return { teks: "Pendaftaran ditutup", kelas: "lomba-status--tutup" };
+  return { teks: "Pendaftaran dibuka", kelas: "lomba-status--buka" };
+}
+
+function paragrafLomba(teks) {
+  return String(teks || "").split(/\n{2,}/).map(p => p.trim()).filter(Boolean)
+    .map(p => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`).join("");
+}
+
+function htmlMetaLomba(l) {
+  const baris = [];
+  if (l.tanggal_buka || l.tanggal_tutup) {
+    baris.push(`<li><strong>Pendaftaran:</strong> ${escapeHtml(l.tanggal_buka ? formatTanggal(l.tanggal_buka) : "sekarang")} s.d. ${escapeHtml(l.tanggal_tutup ? formatTanggal(l.tanggal_tutup) : "belum ditentukan")}</li>`);
+  }
+  if (l.tanggal_acara) baris.push(`<li><strong>Pelaksanaan:</strong> ${escapeHtml(formatTanggal(l.tanggal_acara))}</li>`);
+  if (l.lokasi) baris.push(`<li><strong>Lokasi:</strong> ${escapeHtml(l.lokasi)}</li>`);
+  if (l.kontak) baris.push(`<li><strong>Kontak:</strong> ${escapeHtml(l.kontak)}</li>`);
+  return baris.length ? `<ul class="lomba-meta">${baris.join("")}</ul>` : "";
+}
+
+function htmlKartuLomba(l) {
+  const st = statusLomba(l);
+  return `
+    <li class="lomba-kartu">
+      <span class="lomba-status ${st.kelas}">${escapeHtml(st.teks)}</span>
+      <h3>${escapeHtml(l.judul)}</h3>
+      ${l.ringkasan ? `<p>${escapeHtml(l.ringkasan)}</p>` : ""}
+      ${htmlMetaLomba(l)}
+      <div class="lomba-aksi"><a class="lomba-tombol lomba-tombol--utama" href="lomba.html?slug=${encodeURIComponent(l.slug)}">Lihat detail<span class="sr-only"> ${escapeHtml(l.judul)}</span></a></div>
+    </li>`;
+}
+
+function htmlKategoriLomba(k, lombaDibuka) {
+  const juknis = urlGoogleAman(k.juknis_url, "juknis");
+  const form = urlGoogleAman(k.form_url, "form");
+  const syarat = String(k.syarat || "").split("\n").map(s => s.trim()).filter(Boolean);
+  const info = [];
+  if (k.biaya) info.push(`<li><strong>Biaya:</strong> ${escapeHtml(k.biaya)}</li>`);
+  if (k.kuota !== null && k.kuota !== undefined) info.push(`<li><strong>Kuota:</strong> ${escapeHtml(k.kuota)} peserta</li>`);
+  return `
+    <li class="lomba-kartu">
+      <h3>${escapeHtml(k.nama)}</h3>
+      ${k.deskripsi ? `<p>${escapeHtml(k.deskripsi)}</p>` : ""}
+      ${info.length ? `<ul class="lomba-meta">${info.join("")}</ul>` : ""}
+      ${syarat.length ? `<ul class="lomba-syarat">${syarat.map(s => `<li>${escapeHtml(s)}</li>`).join("")}</ul>` : ""}
+      <div class="lomba-aksi">
+        ${juknis ? `<a class="lomba-tombol" href="${escapeHtml(tautanUnduhDrive(juknis))}" target="_blank" rel="noopener noreferrer"><span class="material-symbols-outlined" aria-hidden="true">download</span><span>Unduh juknis</span><span class="sr-only"> ${escapeHtml(k.nama)} (buka di tab baru)</span></a>` : ""}
+        ${form && lombaDibuka ? `<a class="lomba-tombol lomba-tombol--utama" href="${escapeHtml(form)}" target="_blank" rel="noopener noreferrer"><span>Daftar</span><span class="sr-only"> ${escapeHtml(k.nama)} (buka di tab baru)</span></a>` : ""}
+      </div>
+    </li>`;
+}
+
+async function muatHalamanLomba() {
+  const daftarEl = document.getElementById("lomba-daftar");
+  const detailEl = document.getElementById("lomba-detail");
+  const kosongEl = document.getElementById("lomba-kosong");
+  if (!daftarEl || !detailEl) return;
+  const slug = new URLSearchParams(window.location.search).get("slug");
+  try {
+    if (!slug) {
+      const { data, error } = await supabaseClient.from("lomba").select("*")
+        .eq("aktif", true).order("tanggal_acara", { ascending: false, nullsFirst: false });
+      if (error || !data || !data.length) { if (kosongEl) kosongEl.hidden = false; return; }
+      daftarEl.innerHTML = data.map(htmlKartuLomba).join("");
+      daftarEl.hidden = false;
+      return;
+    }
+    const { data: l, error } = await supabaseClient.from("lomba").select("*").eq("slug", slug).eq("aktif", true).maybeSingle();
+    if (error || !l) {
+      detailEl.innerHTML = `<p class="empty-note">Lomba tidak ditemukan atau sudah tidak aktif.</p><p><a class="lomba-kembali" href="lomba.html">Kembali ke daftar lomba</a></p>`;
+      detailEl.hidden = false;
+      return;
+    }
+    const { data: kat } = await supabaseClient.from("lomba_kategori").select("*")
+      .eq("lomba_id", l.id).eq("aktif", true).order("urutan", { ascending: true, nullsFirst: false }).order("created_at", { ascending: true });
+    const st = statusLomba(l);
+    const dibuka = st.kelas === "lomba-status--buka";
+    document.title = `${l.judul} | HIMPALUBI`;
+    const desk = document.querySelector('meta[name="description"]');
+    if (desk) desk.setAttribute("content", l.ringkasan || `Informasi lomba ${l.judul} dari HIMPALUBI.`);
+    const h1 = document.querySelector(".page-hero__title");
+    if (h1) h1.textContent = l.judul;
+    const lead = document.querySelector(".page-hero__lead");
+    if (lead) lead.textContent = l.ringkasan || "";
+    const poster = urlGambarAman(l.poster_url);
+    detailEl.innerHTML = `
+      <a class="lomba-kembali" href="lomba.html">&larr; Semua lomba</a>
+      <section>
+        <span class="lomba-status ${st.kelas}">${escapeHtml(st.teks)}</span>
+        ${poster ? `<img class="lomba-poster" src="${poster}" alt="Poster ${escapeHtml(l.judul)}" loading="lazy">` : ""}
+        ${htmlMetaLomba(l)}
+      </section>
+      ${l.deskripsi ? `<section><h2>Tentang lomba</h2>${paragrafLomba(l.deskripsi)}</section>` : ""}
+      <section>
+        <h2>Kategori lomba</h2>
+        ${kat && kat.length ? `<ul class="lomba-daftar">${kat.map(k => htmlKategoriLomba(k, dibuka)).join("")}</ul>` : `<p class="empty-note">Kategori akan segera diumumkan.</p>`}
+        ${!dibuka ? `<p>Tombol Daftar hanya muncul saat pendaftaran dibuka.</p>` : ""}
+      </section>`;
+    detailEl.hidden = false;
+  } catch (e) {
+    if (kosongEl) kosongEl.hidden = false;
+  }
 }

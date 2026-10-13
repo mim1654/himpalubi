@@ -21,9 +21,6 @@
   --surface-container-high: #DFE9FA;
   --inverse-surface: #27313E;
   --inverse-on-surface: #EAF1FF;
-  --primary-fixed: #FFDAD8;
-  --on-primary-fixed-variant: #92001C;
-  --surface-variant: #D9E3F4;
   
   /* Legacy alias mappings for existing components */
   --ink-900: #121C28;
@@ -1779,24 +1776,6 @@ tr:last-child td { border-bottom: none; }
 .person--lead .person__name { font-size: 1.0625rem; }
 .person--lead .person__role { color: var(--primary); font-weight: 600; }
 
-/* Penanda kepengurusan pada kartu anggota dan tab periode di halaman Struktur */
-.person__badge {
-  display: inline-block; margin-top: 0.4rem; padding: 0.15rem 0.55rem; border-radius: 9999px;
-  background: var(--primary-fixed); color: var(--on-primary-fixed-variant);
-  font-size: 0.6875rem; line-height: 1.2; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase;
-}
-.person__badge { white-space: nowrap; }
-.person__badge--lalu { white-space: normal; border-radius: 0.5rem; text-transform: none; letter-spacing: 0.02em; background: var(--surface-variant); color: var(--on-surface); }
-.periode-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
-.periode-tab {
-  min-height: 44px; padding: 0 1.1rem; border-radius: 9999px; cursor: pointer;
-  border: 1px solid var(--surface-container-high); background: var(--surface-container-lowest);
-  color: var(--on-surface); font: inherit; font-size: 0.9375rem; font-weight: 600;
-}
-.periode-tab:hover { border-color: var(--primary-container); }
-.periode-tab[aria-selected="true"] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
-.periode-tab:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
-
 /* ---------- Program kerja ---------- */
 .program-list { list-style: none; margin: 0; padding: 0; }
 .program-row {
@@ -2121,7 +2100,6 @@ body[data-page="kampus"] main section + section { border-top: 0; }
 .ukm-kartu .ukm-logo { flex: none; }
 .ukm-logo-tautan { flex: none; display: block; border-radius: 9999px; text-decoration: none; }
 .ukm-logo-tautan:hover .ukm-logo { border-color: var(--primary-container); }
-#anggota { scroll-margin-top: 5.5rem; }
 .ukm-kartu__isi { min-width: 0; }
 .ukm-kartu .ukm-nama { margin: 0; font-size: 1rem; line-height: 1.5rem; }
 .ukm-kartu__teks { margin: 0.25rem 0 0; font-size: 0.875rem; line-height: 1.55; color: var(--ink-600); overflow-wrap: anywhere; }
@@ -2135,3 +2113,31 @@ body[data-page="kampus"] main section + section { border-top: 0; }
 .footer-grid[class] { grid-template-columns: 1fr; }
 @media (min-width: 768px) { .footer-grid[class] { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1024px) { .footer-grid[class] { grid-template-columns: minmax(0, 1.25fr) repeat(auto-fit, minmax(11rem, 1fr)); } }
+
+
+/* ===== Info Lomba (lomba.html) ===== */
+.lomba-daftar { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 768px) { .lomba-daftar { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.lomba-kartu { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; padding: 1.25rem; background: var(--surface-container-lowest); border: 1px solid var(--surface-container-high); border-radius: 0.75rem; box-shadow: 0 1px 2px rgba(18, 28, 40, 0.06); }
+.lomba-kartu h3 { margin: 0; font-size: 1.125rem; line-height: 1.5rem; font-weight: 700; color: var(--on-surface); overflow-wrap: anywhere; }
+.lomba-kartu p { margin: 0; font-size: 0.875rem; line-height: 1.55; color: var(--ink-600); }
+.lomba-poster { width: 100%; max-height: 22rem; object-fit: contain; border-radius: 0.5rem; background: var(--surface-container-low); }
+.lomba-status { display: inline-flex; align-items: center; align-self: flex-start; min-height: 1.75rem; padding: 0 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; background: var(--surface-container); color: var(--ink-700); }
+.lomba-status--buka { background: #e0f0e5; color: var(--ok); }
+.lomba-status--tutup { background: var(--surface-container-high); color: var(--ink-700); }
+.lomba-meta { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; font-size: 0.875rem; color: var(--ink-700); }
+.lomba-meta strong { font-weight: 600; color: var(--on-surface); }
+.lomba-tombol { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; min-height: 44px; padding: 0 1.1rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; text-decoration: none; border: 1px solid var(--primary); color: var(--primary); background: var(--surface-container-lowest); }
+.lomba-tombol:hover { background: var(--surface-container-low); }
+.lomba-tombol--utama { background: var(--primary); color: var(--on-primary); }
+.lomba-tombol--utama:hover { background: var(--primary-container); }
+.lomba-tombol:focus-visible, .lomba-kartu a:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.lomba-tombol .material-symbols-outlined { font-size: 20px; }
+.lomba-aksi { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: auto; }
+.lomba-detail > section { margin-top: 2.5rem; }
+.lomba-detail h2 { margin: 0 0 0.75rem; font-size: 1.375rem; line-height: 1.75rem; font-weight: 700; color: var(--on-surface); }
+.lomba-detail p { margin: 0 0 0.75rem; line-height: 1.65; color: var(--ink-700); }
+.lomba-syarat { margin: 0; padding-left: 1.25rem; display: grid; gap: 0.25rem; font-size: 0.875rem; color: var(--ink-700); }
+.lomba-kembali { display: inline-flex; align-items: center; min-height: 44px; color: var(--primary); font-weight: 600; text-decoration: none; }
+.lomba-kembali:hover { text-decoration: underline; }
+@media (prefers-reduced-motion: reduce) { .lomba-tombol { transition: none; } }
