@@ -2727,3 +2727,136 @@ async function muatJaringanBeranda(elId = "jaringan-beranda-daftar", batas = 4) 
   if (semua && ukm.length > batas) semua.textContent = `Lihat semua ${ukm.length} UKM`;
   bagian.hidden = false;
 }
+
+
+// ================= INFO LOMBA (lomba.html) =================
+// Tautan hanya diterima dari Google Drive/Docs/Forms. Selain itu diabaikan.
+function urlGoogleAman(u, jenis) {
+  try {
+    const url = new URL(String(u || "").trim());
+    if (url.protocol !== "https:") return "";
+    const h = url.hostname.toLowerCase();
+    if (jenis === "form") {
+      const ok = (h === "docs.google.com" && url.pathname.startsWith("/forms/")) || h === "forms.gle" || h === "forms.google.com";
+      return ok ? url.href : "";
+    }
+    return (h === "drive.google.com" || h === "docs.google.com") ? url.href : "";
+  } catch (e) { return ""; }
+}
+
+// Tautan Drive "…/file/d/ID/view" diubah jadi tautan unduh langsung. Selain itu dipakai apa adanya.
+function tautanUnduhDrive(href) {
+  const m = /^https:\/\/drive\.google\.com\/file\/d\/([\w-]+)/.exec(href);
+  return m ? `https://drive.google.com/uc?export=download&id=${m[1]}` : href;
+}
+
+function statusLomba(l) {
+  const tgl = (s) => (s ? new Date(s + "T00:00:00") : null);
+  const sekarang = new Date();
+  const buka = tgl(l.tanggal_buka);
+  const tutup = tgl(l.tanggal_tutup);
+  if (tutup) tutup.setHours(23, 59, 59, 999);
+  if (buka && sekarang < buka) return { teks: "Segera dibuka", kelas: "" };
+  if (tutup && sekarang > tutup) return { teks: "Pendaftaran ditutup", kelas: "lomba-status--tutup" };
+  return { teks: "Pendaftaran dibuka", kelas: "lomba-status--buka" };
+}
+
+function paragrafLomba(teks) {
+  return String(teks || "").split(/\n{2,}/).map(p => p.trim()).filter(Boolean)
+    .map(p => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`).join("");
+}
+
+function htmlMetaLomba(l) {
+  const baris = [];
+  if (l.tanggal_buka || l.tanggal_tutup) {
+    baris.push(`<li><strong>Pendaftaran:</strong> ${escapeHtml(l.tanggal_buka ? formatTanggal(l.tanggal_buka) : "sekarang")} s.d. ${escapeHtml(l.tanggal_tutup ? formatTanggal(l.tanggal_tutup) : "belum ditentukan")}</li>`);
+  }
+  if (l.tanggal_acara) baris.push(`<li><strong>Pelaksanaan:</strong> ${escapeHtml(formatTanggal(l.tanggal_acara))}</li>`);
+  if (l.lokasi) baris.push(`<li><strong>Lokasi:</strong> ${escapeHtml(l.lokasi)}</li>`);
+  if (l.kontak) baris.push(`<li><strong>Kontak:</strong> ${escapeHtml(l.kontak)}</li>`);
+  return baris.length ? `<ul class="lomba-meta">${baris.join("")}</ul>` : "";
+}
+
+function htmlKartuLomba(l) {
+  const st = statusLomba(l);
+  return `
+    <li class="lomba-kartu">
+      <span class="lomba-status ${st.kelas}">${escapeHtml(st.teks)}</span>
+      <h3>${escapeHtml(l.judul)}</h3>
+      ${l.ringkasan ? `<p>${escapeHtml(l.ringkasan)}</p>` : ""}
+      ${htmlMetaLomba(l)}
+      <div class="lomba-aksi"><a class="lomba-tombol lomba-tombol--utama" href="lomba.html?slug=${encodeURIComponent(l.slug)}">Lihat detail<span class="sr-only"> ${escapeHtml(l.judul)}</span></a></div>
+    </li>`;
+}
+
+function htmlKategoriLomba(k, lombaDibuka) {
+  const juknis = urlGoogleAman(k.juknis_url, "juknis");
+  const form = urlGoogleAman(k.form_url, "form");
+  const syarat = String(k.syarat || "").split("\n").map(s => s.trim()).filter(Boolean);
+  const info = [];
+  if (k.biaya) info.push(`<li><strong>Biaya:</strong> ${escapeHtml(k.biaya)}</li>`);
+  if (k.kuota !== null && k.kuota !== undefined) info.push(`<li><strong>Kuota:</strong> ${escapeHtml(k.kuota)} peserta</li>`);
+  return `
+    <li class="lomba-kartu">
+      <h3>${escapeHtml(k.nama)}</h3>
+      ${k.deskripsi ? `<p>${escapeHtml(k.deskripsi)}</p>` : ""}
+      ${info.length ? `<ul class="lomba-meta">${info.join("")}</ul>` : ""}
+      ${syarat.length ? `<ul class="lomba-syarat">${syarat.map(s => `<li>${escapeHtml(s)}</li>`).join("")}</ul>` : ""}
+      <div class="lomba-aksi">
+        ${juknis ? `<a class="lomba-tombol" href="${escapeHtml(tautanUnduhDrive(juknis))}" target="_blank" rel="noopener noreferrer"><span class="material-symbols-outlined" aria-hidden="true">download</span><span>Unduh juknis</span><span class="sr-only"> ${escapeHtml(k.nama)} (buka di tab baru)</span></a>` : ""}
+        ${form && lombaDibuka ? `<a class="lomba-tombol lomba-tombol--utama" href="${escapeHtml(form)}" target="_blank" rel="noopener noreferrer"><span>Daftar</span><span class="sr-only"> ${escapeHtml(k.nama)} (buka di tab baru)</span></a>` : ""}
+      </div>
+    </li>`;
+}
+
+async function muatHalamanLomba() {
+  const daftarEl = document.getElementById("lomba-daftar");
+  const detailEl = document.getElementById("lomba-detail");
+  const kosongEl = document.getElementById("lomba-kosong");
+  if (!daftarEl || !detailEl) return;
+  const slug = new URLSearchParams(window.location.search).get("slug");
+  try {
+    if (!slug) {
+      const { data, error } = await supabaseClient.from("lomba").select("*")
+        .eq("aktif", true).order("tanggal_acara", { ascending: false, nullsFirst: false });
+      if (error || !data || !data.length) { if (kosongEl) kosongEl.hidden = false; return; }
+      daftarEl.innerHTML = data.map(htmlKartuLomba).join("");
+      daftarEl.hidden = false;
+      return;
+    }
+    const { data: l, error } = await supabaseClient.from("lomba").select("*").eq("slug", slug).eq("aktif", true).maybeSingle();
+    if (error || !l) {
+      detailEl.innerHTML = `<p class="empty-note">Lomba tidak ditemukan atau sudah tidak aktif.</p><p><a class="lomba-kembali" href="lomba.html">Kembali ke daftar lomba</a></p>`;
+      detailEl.hidden = false;
+      return;
+    }
+    const { data: kat } = await supabaseClient.from("lomba_kategori").select("*")
+      .eq("lomba_id", l.id).eq("aktif", true).order("urutan", { ascending: true, nullsFirst: false }).order("created_at", { ascending: true });
+    const st = statusLomba(l);
+    const dibuka = st.kelas === "lomba-status--buka";
+    document.title = `${l.judul} | HIMPALUBI`;
+    const desk = document.querySelector('meta[name="description"]');
+    if (desk) desk.setAttribute("content", l.ringkasan || `Informasi lomba ${l.judul} dari HIMPALUBI.`);
+    const h1 = document.querySelector(".page-hero__title");
+    if (h1) h1.textContent = l.judul;
+    const lead = document.querySelector(".page-hero__lead");
+    if (lead) lead.textContent = l.ringkasan || "";
+    const poster = urlGambarAman(l.poster_url);
+    detailEl.innerHTML = `
+      <a class="lomba-kembali" href="lomba.html">&larr; Semua lomba</a>
+      <section>
+        <span class="lomba-status ${st.kelas}">${escapeHtml(st.teks)}</span>
+        ${poster ? `<img class="lomba-poster" src="${poster}" alt="Poster ${escapeHtml(l.judul)}" loading="lazy">` : ""}
+        ${htmlMetaLomba(l)}
+      </section>
+      ${l.deskripsi ? `<section><h2>Tentang lomba</h2>${paragrafLomba(l.deskripsi)}</section>` : ""}
+      <section>
+        <h2>Kategori lomba</h2>
+        ${kat && kat.length ? `<ul class="lomba-daftar">${kat.map(k => htmlKategoriLomba(k, dibuka)).join("")}</ul>` : `<p class="empty-note">Kategori akan segera diumumkan.</p>`}
+        ${!dibuka ? `<p>Tombol Daftar hanya muncul saat pendaftaran dibuka.</p>` : ""}
+      </section>`;
+    detailEl.hidden = false;
+  } catch (e) {
+    if (kosongEl) kosongEl.hidden = false;
+  }
+}

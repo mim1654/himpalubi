@@ -300,7 +300,7 @@ function salinSitus() {
 
 // ---------- Sitemap, peta alamat, dan pengalihan detail.html ----------
 // Halaman tetap di root situs. Hanya berkas yang benar-benar ada di repo yang dimasukkan sitemap.
-const HALAMAN_UTAMA = ["index", "tentang", "kegiatan", "berita", "struktur", "program-kerja", "galeri", "pendaftaran", "kontak", "kampus", "privasi"];
+const HALAMAN_UTAMA = ["index", "tentang", "kegiatan", "berita", "lomba", "struktur", "program-kerja", "galeri", "pendaftaran", "kontak", "kampus", "privasi"];
 
 const tglDari = (iso) => (/^\d{4}-\d{2}-\d{2}/.test(iso || "") ? String(iso).slice(0, 10) : "");
 const tglTerbaru = (daftar) => daftar.filter(Boolean).sort().pop() || "";
