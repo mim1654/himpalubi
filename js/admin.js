@@ -1006,21 +1006,268 @@ function tampilkanFotoLama(previewElId, url) {
   ` : "";
 }
 
+// ---------- Bantuan Excel (dipakai impor/unduh anggota dan unduh pendaftar) ----------
+function tanggalWib(iso) {
+  if (!iso) return "";
+  try { return new Date(iso).toLocaleString("sv-SE", { timeZone: "Asia/Jakarta" }).slice(0, 16); } catch (e) { return ""; }
+}
+
+function namaSheetAman(nama, dipakai) {
+  const dasar = String(nama).replace(/[\\/?*[\]:]/g, " ").trim().slice(0, 31) || "Sheet";
+  let hasil = dasar, i = 2;
+  while (dipakai.has(hasil.toLowerCase())) {
+    const akhiran = ` (${i++})`;
+    hasil = dasar.slice(0, 31 - akhiran.length) + akhiran;
+  }
+  dipakai.add(hasil.toLowerCase());
+  return hasil;
+}
+
+function tambahSheetExcel(wb, nama, kolom, baris, dipakai, bernomor) {
+  const isi = bernomor ? baris.map((r, i) => ({ No: i + 1, ...r })) : baris;
+  const judul = bernomor ? ["No", ...kolom] : kolom;
+  const ws = XLSX.utils.json_to_sheet(amankanBarisExcel(isi), { header: judul });
+  ws["!cols"] = judul.map(k => ({ wch: Math.min(50, Math.max(String(k).length, ...isi.map(r => String(r[k] ?? "").length)) + 2) }));
+  if (isi.length) ws["!autofilter"] = { ref: ws["!ref"] };
+  XLSX.utils.book_append_sheet(wb, ws, namaSheetAman(nama, dipakai));
+}
+
+// Kelompok per angkatan: angkatan terbaru dulu, "Tanpa angkatan" paling akhir.
+function kelompokkanPerAngkatan(baris) {
+  const peta = new Map();
+  baris.forEach(r => {
+    const k = String(r.Angkatan || "").trim() || "Tanpa angkatan";
+    if (!peta.has(k)) peta.set(k, []);
+    peta.get(k).push(r);
+  });
+  return [...peta.entries()].sort((a, b) => ((a[0] === "Tanpa angkatan") - (b[0] === "Tanpa angkatan")) || b[0].localeCompare(a[0]));
+}
+
+function urutkanNamaId(a, b) { return String(a).localeCompare(String(b), "id"); }
+
+function tanggalHariIni() { return new Date().toISOString().slice(0, 10); }
+
+// ---------- Impor: pembacaan berkas ----------
+function kunciKolom(k) {
+  return String(k || "").toLowerCase().replace(/\(.*?\)/g, "").replace(/[*\s_]/g, "");
+}
+
+// Hasil: { baris: [...siap simpan], masalah: ["Baris 5: ...", ...] }. Nomor baris = nomor baris di Excel.
+function bacaBerkasAnggota(wb) {
+  const ws = wb.Sheets["Data"] || wb.Sheets[wb.SheetNames[0]];
+  const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "", raw: false, blankrows: true });
+  if (!aoa.length) return { baris: [], masalah: [], kosong: true };
+  const peta = {};
+  aoa[0].forEach((h, i) => { const k = kunciKolom(h); if (k && !(k in peta)) peta[k] = i; });
+  if (!("nama" in peta)) return { baris: [], masalah: ["Kolom \"Nama\" tidak ditemukan di baris 1. Gunakan template terbaru dan jangan ubah judul kolom."] };
+  const ambil = (r, k) => (k in peta ? String(r[peta[k]] ?? "").trim().replace(/\s+/g, " ") : "");
+  const baris = [], masalah = [];
+  const nimDi = new Map();
+  for (let i = 1; i < aoa.length; i++) {
+    const r = aoa[i];
+    if (!r.some(s => String(s ?? "").trim() !== "")) continue;
+    const no = i + 1;
+    const nama = ambil(r, "nama"), nim = ambil(r, "nim"), angkatan = ambil(r, "angkatan");
+    const jabatan = ambil(r, "jabatan"), statusMentah = ambil(r, "status");
+    const salah = [];
+    if (nama.length < 2) salah.push("Nama kosong atau terlalu pendek");
+    if (!/^\d{4}$/.test(angkatan) || +angkatan < 2000 || +angkatan > 2100) salah.push(angkatan ? `Angkatan \"${angkatan}\" tidak valid (tulis 4 angka, misalnya 2023)` : "Angkatan wajib diisi");
+    let status = "Aktif";
+    if (statusMentah) {
+      const s = statusMentah.toLowerCase();
+      if (s === "aktif") status = "Aktif"; else if (s === "nonaktif") status = "Nonaktif";
+      else salah.push(`Status \"${statusMentah}\" tidak valid (pilih Aktif atau Nonaktif)`);
+    }
+    if (nim) {
+      if (nimDi.has(nim)) salah.push(`NIM ${nim} sudah dipakai di baris ${nimDi.get(nim)}`);
+      else nimDi.set(nim, no);
+    }
+    if (salah.length) { masalah.push(`Baris ${no}: ${salah.join("; ")}`); continue; }
+    baris.push({ nama, nim: nim || null, jabatan: jabatan || null, angkatan, status, kategori: "Anggota" });
+  }
+  return { baris, masalah };
+}
+
+// ---------- Unduh data anggota (lengkap, per angkatan) ----------
+const KOLOM_ANGGOTA_EXCEL = ["Nama", "NIM", "Angkatan", "Status", "Kepengurusan Saat Ini", "Riwayat Pengurus", "Jabatan / Keterangan",
+  "Program Studi", "No. WhatsApp", "Email", "Tempat Lahir", "Tanggal Lahir", "Tanggal Mendaftar (WIB)", "Status Pendaftaran", "Dicatat di Data (WIB)"];
+
+// Data kontak ada di tabel pendaftaran (hanya admin yang bisa membaca). Dicocokkan lewat NIM, atau nama bila salah satu NIM kosong.
+function cariPendaftarUntukAnggota(daftar, a) {
+  if (!daftar) return null;
+  const nim = String(a.nim || "").trim(), kunci = rapikanNama(a.nama);
+  const cocok = daftar.filter(p => {
+    const pn = String(p.nim || "").trim();
+    if (nim && pn) return nim === pn;
+    return rapikanNama(p.nama) === kunci;
+  });
+  cocok.sort((x, y) => ((y.status === "Diterima") - (x.status === "Diterima")) || String(y.created_at).localeCompare(String(x.created_at)));
+  return cocok[0] || null;
+}
+
+async function ambilDataAnggotaLengkap() {
+  const [ang, kep, daf] = await Promise.all([
+    supabaseClient.from("anggota").select("*").eq("kategori", "Anggota"),
+    supabaseClient.from("kepengurusan").select("anggota_id, periode, jabatan, divisi, aktif"),
+    supabaseClient.from("pendaftaran").select("*"),
+  ]);
+  if (ang.error) throw ang.error;
+  const peta = new Map();
+  (kep.error ? [] : (kep.data || [])).forEach(k => { if (!peta.has(k.anggota_id)) peta.set(k.anggota_id, []); peta.get(k.anggota_id).push(k); });
+  const pendaftar = daf.error ? null : (daf.data || []);
+  const fmt = k => `${k.jabatan} \u00b7 ${k.divisi} (${k.periode})`;
+  const baris = (ang.data || []).map(a => {
+    const keps = peta.get(a.id) || [];
+    const p = cariPendaftarUntukAnggota(pendaftar, a);
+    return {
+      Nama: a.nama, NIM: a.nim || "", Angkatan: String(a.angkatan || "").trim(), Status: a.status,
+      "Kepengurusan Saat Ini": keps.filter(k => k.aktif).sort((x, y) => String(y.periode).localeCompare(String(x.periode))).map(fmt).join("; "),
+      "Riwayat Pengurus": keps.filter(k => !k.aktif).sort((x, y) => String(y.periode).localeCompare(String(x.periode))).map(fmt).join("; "),
+      "Jabatan / Keterangan": a.jabatan || "",
+      "Program Studi": p?.program_studi || "", "No. WhatsApp": p?.no_wa || "", Email: p?.email || "",
+      "Tempat Lahir": p?.tempat_lahir || "", "Tanggal Lahir": p?.tanggal_lahir || "",
+      "Tanggal Mendaftar (WIB)": tanggalWib(p?.created_at), "Status Pendaftaran": p?.status || "",
+      "Dicatat di Data (WIB)": tanggalWib(a.created_at),
+      _pengurusAktif: keps.some(k => k.aktif),
+    };
+  });
+  baris.sort((x, y) => (String(y.Angkatan).localeCompare(String(x.Angkatan))) || urutkanNamaId(x.Nama, y.Nama));
+  return { baris, kepGagal: !!kep.error, dafGagal: daf.error };
+}
+
+async function isiPilihanAngkatanUnduh() {
+  const sel = document.getElementById("pilih-angkatan-unduh");
+  if (!sel) return;
+  const { data } = await supabaseClient.from("anggota").select("angkatan").eq("kategori", "Anggota");
+  const daftar = [...new Set((data || []).map(r => String(r.angkatan || "").trim() || "Tanpa angkatan"))]
+    .sort((a, b) => ((a === "Tanpa angkatan") - (b === "Tanpa angkatan")) || b.localeCompare(a));
+  const lama = sel.value;
+  sel.innerHTML = `<option value="semua">Semua angkatan (satu sheet per angkatan)</option>` +
+    daftar.map(a => `<option value="${escapeHtml(a)}">${a === "Tanpa angkatan" ? "Tanpa angkatan" : "Angkatan " + escapeHtml(a)}</option>`).join("");
+  sel.value = daftar.includes(lama) ? lama : "semua";
+}
+
+async function unduhDataAnggotaExcel() {
+  const tombol = document.getElementById("tombol-unduh-excel-anggota");
+  const pilih = document.getElementById("pilih-angkatan-unduh")?.value || "semua";
+  if (typeof XLSX === "undefined") { tampilkanToast("Pustaka Excel belum termuat. Muat ulang halaman.", "gagal"); return; }
+  const teksAsal = tombol ? tombol.innerHTML : "";
+  if (tombol) { tombol.disabled = true; tombol.querySelector("span:last-child").textContent = "Menyiapkan..."; }
+  try {
+    const d = await ambilDataAnggotaLengkap();
+    let baris = d.baris;
+    if (pilih !== "semua") baris = baris.filter(r => (r.Angkatan || "Tanpa angkatan") === pilih);
+    if (!baris.length) { tampilkanToast("Tidak ada anggota untuk diunduh.", "gagal"); return; }
+    const wb = XLSX.utils.book_new(), dipakai = new Set();
+    const bersih = (rows) => rows.map(({ _pengurusAktif, ...sisa }) => sisa);
+    if (pilih === "semua") {
+      const ringkas = kelompokkanPerAngkatan(baris).map(([ang, isi]) => ({
+        Angkatan: ang, "Jumlah Anggota": isi.length,
+        Aktif: isi.filter(r => r.Status === "Aktif").length, Nonaktif: isi.filter(r => r.Status !== "Aktif").length,
+        "Pengurus Aktif": isi.filter(r => r._pengurusAktif).length,
+      }));
+      ringkas.push({ Angkatan: "TOTAL", "Jumlah Anggota": baris.length, Aktif: baris.filter(r => r.Status === "Aktif").length,
+        Nonaktif: baris.filter(r => r.Status !== "Aktif").length, "Pengurus Aktif": baris.filter(r => r._pengurusAktif).length });
+      tambahSheetExcel(wb, "Ringkasan", ["Angkatan", "Jumlah Anggota", "Aktif", "Nonaktif", "Pengurus Aktif"], ringkas, dipakai, false);
+      tambahSheetExcel(wb, "Semua Angkatan", KOLOM_ANGGOTA_EXCEL, bersih(baris), dipakai, true);
+      kelompokkanPerAngkatan(baris).forEach(([ang, isi]) =>
+        tambahSheetExcel(wb, ang === "Tanpa angkatan" ? ang : `Angkatan ${ang}`, KOLOM_ANGGOTA_EXCEL, bersih(isi), dipakai, true));
+    } else {
+      tambahSheetExcel(wb, pilih === "Tanpa angkatan" ? pilih : `Angkatan ${pilih}`, KOLOM_ANGGOTA_EXCEL, bersih(baris), dipakai, true);
+    }
+    const berkas = pilih === "semua"
+      ? `data-anggota-himpalubi-semua-angkatan-${tanggalHariIni()}.xlsx`
+      : `data-anggota-himpalubi-angkatan-${pilih.replace(/[^\w-]+/g, "-")}-${tanggalHariIni()}.xlsx`;
+    XLSX.writeFile(wb, berkas);
+    tampilkanToast(
+      d.dafGagal ? "Data diunduh, tetapi kontak (WhatsApp, email) tidak ikut karena data pendaftaran gagal dibaca."
+        : d.kepGagal ? "Data diunduh, tetapi riwayat pengurus tidak ikut karena gagal dibaca."
+          : `${baris.length} anggota diunduh.`,
+      d.dafGagal || d.kepGagal ? "gagal" : "sukses");
+  } catch (err) {
+    console.error(err);
+    tampilkanToast("Gagal mengambil data anggota.", "gagal");
+  } finally {
+    if (tombol) { tombol.disabled = false; tombol.innerHTML = teksAsal; }
+  }
+}
+
+// ---------- Unduh data pendaftar (salinan cadangan, semua isian formulir) ----------
+const KOLOM_PENDAFTAR_EXCEL = ["Waktu Daftar (WIB)", "Nama", "NIM", "Program Studi", "Angkatan", "No. WhatsApp", "Email",
+  "Tempat Lahir", "Tanggal Lahir", "Alasan Bergabung", "Status", "Persetujuan Data (WIB)", "ID Pendaftar"];
+
+async function unduhPendaftarExcel() {
+  const tombol = document.getElementById("tombol-unduh-excel-pendaftar");
+  const status = document.getElementById("pilih-status-unduh-pendaftar")?.value || "semua";
+  const angkatanPilih = document.getElementById("pilih-angkatan-unduh-pendaftar")?.value || "semua";
+  if (typeof XLSX === "undefined") { tampilkanToast("Pustaka Excel belum termuat. Muat ulang halaman.", "gagal"); return; }
+  const teksAsal = tombol ? tombol.innerHTML : "";
+  if (tombol) { tombol.disabled = true; tombol.querySelector("span:last-child").textContent = "Menyiapkan..."; }
+  try {
+    const { data, error } = await supabaseClient.from("pendaftaran").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    const semua = data || [];
+    // Isi pilihan angkatan dari data yang ada (sekali, agar sesuai isi tabel).
+    const selAng = document.getElementById("pilih-angkatan-unduh-pendaftar");
+    if (selAng && selAng.options.length <= 1) {
+      [...new Set(semua.map(p => String(p.angkatan || "").trim() || "Tanpa angkatan"))]
+        .sort((a, b) => ((a === "Tanpa angkatan") - (b === "Tanpa angkatan")) || b.localeCompare(a))
+        .forEach(a => { const o = document.createElement("option"); o.value = a; o.textContent = a === "Tanpa angkatan" ? a : "Angkatan " + a; selAng.appendChild(o); });
+    }
+    let baris = semua.map(p => ({
+      "Waktu Daftar (WIB)": tanggalWib(p.created_at), Nama: p.nama, NIM: p.nim || "", "Program Studi": p.program_studi || "",
+      Angkatan: String(p.angkatan || "").trim(), "No. WhatsApp": p.no_wa || "", Email: p.email || "",
+      "Tempat Lahir": p.tempat_lahir || "", "Tanggal Lahir": p.tanggal_lahir || "", "Alasan Bergabung": p.alasan || "",
+      Status: p.status, "Persetujuan Data (WIB)": tanggalWib(p.setuju_pada), "ID Pendaftar": p.id,
+    }));
+    if (status !== "semua") baris = baris.filter(r => r.Status === status);
+    if (angkatanPilih !== "semua") baris = baris.filter(r => (r.Angkatan || "Tanpa angkatan") === angkatanPilih);
+    if (!baris.length) { tampilkanToast("Tidak ada data pendaftar untuk diunduh.", "gagal"); return; }
+    const wb = XLSX.utils.book_new(), dipakai = new Set();
+    if (angkatanPilih === "semua") {
+      const ringkas = kelompokkanPerAngkatan(baris).map(([ang, isi]) => ({
+        Angkatan: ang, Total: isi.length, Menunggu: isi.filter(r => r.Status === "Menunggu").length,
+        Diterima: isi.filter(r => r.Status === "Diterima").length, Ditolak: isi.filter(r => r.Status === "Ditolak").length,
+      }));
+      tambahSheetExcel(wb, "Ringkasan", ["Angkatan", "Total", "Menunggu", "Diterima", "Ditolak"], ringkas, dipakai, false);
+      tambahSheetExcel(wb, "Semua Pendaftar", KOLOM_PENDAFTAR_EXCEL, baris, dipakai, true);
+      kelompokkanPerAngkatan(baris).forEach(([ang, isi]) =>
+        tambahSheetExcel(wb, ang === "Tanpa angkatan" ? ang : `Angkatan ${ang}`, KOLOM_PENDAFTAR_EXCEL, isi, dipakai, true));
+    } else {
+      tambahSheetExcel(wb, angkatanPilih === "Tanpa angkatan" ? angkatanPilih : `Angkatan ${angkatanPilih}`, KOLOM_PENDAFTAR_EXCEL, baris, dipakai, true);
+    }
+    const bagian = [status !== "semua" ? status.toLowerCase() : null, angkatanPilih !== "semua" ? "angkatan-" + angkatanPilih.replace(/[^\w-]+/g, "-") : null].filter(Boolean).join("-");
+    XLSX.writeFile(wb, `data-pendaftar-himpalubi${bagian ? "-" + bagian : ""}-${tanggalHariIni()}.xlsx`);
+    tampilkanToast(`${baris.length} data pendaftar diunduh.`, "sukses");
+  } catch (err) {
+    console.error(err);
+    tampilkanToast("Gagal mengambil data pendaftar.", "gagal");
+  } finally {
+    if (tombol) { tombol.disabled = false; tombol.innerHTML = teksAsal; }
+  }
+}
+
+function pasangUnduhPendaftar() {
+  document.getElementById("tombol-unduh-excel-pendaftar")?.addEventListener("click", unduhPendaftarExcel);
+}
+
 function pasangImportExportAnggota() {
   const tombolTemplate = document.getElementById("tombol-unduh-template-anggota");
   const inputImport = document.getElementById("input-import-anggota");
   const tombolExport = document.getElementById("tombol-unduh-excel-anggota");
   const pesanEl = document.getElementById("pesan-import-anggota");
 
+  isiPilihanAngkatanUnduh();
+
   if (tombolTemplate) {
+    // Template tersedia sebagai berkas siap pakai (ada kolom wajib, pilihan Status, dan sheet Panduan).
     tombolTemplate.addEventListener("click", () => {
-      const data = [
-        { Nama: "Contoh Nama Anggota", NIM: "231F10014", Jabatan: "", Angkatan: "2023", Status: "Aktif" },
-      ];
-      const ws = XLSX.utils.json_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Template");
-      XLSX.writeFile(wb, "template-import-anggota-himpalubi.xlsx");
+      const a = document.createElement("a");
+      a.href = "../unduhan/template-import-anggota-himpalubi.xlsx";
+      a.download = "template-import-anggota-himpalubi.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     });
   }
 
@@ -1040,43 +1287,25 @@ function pasangImportExportAnggota() {
       try {
         const data = await file.arrayBuffer();
         const wb = XLSX.read(data);
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(ws);
+        const hasil = bacaBerkasAnggota(wb);
 
-        if (!rows.length) {
+        if (hasil.kosong || (!hasil.baris.length && !hasil.masalah.length)) {
           pesanEl.className = "form-message error";
-          pesanEl.textContent = "Berkas kosong atau format kolom tidak dikenali.";
+          pesanEl.textContent = "Berkas kosong. Isi data pada sheet \"Data\" mulai baris 2.";
           return;
         }
-
-        const payload = rows
-          .filter(r => r.Nama || r.nama)
-          .map(r => ({
-            nama: String(r.Nama || r.nama || "").trim(),
-            nim: r.NIM || r.nim ? String(r.NIM || r.nim).trim() : null,
-            jabatan: r.Jabatan || r.jabatan ? String(r.Jabatan || r.jabatan).trim() : null,
-            angkatan: r.Angkatan || r.angkatan ? String(r.Angkatan || r.angkatan).trim() : null,
-            status: ["Aktif", "Nonaktif"].includes(String(r.Status || r.status || "").trim()) ? String(r.Status || r.status).trim() : "Aktif",
-            kategori: "Anggota",
-          }));
-
+        if (hasil.masalah.length) {
+          const tampil = hasil.masalah.slice(0, 8).join(" \u2022 ");
+          const sisa = hasil.masalah.length > 8 ? ` \u2022 dan ${hasil.masalah.length - 8} masalah lain.` : "";
+          pesanEl.className = "form-message error";
+          pesanEl.textContent = `Impor dibatalkan, belum ada data yang disimpan. ${hasil.masalah.length} masalah ditemukan: ${tampil}${sisa}`;
+          inputImport.value = "";
+          return;
+        }
+        const payload = hasil.baris;
         if (payload.length > 500) {
           pesanEl.className = "form-message error";
           pesanEl.textContent = `Terlalu banyak baris (${payload.length}). Impor maksimal 500 baris per berkas.`;
-          return;
-        }
-        const nimSama = new Set();
-        const nimDobel = [];
-        payload.forEach(x => { if (x.nim) { if (nimSama.has(x.nim)) nimDobel.push(x.nim); nimSama.add(x.nim); } });
-        if (nimDobel.length) {
-          pesanEl.className = "form-message error";
-          pesanEl.textContent = `Ada NIM ganda di dalam berkas: ${nimDobel.slice(0, 5).join(", ")}. Perbaiki lalu impor ulang.`;
-          return;
-        }
-
-        if (!payload.length) {
-          pesanEl.className = "form-message error";
-          pesanEl.textContent = "Tidak ada baris data valid (kolom Nama wajib diisi).";
           return;
         }
 
@@ -1111,6 +1340,7 @@ function pasangImportExportAnggota() {
         inputImport.value = "";
         muatTabelOrang("Anggota", "tabel-anggota");
         muatRingkasan();
+        isiPilihanAngkatanUnduh();
       } catch (err) {
         pesanEl.className = "form-message error";
         pesanEl.textContent = "Gagal membaca berkas. Pastikan format file .xlsx, .xls, atau .csv.";
@@ -1119,24 +1349,7 @@ function pasangImportExportAnggota() {
     });
   }
 
-  if (tombolExport) {
-    tombolExport.addEventListener("click", async () => {
-      const { data, error } = await supabaseClient.from("anggota").select("*").eq("kategori", "Anggota").order("angkatan", { ascending: false });
-      if (error || !data) { tampilkanToast("Gagal mengambil data anggota.", "gagal"); return; }
-
-      const rows = data.map(a => ({
-        Nama: a.nama,
-        NIM: a.nim || "",
-        Jabatan: a.jabatan || "",
-        Angkatan: a.angkatan || "",
-        Status: a.status,
-      }));
-      const ws = XLSX.utils.json_to_sheet(amankanBarisExcel(rows));
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Anggota");
-      XLSX.writeFile(wb, `data-anggota-himpalubi-${new Date().toISOString().slice(0, 10)}.xlsx`);
-    });
-  }
+  if (tombolExport) tombolExport.addEventListener("click", unduhDataAnggotaExcel);
 }
 
 // ================= TAB DALAM 1 SECTION (Kelola Konten) =================
