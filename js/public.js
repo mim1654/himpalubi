@@ -2755,6 +2755,16 @@ function htmlTautanKampus(daftar) {
       </a></li>`).join("");
 }
 
+function cuplikanKeteranganUkm(teks) {
+  const ringkas = String(teks || "").trim().replace(/\s+/g, " ");
+  if (!ringkas) return "Buka Selengkapnya untuk melihat penjelasan dan profil Instagram UKM ini.";
+  const kalimat = (ringkas.match(/^.*?[.!?](?=\s|$)/) || [ringkas])[0].trim();
+  const batas = 150;
+  return kalimat.length > batas
+    ? kalimat.slice(0, batas - 1).trimEnd() + "…"
+    : kalimat + (kalimat.length < ringkas.length ? "…" : "");
+}
+
 function htmlUkmKampus(daftar, expandable = false) {
   return daftar.map((u, index) => {
     const logo = urlGambarAman(u.logo_url);
@@ -2779,7 +2789,11 @@ function htmlUkmKampus(daftar, expandable = false) {
             ? `<h3 class="ukm-nama"><button type="button" class="ukm-nama__tombol" data-ukm-toggle aria-expanded="false" aria-controls="${escapeHtml(idDetail)}">${escapeHtml(u.nama)}<span class="material-symbols-outlined" data-ukm-ikon aria-hidden="true">expand_more</span></button></h3>`
             : `<h3 class="ukm-nama">${escapeHtml(u.nama)}</h3>`}
           ${expandable
-            ? `<div class="ukm-kartu__rincian" id="${escapeHtml(idDetail)}" data-ukm-detail hidden>
+            ? `<div class="ukm-kartu__cuplikan">
+                <p>${escapeHtml(cuplikanKeteranganUkm(penjelasan))}</p>
+                <button type="button" class="ukm-kartu__selengkapnya" data-ukm-toggle aria-expanded="false" aria-controls="${escapeHtml(idDetail)}">Selengkapnya</button>
+              </div>
+              <div class="ukm-kartu__rincian" id="${escapeHtml(idDetail)}" data-ukm-detail hidden>
                 <div class="ukm-kartu__deskripsi">
                   <h4>Tentang ${escapeHtml(u.nama)}</h4>
                   <p>${escapeHtml(penjelasan || "Penjelasan organisasi ini belum ditambahkan.")}</p>
@@ -2885,9 +2899,11 @@ function pasangInteraksiDetailUkm(daftarEl) {
     if (!panel) return;
     const buka = panel.hidden;
     panel.hidden = !buka;
-    tombol.setAttribute("aria-expanded", String(buka));
-    const ikon = tombol.querySelector("[data-ukm-ikon]");
-    if (ikon) ikon.textContent = buka ? "expand_less" : "expand_more";
+    daftarEl.querySelectorAll(`[data-ukm-toggle][aria-controls="${CSS.escape(panel.id)}"]`).forEach(t => {
+      t.setAttribute("aria-expanded", String(buka));
+      const ikon = t.querySelector("[data-ukm-ikon]");
+      if (ikon) ikon.textContent = buka ? "expand_less" : "expand_more";
+    });
     if (buka) muatPratinjauInstagram(panel.querySelector("[data-ukm-instagram]"));
   });
 }

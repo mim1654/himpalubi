@@ -2125,6 +2125,10 @@ body[data-page="kampus"] main section + section { border-top: 0; }
 .ukm-kartu__isi { min-width: 0; }
 .ukm-kartu .ukm-nama { margin: 0; font-size: 1rem; line-height: 1.5rem; }
 .ukm-kartu__teks { margin: 0.25rem 0 0; font-size: 0.875rem; line-height: 1.55; color: var(--ink-600); overflow-wrap: anywhere; }
+.ukm-kartu__cuplikan { margin-top: 0.25rem; }
+.ukm-kartu__cuplikan p { display: inline; margin: 0; color: var(--ink-600); font-size: 0.875rem; line-height: 1.55; overflow-wrap: anywhere; }
+.ukm-kartu__selengkapnya { display: inline-flex; align-items: center; min-height: 44px; margin-left: 0.25rem; padding: 0; border: 0; background: transparent; color: var(--primary); font: inherit; font-size: 0.875rem; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.ukm-kartu__selengkapnya:focus-visible { outline: var(--focus-ring); outline-offset: 2px; border-radius: 0.2rem; }
 .ukm-daftar--ringkas .ukm-kartu__teks { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .ukm-kartu__tautan { display: inline-flex; align-items: center; gap: 0.25rem; min-height: 44px; font-size: 0.875rem; font-weight: 600; color: var(--primary); text-decoration: none; }
 .ukm-kartu__tautan:hover { text-decoration: underline; }
