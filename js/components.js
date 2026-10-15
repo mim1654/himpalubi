@@ -61,10 +61,7 @@ function tandaiMenuAktif() {
   if (!halaman) return;
 
   // 1. Desktop Nav Items
-  const bagianDirektori = window.location.hash === "#direktori-ukm" ? "ukm" : "hmps";
-  const linkDesktop = halaman === "kampus"
-    ? document.querySelector(`.main-nav-container a[data-page="kampus"][href$="#direktori-${bagianDirektori}"]`)
-    : document.querySelector(`.main-nav-container a[data-page="${halaman}"]`);
+  const linkDesktop = document.querySelector(`.main-nav-container a[data-page="${halaman}"]`);
   if (linkDesktop) {
     linkDesktop.setAttribute("aria-current", "page");
     linkDesktop.classList.remove("text-secondary");
@@ -72,21 +69,21 @@ function tandaiMenuAktif() {
   }
 
   // Tandai kelompok navigasi yang menaungi halaman saat ini.
-  if (["tentang", "struktur", "program-kerja"].includes(halaman)) {
+  if (["tentang", "struktur", "program-kerja", "anggota"].includes(halaman)) {
     const btnTentang = document.getElementById("btn-dropdown-tentang");
     if (btnTentang) {
       btnTentang.classList.remove("text-secondary");
       btnTentang.classList.add("text-primary-container", "font-bold");
     }
   }
-  if (["kegiatan", "galeri"].includes(halaman)) {
+  if (["kegiatan", "lomba", "galeri"].includes(halaman)) {
     const btnKegiatan = document.getElementById("btn-dropdown-kegiatan");
     if (btnKegiatan) {
       btnKegiatan.classList.remove("text-secondary");
       btnKegiatan.classList.add("text-primary-container", "font-bold");
     }
   }
-  if (halaman === "kampus") {
+  if (["kampus", "hmps"].includes(halaman)) {
     const btnOrganisasi = document.getElementById("btn-dropdown-organisasi");
     if (btnOrganisasi) {
       btnOrganisasi.classList.remove("text-secondary");
@@ -95,9 +92,7 @@ function tandaiMenuAktif() {
   }
 
   // 2. Mobile Drawer Nav Items
-  const linkMobile = halaman === "kampus"
-    ? document.querySelector(`#mobile-nav-panel a[data-page="kampus"][href$="#direktori-${bagianDirektori}"]`)
-    : document.querySelector(`#mobile-nav-panel a[data-page="${halaman}"]`);
+  const linkMobile = document.querySelector(`#mobile-nav-panel a[data-page="${halaman}"]`);
   if (linkMobile) {
     linkMobile.setAttribute("aria-current", "page");
     linkMobile.classList.add("font-semibold", "text-primary-container", "bg-surface-container");
