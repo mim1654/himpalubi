@@ -971,9 +971,11 @@
                 <option value="Ditolak">Ditolak</option>
               </select>
               <label for="pilih-angkatan-unduh-pendaftar" class="sr-only">Angkatan yang diunduh</label>
-              <select id="pilih-angkatan-unduh-pendaftar" class="px-3 py-2 bg-surface-container-lowest rounded-xl border border-surface-container text-xs text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[44px]">
-                <option value="semua">Semua angkatan</option>
-              </select>
+              <input type="text" id="pilih-angkatan-unduh-pendaftar" list="opsi-angkatan-unduh-pendaftar" value="Semua angkatan" placeholder="Ketik angkatan, mis. 2023" autocomplete="off" class="px-3 py-2 w-52 max-w-full bg-surface-container-lowest rounded-xl border border-surface-container text-xs text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[44px]" aria-describedby="petunjuk-angkatan-unduh-pendaftar">
+              <datalist id="opsi-angkatan-unduh-pendaftar">
+                <option value="Semua angkatan"></option>
+              </datalist>
+              <span id="petunjuk-angkatan-unduh-pendaftar" class="sr-only">Pilih saran yang tersedia atau ketik tahun angkatan secara manual.</span>
               <button type="button" id="tombol-unduh-excel-pendaftar" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary-fixed hover:bg-primary-fixed-dim text-xs font-semibold text-on-primary-fixed transition-colors min-h-[44px]">
                 <span class="material-symbols-outlined text-[16px]" aria-hidden="true">table_view</span>
                 <span>Unduh Excel (.xlsx)</span>
@@ -1671,7 +1673,7 @@
   <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js" integrity="sha384-TtrQp5nveof/QP1+f/OLiEHL3GuOIRyl3IfsGxu5X45VO2vHeT4HRNmQuTR3Ea3w" crossorigin="anonymous"></script>
   <script src="../js/supabaseClient.js?v=5.2"></script>
   <script src="../js/public.js?v=5.9"></script>
-  <script src="../js/admin.js?v=5.8"></script>
+  <script src="../js/admin.js?v=5.9"></script>
   <script>
     (async () => {
       // 1. Muat modular Sidebar & Top Navbar
