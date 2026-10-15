@@ -4035,6 +4035,16 @@ const JENIS_MITRA = {
     urlHint: "Tempel tautan profil Instagram publik atau tulis @namaakun. Profilnya akan tampil otomatis saat pengunjung membuka detail UKM.",
     logo: true, keterangan: true,
   },
+  hmps: {
+    label: "HMPS",
+    nama: "Contoh: HMPS Pendidikan Luar Biasa",
+    urlLabel: "Instagram HMPS (opsional)",
+    urlPlaceholder: "@namaakun",
+    keteranganLabel: "Penjelasan singkat",
+    keteranganHint: "Satu atau dua kalimat tentang HMPS ini, maksimal 300 karakter.",
+    urlHint: "Tempel tautan profil Instagram atau tulis @namaakun.",
+    logo: true, keterangan: true,
+  },
   tautan: {
     label: "Tautan kampus",
     nama: "Contoh: SIAKAD UNIPAR",
@@ -4050,7 +4060,7 @@ const JENIS_MITRA = {
 function normalisasiUrlMitra(jenis, nilai) {
   let v = String(nilai || "").trim();
   if (!v) return null;
-  if (jenis === "ukm" && !/^https?:\/\//i.test(v)) {
+  if (["ukm", "hmps"].includes(jenis) && !/^https?:\/\//i.test(v)) {
     const akun = v.replace(/^@/, "").replace(/^(https?:\/\/)?(www\.)?instagram\.com\//i, "").replace(/[/?#].*$/, "");
     if (!/^[A-Za-z0-9._]{1,30}$/.test(akun)) return undefined;
     return `https://www.instagram.com/${akun}/`;
@@ -4101,7 +4111,7 @@ async function muatTabelMitra(page) {
     const belumAda = error.code === "42P01" || /mitra_tautan/i.test(error.message || "");
     infoSql?.classList.toggle("hidden", !belumAda);
     document.querySelectorAll("#form-mitra input, #form-mitra select, #form-mitra button").forEach(x => { x.disabled = belumAda; });
-    el.innerHTML = `<tr><td colspan="6" class="py-4 px-4 text-center text-secondary text-xs">${belumAda ? "Belum aktif. Jalankan SQL tahap 20 terlebih dahulu." : "Gagal memuat data."}</td></tr>`;
+    el.innerHTML = `<tr><td colspan="6" class="py-4 px-4 text-center text-secondary text-xs">${belumAda ? "Tabel belum tersedia. Hubungi pengelola teknis." : "Gagal memuat data."}</td></tr>`;
     return;
   }
   infoSql?.classList.add("hidden");
@@ -4110,7 +4120,7 @@ async function muatTabelMitra(page) {
   const semua = (data || []).filter(r => !filter || r.jenis === filter);
   const total = semua.length;
   if (!total) {
-    el.innerHTML = `<tr><td colspan="6">${emptyState("Belum ada data", "Tambahkan lokasi kampus, UKM, atau tautan kampus lewat formulir di atas.", { icon: "handshake" })}</td></tr>`;
+    el.innerHTML = `<tr><td colspan="6">${emptyState("Belum ada data", "Tambahkan data HMPS, UKM, lokasi, atau tautan kampus lewat formulir di atas.", { icon: "handshake" })}</td></tr>`;
     renderBarisPaginasi("tabel-mitra", 0, 1, () => {});
     return;
   }
@@ -4148,7 +4158,7 @@ function pasangFormMitra(formId) {
     const c = JENIS_MITRA[jenis];
     const url = normalisasiUrlMitra(jenis, form.url.value);
     if (url === undefined) {
-      tampilkanToast(jenis === "ukm" ? "Nama akun Instagram tidak valid. Contoh: @ukmseni" : "Alamat situs tidak valid. Contoh: https://unipar.ac.id", "gagal");
+      tampilkanToast(["ukm", "hmps"].includes(jenis) ? "Nama akun Instagram tidak valid. Contoh: @hmpsplb" : "Alamat situs tidak valid. Contoh: https://unipar.ac.id", "gagal");
       return;
     }
     if ((jenis === "tautan") && !url) { tampilkanToast("Alamat situs wajib diisi.", "gagal"); return; }
