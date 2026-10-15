@@ -1200,8 +1200,8 @@ async function unduhPendaftarExcel() {
   const tombol = document.getElementById("tombol-unduh-excel-pendaftar");
   const status = document.getElementById("pilih-status-unduh-pendaftar")?.value || "semua";
   const inputAngkatan = document.getElementById("pilih-angkatan-unduh-pendaftar")?.value.trim() || "";
-  const angkatanKetik = inputAngkatan.replace(/^angkatan\\s+/i, "").trim();
-  const angkatanPilih = !angkatanKetik || /^semua(?:\\s+angkatan)?$/i.test(angkatanKetik) ? "semua" : angkatanKetik;
+  const angkatanKetik = inputAngkatan.replace(/^angkatan\s+/i, "").trim();
+  const angkatanPilih = !angkatanKetik || /^semua(?:\s+angkatan)?$/i.test(angkatanKetik) ? "semua" : angkatanKetik;
   if (typeof XLSX === "undefined") { tampilkanToast("Pustaka Excel belum termuat. Muat ulang halaman.", "gagal"); return; }
   const teksAsal = tombol ? tombol.innerHTML : "";
   if (tombol) { tombol.disabled = true; tombol.querySelector("span:last-child").textContent = "Menyiapkan..."; }
