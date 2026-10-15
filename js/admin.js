@@ -1209,7 +1209,7 @@ async function unduhPendaftarExcel() {
     const { data, error } = await supabaseClient.from("pendaftaran").select("*").order("created_at", { ascending: false });
     if (error) throw error;
     const semua = data || [];
-let baris = semua.map(p => ({
+    let baris = semua.map(p => ({
       "Waktu Daftar (WIB)": tanggalWib(p.created_at), Nama: p.nama, NIM: p.nim || "", "Program Studi": p.program_studi || "",
       Angkatan: String(p.angkatan || "").trim(), "No. WhatsApp": p.no_wa || "", Email: p.email || "",
       "Tempat Lahir": p.tempat_lahir || "", "Tanggal Lahir": p.tanggal_lahir || "", "Alasan Bergabung": p.alasan || "",
