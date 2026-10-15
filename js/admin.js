@@ -1619,7 +1619,7 @@ const adminSidebarTemplate = `
         <li>
           <a href="#kelola-mitra" data-section="kelola-mitra" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors">
             <span class="material-symbols-outlined nav-icon text-[20px] text-secondary">handshake</span>
-            <span>Mitra &amp; Lokasi</span>
+            <span>Direktori &amp; Lokasi</span>
           </a>
         </li>
         <li>
@@ -2064,7 +2064,7 @@ async function muatKomponenAdmin() {
 
   if (sidebarSlot && !sidebarSlot.hasChildNodes()) {
     try {
-      const res = await fetch("partials/sidebar.html");
+      const res = await fetch("partials/sidebar.html?v=6.2");
       if (res.ok) {
         sidebarSlot.innerHTML = await res.text();
       } else {
@@ -2077,7 +2077,7 @@ async function muatKomponenAdmin() {
 
   if (navbarSlot && !navbarSlot.hasChildNodes()) {
     try {
-      const res = await fetch("partials/navbar.html");
+      const res = await fetch("partials/navbar.html?v=6.2");
       if (res.ok) {
         navbarSlot.innerHTML = await res.text();
       } else {
@@ -2106,7 +2106,7 @@ const judulSeksiAdmin = {
   "kelola-aspirasi": "Aspirasi & Pesan Masuk",
   "kelola-faq": "Tanya Jawab (FAQ)",
   "kelola-testimoni": "Testimoni Sivitas",
-  "kelola-mitra": "Mitra & Lokasi",
+  "kelola-mitra": "Direktori & Lokasi",
   "kelola-lomba": "Info Lomba",
   "kelola-pengaturan": "Pengaturan Umum Website",
   "kelola-admin": "Kelola Hak Akses Admin"
