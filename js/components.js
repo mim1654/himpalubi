@@ -68,12 +68,26 @@ function tandaiMenuAktif() {
     linkDesktop.classList.add("text-primary-container", "font-bold", "border-b-2", "border-primary-container");
   }
 
-  // Jika halaman adalah submenu Tentang (profil/struktur/anggota/program-kerja/UKM)
-  if (["tentang", "struktur", "anggota", "program-kerja", "kampus"].includes(halaman)) {
+  // Tandai kelompok navigasi yang menaungi halaman saat ini.
+  if (["tentang", "struktur", "program-kerja"].includes(halaman)) {
     const btnTentang = document.getElementById("btn-dropdown-tentang");
     if (btnTentang) {
       btnTentang.classList.remove("text-secondary");
       btnTentang.classList.add("text-primary-container", "font-bold");
+    }
+  }
+  if (["kegiatan", "galeri"].includes(halaman)) {
+    const btnKegiatan = document.getElementById("btn-dropdown-kegiatan");
+    if (btnKegiatan) {
+      btnKegiatan.classList.remove("text-secondary");
+      btnKegiatan.classList.add("text-primary-container", "font-bold");
+    }
+  }
+  if (halaman === "kampus") {
+    const btnOrganisasi = document.getElementById("btn-dropdown-organisasi");
+    if (btnOrganisasi) {
+      btnOrganisasi.classList.remove("text-secondary");
+      btnOrganisasi.classList.add("text-primary-container", "font-bold");
     }
   }
 
@@ -151,46 +165,37 @@ function pasangHamburger() {
 }
 
 function pasangDropdown() {
-  const tombol = document.getElementById("btn-dropdown-tentang");
-  const dropdown = document.getElementById("nav-dropdown-tentang");
-  if (!tombol || !dropdown) return;
+  document.querySelectorAll(".has-dropdown").forEach(dropdown => {
+    const tombol = dropdown.querySelector(".dropdown-toggle");
+    const wrapper = dropdown.querySelector(".dropdown-menu-wrapper");
+    if (!tombol || !wrapper) return;
 
-  const wrapper = dropdown.querySelector(".dropdown-menu-wrapper");
+    function buka() {
+      wrapper.classList.remove("hidden");
+      tombol.setAttribute("aria-expanded", "true");
+    }
+    function tutup(kembalikanFokus) {
+      wrapper.classList.add("hidden");
+      tombol.setAttribute("aria-expanded", "false");
+      if (kembalikanFokus) tombol.focus();
+    }
 
-  function buka() {
-    if (wrapper) wrapper.classList.remove("hidden");
-    tombol.setAttribute("aria-expanded", "true");
-  }
-
-  function tutup(kembalikanFokus) {
-    if (wrapper) wrapper.classList.add("hidden");
-    tombol.setAttribute("aria-expanded", "false");
-    if (kembalikanFokus) tombol.focus();
-  }
-
-  tombol.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const expanded = tombol.getAttribute("aria-expanded") === "true";
-    if (expanded) tutup(false);
-    else buka();
-  });
-
-  // Klik di luar menutup dropdown
-  document.addEventListener("click", (e) => {
-    if (!dropdown.contains(e.target)) tutup(false);
-  });
-
-  // Escape key closes dropdown
-  dropdown.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") tutup(true);
-  });
-
-  // Focusout logic
-  dropdown.addEventListener("focusout", (e) => {
-    if (!dropdown.contains(e.relatedTarget)) tutup(false);
+    tombol.addEventListener("click", event => {
+      event.stopPropagation();
+      if (tombol.getAttribute("aria-expanded") === "true") tutup(false);
+      else buka();
+    });
+    document.addEventListener("click", event => {
+      if (!dropdown.contains(event.target)) tutup(false);
+    });
+    dropdown.addEventListener("keydown", event => {
+      if (event.key === "Escape") tutup(true);
+    });
+    dropdown.addEventListener("focusout", event => {
+      if (!dropdown.contains(event.relatedTarget)) tutup(false);
+    });
   });
 }
-
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", muatKomponen);
 } else {
