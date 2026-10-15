@@ -1785,7 +1785,8 @@ tr:last-child td { border-bottom: none; }
   background: var(--primary-fixed); color: var(--on-primary-fixed-variant);
   font-size: 0.6875rem; line-height: 1.2; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase;
 }
-.person__badge { white-space: nowrap; }
+.person__badge { white-space: normal; }
+.person__badge--periode { border-radius: 0.5rem; }
 .person__badge--lalu { white-space: normal; border-radius: 0.5rem; text-transform: none; letter-spacing: 0.02em; background: var(--surface-variant); color: var(--on-surface); }
 .person__riwayat { margin: 0.35rem 0 0; font-size: 0.8125rem; line-height: 1.4; color: var(--ink-600); }
 .periode-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
