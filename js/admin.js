@@ -1199,7 +1199,9 @@ const KOLOM_PENDAFTAR_EXCEL = ["Waktu Daftar (WIB)", "Nama", "NIM", "Program Stu
 async function unduhPendaftarExcel() {
   const tombol = document.getElementById("tombol-unduh-excel-pendaftar");
   const status = document.getElementById("pilih-status-unduh-pendaftar")?.value || "semua";
-  const angkatanPilih = document.getElementById("pilih-angkatan-unduh-pendaftar")?.value || "semua";
+  const inputAngkatan = document.getElementById("pilih-angkatan-unduh-pendaftar")?.value.trim() || "";
+  const angkatanKetik = inputAngkatan.replace(/^angkatan\\s+/i, "").trim();
+  const angkatanPilih = !angkatanKetik || /^semua(?:\\s+angkatan)?$/i.test(angkatanKetik) ? "semua" : angkatanKetik;
   if (typeof XLSX === "undefined") { tampilkanToast("Pustaka Excel belum termuat. Muat ulang halaman.", "gagal"); return; }
   const teksAsal = tombol ? tombol.innerHTML : "";
   if (tombol) { tombol.disabled = true; tombol.querySelector("span:last-child").textContent = "Menyiapkan..."; }
@@ -1207,14 +1209,7 @@ async function unduhPendaftarExcel() {
     const { data, error } = await supabaseClient.from("pendaftaran").select("*").order("created_at", { ascending: false });
     if (error) throw error;
     const semua = data || [];
-    // Isi pilihan angkatan dari data yang ada (sekali, agar sesuai isi tabel).
-    const selAng = document.getElementById("pilih-angkatan-unduh-pendaftar");
-    if (selAng && selAng.options.length <= 1) {
-      [...new Set(semua.map(p => String(p.angkatan || "").trim() || "Tanpa angkatan"))]
-        .sort((a, b) => ((a === "Tanpa angkatan") - (b === "Tanpa angkatan")) || b.localeCompare(a))
-        .forEach(a => { const o = document.createElement("option"); o.value = a; o.textContent = a === "Tanpa angkatan" ? a : "Angkatan " + a; selAng.appendChild(o); });
-    }
-    let baris = semua.map(p => ({
+let baris = semua.map(p => ({
       "Waktu Daftar (WIB)": tanggalWib(p.created_at), Nama: p.nama, NIM: p.nim || "", "Program Studi": p.program_studi || "",
       Angkatan: String(p.angkatan || "").trim(), "No. WhatsApp": p.no_wa || "", Email: p.email || "",
       "Tempat Lahir": p.tempat_lahir || "", "Tanggal Lahir": p.tanggal_lahir || "", "Alasan Bergabung": p.alasan || "",
@@ -1247,8 +1242,31 @@ async function unduhPendaftarExcel() {
   }
 }
 
+async function muatOpsiAngkatanPendaftar() {
+  const daftar = document.getElementById("opsi-angkatan-unduh-pendaftar");
+  if (!daftar) return;
+  const { data, error } = await supabaseClient.from("pendaftaran").select("angkatan");
+  if (error) {
+    console.warn("Gagal memuat saran angkatan pendaftar:", error);
+    return;
+  }
+  const angkatan = [...new Set((data || []).map(p => String(p.angkatan || "").trim() || "Tanpa angkatan"))]
+    .sort((a, b) => ((a === "Tanpa angkatan") - (b === "Tanpa angkatan")) || b.localeCompare(a, "id", { numeric: true }));
+  daftar.replaceChildren();
+  const semua = document.createElement("option");
+  semua.value = "Semua angkatan";
+  daftar.appendChild(semua);
+  angkatan.forEach(a => {
+    const opsi = document.createElement("option");
+    opsi.value = a;
+    opsi.label = a === "Tanpa angkatan" ? a : "Angkatan " + a;
+    daftar.appendChild(opsi);
+  });
+}
+
 function pasangUnduhPendaftar() {
   document.getElementById("tombol-unduh-excel-pendaftar")?.addEventListener("click", unduhPendaftarExcel);
+  void muatOpsiAngkatanPendaftar();
 }
 
 function pasangImportExportAnggota() {
