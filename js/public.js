@@ -2899,6 +2899,9 @@ function pasangInteraksiDetailUkm(daftarEl) {
     if (!panel) return;
     const buka = panel.hidden;
     panel.hidden = !buka;
+    const kartu = panel.closest(".ukm-kartu");
+    const cuplikan = kartu?.querySelector(".ukm-kartu__cuplikan");
+    if (cuplikan) cuplikan.hidden = buka;
     daftarEl.querySelectorAll(`[data-ukm-toggle][aria-controls="${CSS.escape(panel.id)}"]`).forEach(t => {
       t.setAttribute("aria-expanded", String(buka));
       const ikon = t.querySelector("[data-ukm-ikon]");
