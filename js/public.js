@@ -1316,14 +1316,14 @@ function kartuAnggota(a, unggulan, kep) {
   if (kep && kep.aktif.length) {
     const aktif = [...kep.aktif].sort((x, y) => String(y.periode).localeCompare(String(x.periode)));
     const periodeAktif = [...new Set(aktif.map(k => k.periode))].sort((x, y) => String(y).localeCompare(String(x)));
-    peran = aktif.map(k => `${escapeHtml(k.jabatan)} &middot; `${escapeHtml(k.divisi)} (${escapeHtml(k.periode)})`).join("<br>");
-    lencana.push(`<span class="person__badge person__badge--periode">Pengurus aktif `${periodeAktif.map(escapeHtml).join(", ")}</span>`);
+    peran = aktif.map(k => `${escapeHtml(k.jabatan)} &middot; ${escapeHtml(k.divisi)} (${escapeHtml(k.periode)})`).join("<br>");
+    lencana.push(`<span class="person__badge person__badge--periode">Pengurus aktif ${periodeAktif.map(escapeHtml).join(", ")}</span>`);
   }
   if (kep && kep.mantan.length) {
     const urut = [...kep.mantan].sort((x, y) => String(y.periode).localeCompare(String(x.periode)));
     const periodeMantan = [...new Set(urut.map(k => k.periode))];
-    lencana.push(`<span class="person__badge person__badge--lalu">Mantan pengurus `${periodeMantan.map(escapeHtml).join(", ")}</span>`);
-    lencana.push(`<p class="person__riwayat">`${urut.map(k => `${escapeHtml(k.jabatan)} &middot; ${escapeHtml(k.divisi)} (${escapeHtml(k.periode)})`).join("<br>")}</p>`);
+    lencana.push(`<span class="person__badge person__badge--lalu">Mantan pengurus ${periodeMantan.map(escapeHtml).join(", ")}</span>`);
+    lencana.push(`<p class="person__riwayat">${urut.map(k => `${escapeHtml(k.jabatan)} &middot; ${escapeHtml(k.divisi)} (${escapeHtml(k.periode)})`).join("<br>")}</p>`);
   }
 
   return `
