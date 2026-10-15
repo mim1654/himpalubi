@@ -61,7 +61,10 @@ function tandaiMenuAktif() {
   if (!halaman) return;
 
   // 1. Desktop Nav Items
-  const linkDesktop = document.querySelector(`.main-nav-container a[data-page="${halaman}"]`);
+  const bagianDirektori = window.location.hash === "#direktori-ukm" ? "ukm" : "hmps";
+  const linkDesktop = halaman === "kampus"
+    ? document.querySelector(`.main-nav-container a[data-page="kampus"][href$="#direktori-${bagianDirektori}"]`)
+    : document.querySelector(`.main-nav-container a[data-page="${halaman}"]`);
   if (linkDesktop) {
     linkDesktop.setAttribute("aria-current", "page");
     linkDesktop.classList.remove("text-secondary");
@@ -92,7 +95,9 @@ function tandaiMenuAktif() {
   }
 
   // 2. Mobile Drawer Nav Items
-  const linkMobile = document.querySelector(`#mobile-nav-panel a[data-page="${halaman}"]`);
+  const linkMobile = halaman === "kampus"
+    ? document.querySelector(`#mobile-nav-panel a[data-page="kampus"][href$="#direktori-${bagianDirektori}"]`)
+    : document.querySelector(`#mobile-nav-panel a[data-page="${halaman}"]`);
   if (linkMobile) {
     linkMobile.setAttribute("aria-current", "page");
     linkMobile.classList.add("font-semibold", "text-primary-container", "bg-surface-container");
