@@ -1312,15 +1312,18 @@ function kartuAnggota(a, unggulan, kep) {
     : fallback;
 
   let peran = escapeHtml(a.jabatan || "Anggota");
-  let lencana = "";
+  const lencana = [];
   if (kep && kep.aktif.length) {
-    peran = kep.aktif.map(k => `${escapeHtml(k.jabatan)} &middot; ${escapeHtml(k.divisi)}`).join("<br>");
-    lencana = `<span class="person__badge">Pengurus aktif</span>`;
-  } else if (kep && kep.mantan.length) {
-    // Terbaru di atas. Tampilkan jabatan dan divisi tiap periode, bukan hanya tahunnya.
+    const aktif = [...kep.aktif].sort((x, y) => String(y.periode).localeCompare(String(x.periode)));
+    const periodeAktif = [...new Set(aktif.map(k => k.periode))].sort((x, y) => String(y).localeCompare(String(x)));
+    peran = aktif.map(k => `${escapeHtml(k.jabatan)} &middot; `${escapeHtml(k.divisi)} (${escapeHtml(k.periode)})`).join("<br>");
+    lencana.push(`<span class="person__badge person__badge--periode">Pengurus aktif `${periodeAktif.map(escapeHtml).join(", ")}</span>`);
+  }
+  if (kep && kep.mantan.length) {
     const urut = [...kep.mantan].sort((x, y) => String(y.periode).localeCompare(String(x.periode)));
-    lencana = `<span class="person__badge person__badge--lalu">Mantan pengurus ${escapeHtml(urut[0].periode)}</span>`
-      + `<p class="person__riwayat">${urut.map(k => `${escapeHtml(k.jabatan)} &middot; ${escapeHtml(k.divisi)} (${escapeHtml(k.periode)})`).join("<br>")}</p>`;
+    const periodeMantan = [...new Set(urut.map(k => k.periode))];
+    lencana.push(`<span class="person__badge person__badge--lalu">Mantan pengurus `${periodeMantan.map(escapeHtml).join(", ")}</span>`);
+    lencana.push(`<p class="person__riwayat">`${urut.map(k => `${escapeHtml(k.jabatan)} &middot; ${escapeHtml(k.divisi)} (${escapeHtml(k.periode)})`).join("<br>")}</p>`);
   }
 
   return `
@@ -1329,7 +1332,7 @@ function kartuAnggota(a, unggulan, kep) {
       <div class="person__body">
         <h3 class="person__name">${escapeHtml(a.nama)}</h3>
         <p class="person__role">${peran}</p>
-        ${lencana}
+        ${lencana.join("<br>")}
       </div>
     </article>
   `;
