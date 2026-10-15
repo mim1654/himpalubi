@@ -153,6 +153,9 @@ function pasangHamburger() {
     toggle();
   });
 
+  // Pilih tautan lalu tutup panel agar halaman tujuan tidak tertutup menu.
+  panel.querySelectorAll("a[href]").forEach(link => link.addEventListener("click", tutup));
+
   // Klik di luar menutup panel mobile
   document.addEventListener("click", (e) => {
     if (!panel.contains(e.target) && !tombol.contains(e.target)) {
