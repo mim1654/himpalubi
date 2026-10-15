@@ -2937,6 +2937,20 @@ async function muatHalamanKampus() {
   if (kosong) kosong.hidden = ukm.length > 0;
 }
 
+// Direktori HMPS dimuat dari tabel yang sama, tanpa mencampur data UKM.
+async function muatHalamanHmps() {
+  const hmps = await ambilMitra("hmps");
+  const daftarEl = document.getElementById("hmps-daftar");
+  const kosong = document.getElementById("hmps-kosong");
+  if (hmps.length && daftarEl) {
+    daftarEl.innerHTML = htmlUkmKampus(hmps, true);
+    pasangInteraksiDetailUkm(daftarEl);
+    if (kosong) kosong.hidden = true;
+    return;
+  }
+  if (kosong) kosong.hidden = false;
+}
+
 // Beranda: ringkasan Jaringan Kampus. Bagian tetap tersembunyi sampai ada UKM aktif.
 async function muatJaringanBeranda(elId = "jaringan-beranda-daftar", batas = 4) {
   const daftarEl = document.getElementById(elId);

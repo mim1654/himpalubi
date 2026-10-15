@@ -114,7 +114,8 @@
     <section class="kampus-blok direktori-organisasi__blok" id="direktori-hmps" aria-labelledby="judul-direktori-hmps">
       <h2 id="judul-direktori-hmps">Direktori HMPS</h2>
       <p class="jaringan__lead">Himpunan Mahasiswa Program Studi di lingkungan Universitas PGRI Argopuro Jember.</p>
-      <div class="direktori-organisasi__kosong" role="status">
+      <ul class="ukm-daftar" id="hmps-daftar"></ul>
+      <div class="direktori-organisasi__kosong" id="hmps-kosong" role="status">
         <span class="material-symbols-outlined" aria-hidden="true">groups</span>
         <div><h3>Data HMPS belum tersedia</h3><p>Informasi HMPS akan ditampilkan setelah nama dan data resminya dikonfirmasi oleh pengelola.</p></div>
       </div>
@@ -126,6 +127,12 @@
 
 <div id="site-footer-slot"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+<script src="js/supabaseClient.js?v=5.2"></script>
+<script src="js/public.js?v=6.4"></script>
 <script src="js/components.js?v=5.6"></script>
+<script>
+  muatHalamanHmps();
+</script>
 </body>
 </html>
