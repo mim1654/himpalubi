@@ -2923,10 +2923,10 @@ async function muatJaringanKampus() {
   kolom.hidden = false;
 }
 
-// Halaman Jaringan Kampus (kampus.html): hanya daftar UKM. Peta ada di halaman Kontak, tautan situs kampus ada di footer.
+// Direktori organisasi mahasiswa (kampus.html); HMPS tanpa data terverifikasi ditampilkan sebagai status kosong.
 async function muatHalamanKampus() {
   const ukm = await ambilMitra("ukm");
-  const secU = document.getElementById("kampus-ukm");
+  const secU = document.getElementById("direktori-ukm");
   if (ukm.length && secU) {
     const daftarEl = document.getElementById("kampus-ukm-daftar");
     daftarEl.innerHTML = htmlUkmKampus(ukm, true);

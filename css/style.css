@@ -2187,3 +2187,15 @@ body[data-page="kampus"] main section + section { border-top: 0; }
 .lomba-kembali { display: inline-flex; align-items: center; min-height: 44px; color: var(--primary); font-weight: 600; text-decoration: none; }
 .lomba-kembali:hover { text-decoration: underline; }
 @media (prefers-reduced-motion: reduce) { .lomba-tombol { transition: none; } }
+
+/* Direktori organisasi mahasiswa */
+.direktori-organisasi__pilihan { display: flex; flex-wrap: wrap; gap: .65rem; margin: 0 0 1.75rem; }
+.direktori-organisasi__tab { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: .45rem 1rem; border: 1px solid var(--surface-container-high); border-radius: 9999px; background: var(--surface-container-lowest); color: var(--on-surface); font-size: .875rem; font-weight: 700; text-decoration: none; }
+.direktori-organisasi__tab:hover, .direktori-organisasi__tab:focus-visible { border-color: var(--primary); color: var(--primary); }
+.direktori-organisasi__tab:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.direktori-organisasi__blok { scroll-margin-top: 7rem; }
+.direktori-organisasi__kosong { display: flex; align-items: flex-start; gap: .9rem; max-width: 48rem; padding: 1.25rem; border: 1px solid var(--surface-container-high); border-radius: .75rem; background: var(--surface-container-lowest); color: var(--ink-600); }
+.direktori-organisasi__kosong > .material-symbols-outlined { flex: none; color: var(--primary); font-size: 1.75rem; }
+.direktori-organisasi__kosong h3 { margin: 0 0 .25rem; color: var(--on-surface); font-size: .95rem; font-weight: 700; }
+.direktori-organisasi__kosong p { margin: 0; font-size: .875rem; line-height: 1.55; }
+@media (max-width: 639px) { .direktori-organisasi__pilihan { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } }
