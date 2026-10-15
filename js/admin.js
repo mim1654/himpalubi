@@ -4032,7 +4032,7 @@ const JENIS_MITRA = {
     urlPlaceholder: "@namaakun",
     keteranganLabel: "Penjelasan singkat (tampil di samping logo)",
     keteranganHint: "Satu atau dua kalimat tentang UKM ini, maksimal 300 karakter. Contoh: Wadah mahasiswa untuk berlatih dan tampil dalam seni tari tradisional.",
-    urlHint: "Cukup tulis nama akun, misalnya @ukmseni, atau tempel tautan lengkapnya.",
+    urlHint: "Tempel tautan profil Instagram publik atau tulis @namaakun. Profilnya akan tampil otomatis saat pengunjung membuka detail UKM.",
     logo: true, keterangan: true,
   },
   tautan: {

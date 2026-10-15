@@ -2427,6 +2427,17 @@ function urlTautanAman(u) {
   return /^https?:\/\//i.test(s) ? s : "";
 }
 
+function urlProfilInstagramAman(nilai) {
+  try {
+    const url = new URL(String(nilai || "").trim());
+    if (url.protocol !== "https:" || !["instagram.com", "www.instagram.com"].includes(url.hostname.toLowerCase())) return "";
+    const bagian = url.pathname.split("/").filter(Boolean);
+    if (bagian.length !== 1 || !/^[A-Za-z0-9._]{1,30}$/.test(bagian[0])) return "";
+    if (/^(p|reel|reels|stories|explore|accounts|direct)$/i.test(bagian[0])) return "";
+    return `https://www.instagram.com/${bagian[0]}/`;
+  } catch (e) { return ""; }
+}
+
 // ================= SEO: update meta/OG tag dinamis di halaman detail =================
 function perbaruiMetaDetail(data, kategori) {
   const BASE = "https://mim1654.github.io/himpalubi/";
@@ -2744,23 +2755,142 @@ function htmlTautanKampus(daftar) {
       </a></li>`).join("");
 }
 
-function htmlUkmKampus(daftar) {
-  return daftar.map(u => {
+function htmlUkmKampus(daftar, expandable = false) {
+  return daftar.map((u, index) => {
     const logo = urlGambarAman(u.logo_url);
     const href = urlTautanAman(u.url);
+    const profilInstagram = urlProfilInstagramAman(u.url);
     const penjelasan = String(u.keterangan || "").trim();
+    const idDetail = "ukm-detail-" + String(u.id || index).replace(/[^A-Za-z0-9_-]/g, "");
+    const logoIsi = logo
+      ? `<img src="${escapeHtml(logo)}" alt="" class="ukm-logo__gambar" loading="lazy" width="64" height="64">`
+      : escapeHtml(inisialNama(u.nama));
+    const logoMarkup = expandable
+      ? `<span class="ukm-logo" aria-hidden="true">${logoIsi}</span>`
+      : href
+        ? `<a class="ukm-logo-tautan" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><span class="ukm-logo">${logoIsi}</span></a>`
+        : `<span class="ukm-logo" aria-hidden="true">${logoIsi}</span>`;
+
     return `
-      <li class="ukm-kartu">
-        ${href ? `<a class="ukm-logo-tautan" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><span class="ukm-logo">${logo ? `<img src="${escapeHtml(logo)}" alt="" loading="lazy" width="64" height="64">` : escapeHtml(inisialNama(u.nama))}</span></a>` : `<span class="ukm-logo" aria-hidden="true">${logo ? `<img src="${escapeHtml(logo)}" alt="" loading="lazy" width="64" height="64">` : escapeHtml(inisialNama(u.nama))}</span>`}
+      <li class="ukm-kartu ${expandable ? "ukm-kartu--rincian" : ""}">
+        ${logoMarkup}
         <div class="ukm-kartu__isi">
-          <h3 class="ukm-nama">${escapeHtml(u.nama)}</h3>
-          ${penjelasan ? `<p class="ukm-kartu__teks">${escapeHtml(penjelasan)}</p>` : ""}
-          ${href ? `<a class="ukm-kartu__tautan" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer"><span>Buka Instagram</span><span class="material-symbols-outlined" aria-hidden="true">arrow_outward</span><span class="sr-only">${escapeHtml(u.nama)} (tab baru)</span></a>` : ""}
+          ${expandable
+            ? `<h3 class="ukm-nama"><button type="button" class="ukm-nama__tombol" data-ukm-toggle aria-expanded="false" aria-controls="${escapeHtml(idDetail)}">${escapeHtml(u.nama)}<span class="material-symbols-outlined" data-ukm-ikon aria-hidden="true">expand_more</span></button></h3>`
+            : `<h3 class="ukm-nama">${escapeHtml(u.nama)}</h3>`}
+          ${expandable
+            ? `<div class="ukm-kartu__rincian" id="${escapeHtml(idDetail)}" data-ukm-detail hidden>
+                <div class="ukm-kartu__deskripsi">
+                  <h4>Tentang ${escapeHtml(u.nama)}</h4>
+                  <p>${escapeHtml(penjelasan || "Penjelasan organisasi ini belum ditambahkan.")}</p>
+                </div>
+                ${profilInstagram
+                  ? `<section class="ukm-instagram" aria-label="Pratinjau Instagram ${escapeHtml(u.nama)}">
+                      <h4>Instagram</h4>
+                      <div class="ukm-instagram__embed" data-ukm-instagram data-url="${escapeHtml(profilInstagram)}" data-embed-status="belum">
+                        <p class="ukm-instagram__status" role="status" aria-live="polite">Pratinjau profil Instagram akan dimuat.</p>
+                        <div class="ukm-instagram__widget"></div>
+                        <a class="ukm-instagram__fallback" href="${escapeHtml(profilInstagram)}" target="_blank" rel="noopener noreferrer" hidden>Buka profil Instagram</a>
+                      </div>
+                    </section>`
+                  : `<section class="ukm-instagram">
+                      <h4>Instagram</h4>
+                      <p class="ukm-instagram__status">${href ? "Tautan yang disimpan bukan tautan profil Instagram." : "Tautan profil Instagram belum ditambahkan."}</p>
+                      ${href ? `<a class="ukm-instagram__fallback" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">Buka tautan</a>` : ""}
+                    </section>`}
+              </div>`
+            : `${penjelasan ? `<p class="ukm-kartu__teks">${escapeHtml(penjelasan)}</p>` : ""}
+              ${href ? `<a class="ukm-kartu__tautan" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer"><span>Buka Instagram</span><span class="material-symbols-outlined" aria-hidden="true">arrow_outward</span><span class="sr-only">${escapeHtml(u.nama)} (tab baru)</span></a>` : ""}`}
         </div>
       </li>`;
   }).join("");
 }
 
+let janjiScriptInstagramEmbed = null;
+
+function muatScriptInstagramEmbed() {
+  if (window.instgrm?.Embeds?.process) return Promise.resolve(true);
+  if (!janjiScriptInstagramEmbed) {
+    janjiScriptInstagramEmbed = new Promise(resolve => {
+      const script = document.createElement("script");
+      script.src = "https://www.instagram.com/embed.js";
+      script.async = true;
+      script.onload = () => resolve(!!window.instgrm?.Embeds?.process);
+      script.onerror = () => resolve(false);
+      document.head.appendChild(script);
+    });
+  }
+  return janjiScriptInstagramEmbed;
+}
+
+async function muatPratinjauInstagram(wadah) {
+  if (!wadah || wadah.dataset.embedStatus !== "belum") return;
+  wadah.dataset.embedStatus = "memuat";
+
+  const url = wadah.dataset.url || "";
+  const status = wadah.querySelector(".ukm-instagram__status");
+  const widget = wadah.querySelector(".ukm-instagram__widget");
+  const fallback = wadah.querySelector(".ukm-instagram__fallback");
+  if (!url || !status || !widget || !fallback) return;
+
+  const kutipan = document.createElement("blockquote");
+  kutipan.className = "instagram-media";
+  kutipan.setAttribute("data-instgrm-permalink", url);
+  kutipan.setAttribute("data-instgrm-version", "14");
+  const tautan = document.createElement("a");
+  tautan.href = url;
+  tautan.target = "_blank";
+  tautan.rel = "noopener noreferrer";
+  tautan.textContent = "Lihat profil Instagram";
+  kutipan.appendChild(tautan);
+  widget.replaceChildren(kutipan);
+  status.textContent = "Memuat pratinjau profil Instagram…";
+
+  let observer;
+  let timer;
+  const tampilkanCadangan = () => {
+    if (observer) observer.disconnect();
+    status.textContent = "Pratinjau Instagram tidak dapat dimuat saat ini.";
+    fallback.hidden = false;
+  };
+  const cekEmbedSiap = () => {
+    if (!widget.querySelector("iframe")) return false;
+    status.hidden = true;
+    fallback.hidden = true;
+    if (observer) observer.disconnect();
+    if (timer) clearTimeout(timer);
+    return true;
+  };
+
+  observer = new MutationObserver(cekEmbedSiap);
+  observer.observe(widget, { childList: true, subtree: true });
+  timer = setTimeout(() => { if (!cekEmbedSiap()) tampilkanCadangan(); }, 12000);
+
+  if (!await muatScriptInstagramEmbed()) {
+    tampilkanCadangan();
+    return;
+  }
+  try {
+    window.instgrm.Embeds.process();
+  } catch (e) {
+    tampilkanCadangan();
+  }
+}
+
+function pasangInteraksiDetailUkm(daftarEl) {
+  daftarEl.addEventListener("click", event => {
+    const tombol = event.target.closest?.("[data-ukm-toggle]");
+    if (!tombol || !daftarEl.contains(tombol)) return;
+    const panel = document.getElementById(tombol.getAttribute("aria-controls"));
+    if (!panel) return;
+    const buka = panel.hidden;
+    panel.hidden = !buka;
+    tombol.setAttribute("aria-expanded", String(buka));
+    const ikon = tombol.querySelector("[data-ukm-ikon]");
+    if (ikon) ikon.textContent = buka ? "expand_less" : "expand_more";
+    if (buka) muatPratinjauInstagram(panel.querySelector("[data-ukm-instagram]"));
+  });
+}
 // Tautan situs kampus tampil di footer, di kolom sendiri "Layanan Akademik" (diisi dari Dashboard > Mitra & Lokasi).
 // Kolom tersembunyi selama belum ada tautan, sehingga footer tetap rapi.
 async function muatJaringanKampus() {
@@ -2779,7 +2909,9 @@ async function muatHalamanKampus() {
   const ukm = await ambilMitra("ukm");
   const secU = document.getElementById("kampus-ukm");
   if (ukm.length && secU) {
-    document.getElementById("kampus-ukm-daftar").innerHTML = htmlUkmKampus(ukm);
+    const daftarEl = document.getElementById("kampus-ukm-daftar");
+    daftarEl.innerHTML = htmlUkmKampus(ukm, true);
+    pasangInteraksiDetailUkm(daftarEl);
     secU.hidden = false;
   }
   const kosong = document.getElementById("kampus-kosong");

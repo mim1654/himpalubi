@@ -2130,6 +2130,26 @@ body[data-page="kampus"] main section + section { border-top: 0; }
 .ukm-kartu__tautan:hover { text-decoration: underline; }
 .ukm-kartu__tautan:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
 .ukm-kartu__tautan .material-symbols-outlined { font-size: 18px; }
+.ukm-kartu--rincian { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; }
+.ukm-kartu--rincian > .ukm-kartu__isi { min-width: 0; }
+.ukm-nama__tombol { display: flex; align-items: center; justify-content: space-between; gap: .5rem; width: 100%; padding: 0; border: 0; background: transparent; color: var(--on-surface); font: inherit; font-weight: 700; text-align: left; cursor: pointer; }
+.ukm-nama__tombol:hover { color: var(--primary); }
+.ukm-nama__tombol:focus-visible { outline: var(--focus-ring); outline-offset: 3px; border-radius: .25rem; }
+.ukm-nama__tombol .material-symbols-outlined { flex: none; color: var(--primary); font-size: 1.25rem; }
+.ukm-kartu__rincian { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(15rem, 21rem); gap: 1.25rem; width: 100%; min-width: 0; margin-top: .25rem; padding-top: 1.25rem; border-top: 1px solid var(--surface-container-high); }
+.ukm-kartu__rincian[hidden] { display: none !important; }
+.ukm-kartu__deskripsi h4, .ukm-instagram h4 { margin: 0 0 .5rem; color: var(--on-surface); font-size: .875rem; line-height: 1.35rem; font-weight: 700; }
+.ukm-kartu__deskripsi p, .ukm-instagram__status { margin: 0; color: var(--ink-600); font-size: .875rem; line-height: 1.55; overflow-wrap: anywhere; }
+.ukm-instagram { min-width: 0; padding: .875rem; border: 1px solid var(--surface-container-high); border-radius: .75rem; background: var(--surface); }
+.ukm-instagram__embed { min-width: 0; }
+.ukm-instagram__widget { min-width: 0; max-width: 100%; overflow: hidden; }
+.ukm-instagram__widget blockquote.instagram-media { box-sizing: border-box !important; width: 100% !important; max-width: 100% !important; min-width: 0 !important; margin: 0 auto !important; }
+.ukm-instagram__widget iframe { display: block; width: 100% !important; max-width: 100% !important; min-width: 0 !important; margin: 0 auto !important; }
+.ukm-instagram__fallback { display: inline-flex; align-items: center; min-height: 44px; margin-top: .5rem; color: var(--primary); font-size: .875rem; font-weight: 700; text-decoration: underline; }
+@media (max-width: 639px) {
+  .ukm-kartu__rincian { grid-template-columns: minmax(0, 1fr); }
+  .ukm-instagram { max-width: 25rem; }
+}
 
 /* Footer: kolom menyesuaikan jumlah isi (kolom Layanan Akademik tersembunyi bila belum ada tautan) */
 .footer-grid[class] { grid-template-columns: 1fr; }
