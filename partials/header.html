@@ -18,25 +18,47 @@
     <nav class="hidden xl:flex items-center gap-6 main-nav-container" aria-label="Navigasi Utama">
       <a class="nav-item text-body-md font-medium text-secondary hover:text-primary-container transition-colors py-2" data-page="beranda" href="index.html">Beranda</a>
       
-      <!-- Dropdown Tentang -->
+      <!-- Dropdown Tentang Kami -->
       <div class="relative group py-2 has-dropdown" id="nav-dropdown-tentang">
         <button class="dropdown-toggle flex items-center gap-1 text-body-md text-secondary hover:text-primary-container transition-colors font-medium focus:outline-none" type="button" aria-expanded="false" aria-haspopup="true" id="btn-dropdown-tentang">
-          <span>Tentang</span>
+          <span>Tentang Kami</span>
           <span class="material-symbols-outlined text-[18px] transition-transform duration-200 group-hover:rotate-180 caret-icon" aria-hidden="true">expand_more</span>
         </button>
-        <div class="dropdown-menu-wrapper absolute left-0 top-full hidden group-hover:block w-56 pt-2 z-50">
+        <div class="dropdown-menu-wrapper absolute left-0 top-full hidden group-hover:block w-60 pt-2 z-50">
           <div class="bg-surface-container-lowest/95 backdrop-blur-md rounded-xl shadow-[0_10px_24px_-3px_rgba(28,31,38,0.08)] border border-surface-container py-2">
-            <a class="block px-4 py-2.5 text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container transition-colors" data-page="tentang" href="tentang.html">Profil Organisasi</a>
-            <a class="block px-4 py-2.5 text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container transition-colors" data-page="struktur" href="struktur.html">Struktur Organisasi</a>
-<a class="block px-4 py-2.5 text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container transition-colors" data-page="anggota" href="anggota.html">Anggota</a>
+            <a class="block px-4 py-2.5 text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container transition-colors" data-page="tentang" href="tentang.html">Profil HIMPALUBI</a>
+            <a class="block px-4 py-2.5 text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container transition-colors" data-page="tentang" href="tentang.html#sec-visimisi">Visi dan Misi</a>
+            <a class="block px-4 py-2.5 text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container transition-colors" data-page="struktur" href="struktur.html">Struktur dan Kepengurusan</a>
             <a class="block px-4 py-2.5 text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container transition-colors" data-page="program-kerja" href="program-kerja.html">Program Kerja</a>
-            <a class="block px-4 py-2.5 text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container transition-colors" data-page="kampus" href="kampus.html">UKM</a>
           </div>
         </div>
       </div>
 
-      <a class="nav-item text-body-md text-secondary hover:text-primary-container transition-colors font-medium py-2" data-page="kegiatan" href="kegiatan.html">Kegiatan</a>
+      <div class="relative group py-2 has-dropdown" id="nav-dropdown-kegiatan">
+        <button class="dropdown-toggle flex items-center gap-1 text-body-md text-secondary hover:text-primary-container transition-colors font-medium focus:outline-none" type="button" aria-expanded="false" aria-haspopup="true" id="btn-dropdown-kegiatan">
+          <span>Kegiatan</span>
+          <span class="material-symbols-outlined text-[18px] transition-transform duration-200 group-hover:rotate-180 caret-icon" aria-hidden="true">expand_more</span>
+        </button>
+        <div class="dropdown-menu-wrapper absolute left-0 top-full hidden group-hover:block w-56 pt-2 z-50">
+          <div class="bg-surface-container-lowest/95 backdrop-blur-md rounded-xl shadow-[0_10px_24px_-3px_rgba(28,31,38,0.08)] border border-surface-container py-2">
+            <a class="block px-4 py-2.5 text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container transition-colors" data-page="kegiatan" href="kegiatan.html">Kegiatan Terbaru</a>
+            <a class="block px-4 py-2.5 text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container transition-colors" data-page="galeri" href="galeri.html">Dokumentasi</a>
+          </div>
+        </div>
+      </div>
       <a class="nav-item text-body-md text-secondary hover:text-primary-container transition-colors font-medium py-2" data-page="lomba" href="lomba.html">Lomba</a>
+      <div class="relative group py-2 has-dropdown" id="nav-dropdown-organisasi">
+        <button class="dropdown-toggle flex items-center gap-1 text-body-md text-secondary hover:text-primary-container transition-colors font-medium focus:outline-none" type="button" aria-expanded="false" aria-haspopup="true" id="btn-dropdown-organisasi">
+          <span>Organisasi Mahasiswa UNIPAR</span>
+          <span class="material-symbols-outlined text-[18px] transition-transform duration-200 group-hover:rotate-180 caret-icon" aria-hidden="true">expand_more</span>
+        </button>
+        <div class="dropdown-menu-wrapper absolute left-0 top-full hidden group-hover:block w-60 pt-2 z-50">
+          <div class="bg-surface-container-lowest/95 backdrop-blur-md rounded-xl shadow-[0_10px_24px_-3px_rgba(28,31,38,0.08)] border border-surface-container py-2">
+            <a class="block px-4 py-2.5 text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container transition-colors" data-page="kampus" href="kampus.html#direktori-hmps">Direktori HMPS</a>
+            <a class="block px-4 py-2.5 text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container transition-colors" data-page="kampus" href="kampus.html#direktori-ukm">Direktori UKM</a>
+          </div>
+        </div>
+      </div>
       <a class="nav-item text-body-md text-secondary hover:text-primary-container transition-colors font-medium py-2" data-page="berita" href="berita.html">Berita</a>
       <a class="nav-item text-body-md text-secondary hover:text-primary-container transition-colors font-medium py-2" data-page="galeri" href="galeri.html">Galeri</a>
       <a class="nav-item text-body-md text-secondary hover:text-primary-container transition-colors font-medium py-2" data-page="kontak" href="kontak.html">Kontak</a>
@@ -65,17 +87,29 @@
   <div id="mobile-nav-panel" class="hidden xl:hidden w-full bg-surface-container-lowest/95 backdrop-blur-xl border-t border-surface-container-high px-4 pt-3 pb-6 space-y-2 shadow-xl overflow-y-auto max-h-[calc(100vh-4.5rem)]">
     <a class="mobile-nav-item block px-4 py-2.5 rounded-xl text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container font-medium" data-page="beranda" href="index.html">Beranda</a>
     <div class="px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container">
-      <span class="text-label-sm font-bold uppercase tracking-wider text-primary-container">Tentang Himpunan</span>
+      <span class="text-label-sm font-bold uppercase tracking-wider text-primary-container">Tentang Kami</span>
       <div class="mt-1 pl-2 space-y-1">
-        <a class="mobile-nav-item block py-1.5 text-body-md text-on-surface hover:text-primary-container" data-page="tentang" href="tentang.html">Profil Organisasi</a>
-        <a class="mobile-nav-item block py-1.5 text-body-md text-on-surface hover:text-primary-container" data-page="struktur" href="struktur.html">Struktur Organisasi</a>
-        <a class="mobile-nav-item block py-1.5 text-body-md text-on-surface hover:text-primary-container" data-page="anggota" href="anggota.html">Anggota</a>
+        <a class="mobile-nav-item block py-1.5 text-body-md text-on-surface hover:text-primary-container" data-page="tentang" href="tentang.html">Profil HIMPALUBI</a>
+        <a class="mobile-nav-item block py-1.5 text-body-md text-on-surface hover:text-primary-container" data-page="tentang" href="tentang.html#sec-visimisi">Visi dan Misi</a>
+        <a class="mobile-nav-item block py-1.5 text-body-md text-on-surface hover:text-primary-container" data-page="struktur" href="struktur.html">Struktur dan Kepengurusan</a>
         <a class="mobile-nav-item block py-1.5 text-body-md text-on-surface hover:text-primary-container" data-page="program-kerja" href="program-kerja.html">Program Kerja</a>
-        <a class="mobile-nav-item block py-1.5 text-body-md text-on-surface hover:text-primary-container" data-page="kampus" href="kampus.html">UKM</a>
       </div>
     </div>
-    <a class="mobile-nav-item block px-4 py-2.5 rounded-xl text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container font-medium" data-page="kegiatan" href="kegiatan.html">Kegiatan</a>
+    <div class="px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container">
+      <span class="text-label-sm font-bold uppercase tracking-wider text-primary-container">Kegiatan</span>
+      <div class="mt-1 pl-2 space-y-1">
+        <a class="mobile-nav-item block py-1.5 text-body-md text-on-surface hover:text-primary-container" data-page="kegiatan" href="kegiatan.html">Kegiatan Terbaru</a>
+        <a class="mobile-nav-item block py-1.5 text-body-md text-on-surface hover:text-primary-container" data-page="galeri" href="galeri.html">Dokumentasi</a>
+      </div>
+    </div>
     <a class="mobile-nav-item block px-4 py-2.5 rounded-xl text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container font-medium" data-page="lomba" href="lomba.html">Lomba</a>
+    <div class="px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container">
+      <span class="text-label-sm font-bold uppercase tracking-wider text-primary-container">Organisasi Mahasiswa UNIPAR</span>
+      <div class="mt-1 pl-2 space-y-1">
+        <a class="mobile-nav-item block py-1.5 text-body-md text-on-surface hover:text-primary-container" data-page="kampus" href="kampus.html#direktori-hmps">Direktori HMPS</a>
+        <a class="mobile-nav-item block py-1.5 text-body-md text-on-surface hover:text-primary-container" data-page="kampus" href="kampus.html#direktori-ukm">Direktori UKM</a>
+      </div>
+    </div>
     <a class="mobile-nav-item block px-4 py-2.5 rounded-xl text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container font-medium" data-page="berita" href="berita.html">Berita</a>
     <a class="mobile-nav-item block px-4 py-2.5 rounded-xl text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container font-medium" data-page="galeri" href="galeri.html">Galeri</a>
     <a class="mobile-nav-item block px-4 py-2.5 rounded-xl text-body-md text-on-surface hover:bg-surface-container hover:text-primary-container font-medium" data-page="kontak" href="kontak.html">Kontak</a>
