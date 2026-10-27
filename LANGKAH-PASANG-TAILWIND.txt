@@ -1,0 +1,6 @@
+1. Buka github.com/mim1654/himpalubi > Add file > Upload files.
+2. Seret SEMUA isi folder zip ini (susunan folder sudah sama dengan repo, termasuk folder css dan admin). Pilih "Commit changes".
+3. Tunggu 1-2 menit sampai GitHub Pages selesai (tab Actions hijau).
+4. Buka situs, tekan Ctrl+Shift+R (hard refresh). Periksa beranda, berita, kontak, login admin.
+5. Ukur ulang di Chrome DevTools > Lighthouse (mode Mobile) dan kirim skornya.
+Jika ada yang rusak: di GitHub buka commit tadi > Revert.
